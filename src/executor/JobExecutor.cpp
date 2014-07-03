@@ -23,11 +23,6 @@ JobExecutor::~JobExecutor()
     // TODO Auto-generated destructor stub
 }
 
-void test(JobExecutor* pExecutor)
-{
-	printf("test\n");
-}
-
 void JobExecutor::start()
 {
     if(!mbStarted)
