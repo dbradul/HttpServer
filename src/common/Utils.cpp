@@ -1,7 +1,7 @@
 /*******************************************************************
  * Utils.cpp
  *
- *  @date: 28 квіт. 2014
+ *  @date: 28 пїЅпїЅпїЅ. 2014
  *  @author: DB
  ******************************************************************/
 
@@ -78,29 +78,29 @@ Url::Url(const string& url_s)
 //---------------------------------------------------------------------------------------
 void Url::parse(const string& url)
 {
-    const std::string prot_end("://");
-    std::string::const_iterator protIdx = std::search(url.begin(), url.end(), prot_end.begin(), prot_end.end());
-    mProtocol.reserve(distance(url.begin(), protIdx));
-    if (protIdx != url.end())
-    {
-        std::transform(url.begin(), protIdx, std::back_inserter(mProtocol), std::ptr_fun<int, int>(tolower)); // protocol is icase
-        std::advance(protIdx, prot_end.length());
-    }
-    else
-    {
-        protIdx = url.begin();
-    }
-
-    std::string::const_iterator path_i = std::find(protIdx, url.end(), '/');
-    mHost.reserve(distance(protIdx, path_i));
-    std::transform(protIdx, path_i, std::back_inserter(mHost), std::ptr_fun<int, int>(tolower)); // host is icase
-    std::string::const_iterator query_i = find(path_i, url.end(), '?');
-    mPath.assign(path_i, query_i);
-    if (query_i != url.end())
-    {
-        ++query_i;
-    }
-    mQuery.assign(query_i, url.end());
+//    const std::string prot_end("://");
+//    std::string::const_iterator protIdx = std::search(url.begin(), url.end(), prot_end.begin(), prot_end.end());
+//    mProtocol.reserve(distance(url.begin(), protIdx));
+//    if (protIdx != url.end())
+//    {
+//        std::transform(url.begin(), protIdx, std::back_inserter(mProtocol), std::ptr_fun<int, int>(tolower)); // protocol is icase
+//        std::advance(protIdx, prot_end.length());
+//    }
+//    else
+//    {
+//        protIdx = url.begin();
+//    }
+//
+//    std::string::const_iterator path_i = std::find(protIdx, url.end(), '/');
+//    mHost.reserve(distance(protIdx, path_i));
+//    std::transform(protIdx, path_i, std::back_inserter(mHost), std::ptr_fun<int, int>(tolower)); // host is icase
+//    std::string::const_iterator query_i = find(path_i, url.end(), '?');
+//    mPath.assign(path_i, query_i);
+//    if (query_i != url.end())
+//    {
+//        ++query_i;
+//    }
+//    mQuery.assign(query_i, url.end());
 }
 
 const std::string& Url::getProtocol() const

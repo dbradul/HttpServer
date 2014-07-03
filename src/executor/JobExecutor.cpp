@@ -1,7 +1,7 @@
 /*******************************************************************
  * JobExecutor.cpp
  *
- *  @date: 28 квіт. 2014
+ *  @date: 28 пїЅпїЅпїЅ. 2014
  *  @author: DB
  ******************************************************************/
 
@@ -11,6 +11,7 @@
 const int JobExecutor::THREAD_NUM_UPPER_BOUND = 1024;
 
 JobExecutor::JobExecutor()
+:mbStarted(false)
 {
     unsigned long portNumber;
     Config::getValue(Config::CONFIG_MAX_THREAD_NUMBER, portNumber);
@@ -20,6 +21,11 @@ JobExecutor::JobExecutor()
 JobExecutor::~JobExecutor()
 {
     // TODO Auto-generated destructor stub
+}
+
+void test(JobExecutor* pExecutor)
+{
+	printf("test\n");
 }
 
 void JobExecutor::start()
@@ -34,7 +40,7 @@ void JobExecutor::start()
 
         for(int i=0; i<maxNumThread; ++i)
         {
-            mThreadPool.push_back(std::thread(&JobExecutor::run, this));
+            mThreadPool.push_back(new std::thread(&JobExecutor::run, this));
         }
 
         mbStarted = true;

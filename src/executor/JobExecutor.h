@@ -1,7 +1,7 @@
 /*******************************************************************
  * JobExecutor.h
  *
- *  @date: 28 квіт. 2014
+ *  @date: 28 пїЅпїЅпїЅ. 2014
  *  @author: DB
  ******************************************************************/
 
@@ -27,8 +27,8 @@ class JobExecutor
 
     private:
         void run();
-        std::vector<std::thread> mThreadPool;
-        bool mbStarted = false;
+        std::vector<std::thread*> mThreadPool;
+        bool mbStarted;
         int mMaxThreadNum;
 
 };

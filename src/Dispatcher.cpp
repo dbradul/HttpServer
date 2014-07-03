@@ -130,8 +130,8 @@ Request Dispatcher::readRequest()
 {
     Request request;
 
-    struct sockaddr_in client_addr = {0};
-    int size = sizeof(client_addr);
+    struct sockaddr client_addr = {0};
+    socklen_t size = sizeof(client_addr);
     int connDesc = -1;
     mSessionId = -1;
     bool bMessageCompleted = false;
