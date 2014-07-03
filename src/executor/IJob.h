@@ -24,7 +24,7 @@ class IJob
             mCallback(result);
         }
 
-        void setOnFinishCallback(tCallback callback)
+        void setOnFinishCallback(Callback callback)
         {
             mCallback = callback;
         }
@@ -33,7 +33,7 @@ class IJob
         virtual std::string doJob() = 0;
 
     private:
-        tCallback mCallback;
+        Callback mCallback;
 };
 
 #endif /* IJOB_H_ */

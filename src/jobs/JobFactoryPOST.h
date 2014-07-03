@@ -17,7 +17,7 @@ class JobFactoryPOST : public IJobFactory
         virtual ~JobFactoryPOST();
 
         virtual IJob* createJob(const Request& request);
-        virtual tCallback createJobCallback(const Dispatcher& dispatcher, const int sessionId);
+        virtual Callback createJobCallback(const Dispatcher& dispatcher, const int sessionId);
 };
 
 #endif /* JOBFACTORYPOST_H_ */

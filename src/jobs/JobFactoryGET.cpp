@@ -52,7 +52,7 @@ IJob* JobFactoryGET::createJob(const Request& request)
 }
 
 //---------------------------------------------------------------------------------------
-tCallback JobFactoryGET::createJobCallback(const Dispatcher& dispatcher, const int sessionId)
+Callback JobFactoryGET::createJobCallback(const Dispatcher& dispatcher, const int sessionId)
 {
     return [&dispatcher, sessionId] (const std::string& result)
     {

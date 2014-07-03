@@ -22,7 +22,7 @@ extern "C" {
 #define TRC_GROUP "HttpServer"
 
 #define __ENABLE_DEV_DEBUG_OUT__
-//#define __ENABLE_DEV_DEBUG_SLOG__
+#define __ENABLE_DEV_DEBUG_SLOG__
 #ifdef __ENABLE_DEV_DEBUG_OUT__
    #ifdef TRC_DEBUG
       #undef TRC_DEBUG
@@ -44,13 +44,13 @@ extern "C" {
    #endif
 
    #ifdef __ENABLE_DEV_DEBUG_SLOG__
-      #include <sys/slog.h>
+      #include <syslog.h>
       #define NO_PARENTHESES(...) __VA_ARGS__
-      #define TRC_DEBUG(s,m,f) slogf( 1007, _SLOG_DEBUG1, (const char *)NO_PARENTHESES m)
-      #define TRC_INFO(s,m,f)  slogf( 1007, _SLOG_INFO, (const char *)NO_PARENTHESES m)
-      #define TRC_WARN(s,m,f)  slogf( 1007, _SLOG_WARNING, (const char *)NO_PARENTHESES m)
-      #define TRC_ERROR(s,m,f) slogf( 1007, _SLOG_ERROR, (const char *)NO_PARENTHESES m)
-      #define TRC_FATAL(s,m,f) slogf( 1007, _SLOG_CRITICAL, (const char *)NO_PARENTHESES m)
+      #define TRC_DEBUG(s,m,f) syslog( LOG_DEBUG, (const char *)NO_PARENTHESES m)
+      #define TRC_INFO(s,m,f)  syslog( LOG_INFO, (const char *)NO_PARENTHESES m)
+      #define TRC_WARN(s,m,f)  syslog( LOG_WARNING, (const char *)NO_PARENTHESES m)
+      #define TRC_ERROR(s,m,f) syslog( LOG_ERR, (const char *)NO_PARENTHESES m)
+      #define TRC_FATAL(s,m,f) syslog( LOG_CRIT, (const char *)NO_PARENTHESES m)
    #else
       #define TRC_DEBUG(s,m,f) do { printf( TRC_GROUP "\t" ); printf( __PRETTY_FUNCTION__ ); printf( ": " ); printf m; printf ("\n"); } while(0);
       #define TRC_INFO(s,m,f)  do { printf( TRC_GROUP "\t" ); printf( __PRETTY_FUNCTION__ ); printf( ": " ); printf m; printf ("\n"); } while(0);

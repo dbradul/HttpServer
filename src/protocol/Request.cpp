@@ -110,3 +110,8 @@ const std::string& Request::getPath() const
 {
     return mPath;
 }
+
+Request::operator bool()
+{
+    return isValid();
+}

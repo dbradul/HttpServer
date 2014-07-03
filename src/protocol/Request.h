@@ -27,6 +27,7 @@ class Request : public Message
         bool isValid();
         void setValid(bool valid);
         void setSessionId(int sessionId);
+        operator bool();
 
         const std::string& getHost() const;
         const std::string& getPath() const;

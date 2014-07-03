@@ -8,6 +8,7 @@
 #include <common/Config.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <common/Utils.h>
 
 //---------------------------------------------------------------------------------------
@@ -17,12 +18,12 @@ const std::string Config::CONFIG_MAX_THREAD_NUMBER  = "PUTIN_HUYLO";
 const std::string Config::CONFIG_PORT               = "SLAVA_UKRAYNI";
 const std::string Config::CONFIG_WORKING_DIR        = "HEROYAM_SLAVA";
 
-
+char workingDir[FILENAME_MAX];
 std::map<std::string, std::string> Config::settings =
 {
    {CONFIG_MAX_THREAD_NUMBER,   "4"},
    {CONFIG_PORT,                "8080"},
-   {CONFIG_WORKING_DIR,         ""},
+   {CONFIG_WORKING_DIR,         std::string(getcwd(workingDir, sizeof(workingDir)))},
 };
 
 Config::Config()

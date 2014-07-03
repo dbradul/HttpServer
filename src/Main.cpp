@@ -10,9 +10,13 @@
 #include "common/Config.h"
 #include <unistd.h>
 #include <stdlib.h>
+#include <signal.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 
 bool parseOptions(int argc, char *argv[]);
 void printUsage();
+void daemonize();
 
 //---------------------------------------------------------------------------------------
 int main(int argc, char *argv[])
@@ -22,6 +26,11 @@ int main(int argc, char *argv[])
         exit(EXIT_FAILURE);
     }
 
+    daemonize();
+
+    /* Open the log file */
+    openlog ("HTTPServerDaemon", LOG_PID, LOG_DAEMON);
+
     try
     {
         Dispatcher dispatcher;
@@ -30,15 +39,15 @@ int main(int argc, char *argv[])
         JobExecutor jobExecutor;
         jobExecutor.start();
 
-        // infinite message loop
-        while (true)
-        {
-            Request request = dispatcher.readRequest();
+        Request request;
 
+        // infinite message loop
+        while ((request = dispatcher.readRequest()))
+        {
             IJobFactory* jobFactory = IJobFactory::create(request.getMethodType());
 
             IJob*            pJob = jobFactory->createJob(request);
-            tCallback jobCallback = jobFactory->createJobCallback( dispatcher, request.getSessionId() );
+            Callback jobCallback  = jobFactory->createJobCallback( dispatcher, request.getSessionId() );
 
             pJob->setOnFinishCallback(jobCallback);
 
@@ -48,16 +57,68 @@ int main(int argc, char *argv[])
 
     catch(const std::exception& e)
     {
-        TRC_ERROR(0U, ( "Application start failed" ), NULL);
+        TRC_ERROR(0U, ( "Application terminated" ), NULL);
     }
+
+    closelog();
 
     return 0;
 }
 
 //---------------------------------------------------------------------------------------
+void daemonize()
+{
+    pid_t pid;
+
+    /* Fork off the parent process */
+    pid = fork();
+
+    /* An error occurred */
+    if (pid < 0)
+        exit(EXIT_FAILURE);
+
+    /* Success: Let the parent terminate */
+    if (pid > 0)
+        exit(EXIT_SUCCESS);
+
+    /* On success: The child process becomes session leader */
+    if (setsid() < 0)
+        exit(EXIT_FAILURE);
+
+    /* Catch, ignore and handle signals */
+    //TODO: Implement a working signal handler */
+    signal(SIGCHLD, SIG_IGN);
+    signal(SIGHUP, SIG_IGN);
+
+    /* Fork off for the second time*/
+    pid = fork();
+
+    /* An error occurred */
+    if (pid < 0)
+        exit(EXIT_FAILURE);
+
+    /* Success: Let the parent terminate */
+    if (pid > 0)
+        exit(EXIT_SUCCESS);
+
+    /* Set new file permissions */
+    umask(0);
+
+    /* Change the working directory to the root directory */
+    /* or another appropriated directory */
+    chdir("/");
+
+    /* Close all open file descriptors */
+    int x;
+    for (x = sysconf(_SC_OPEN_MAX); x>0; x--)
+    {
+        close (x);
+    }
+}
+
+//---------------------------------------------------------------------------------------
 bool parseOptions(int argc, char *argv[])
 {
-    bool isWorkingDirConfigured = false;
     bool bResult = true;
     int c;
 
@@ -73,7 +134,6 @@ bool parseOptions(int argc, char *argv[])
 
             case 'd':
                 Config::setValue(Config::CONFIG_WORKING_DIR, std::string(optarg));
-                isWorkingDirConfigured = true;
                 break;
 
             case 't':
@@ -91,12 +151,6 @@ bool parseOptions(int argc, char *argv[])
                 printUsage();
                 bResult = false;
         }
-    }
-
-    if(bResult && !isWorkingDirConfigured)
-    {
-        char workingDir[FILENAME_MAX];
-        Config::setValue(Config::CONFIG_WORKING_DIR, std::string(getcwd(workingDir, sizeof(workingDir))));
     }
 
     return bResult;

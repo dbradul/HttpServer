@@ -21,7 +21,7 @@ class IJobFactory
         static IJobFactory* create(const std::string& request);
 
         virtual IJob* createJob(const Request& request)=0;
-        virtual tCallback createJobCallback(const Dispatcher& dispatcher, const int sessionId)=0;
+        virtual Callback createJobCallback(const Dispatcher& dispatcher, const int sessionId)=0;
 };
 
 #endif /* JOBFACTORY_H_ */
