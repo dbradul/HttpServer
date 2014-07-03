@@ -13,10 +13,13 @@
 #include <signal.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <execinfo.h>
 
 bool parseOptions(int argc, char *argv[]);
 void printUsage();
 void daemonize();
+static void signal_error(int sig, siginfo_t *si, void *ptr);
+void hook_signals();
 
 //---------------------------------------------------------------------------------------
 int main(int argc, char *argv[])
@@ -29,7 +32,7 @@ int main(int argc, char *argv[])
     daemonize();
 
     /* Open the log file */
-    openlog ("HTTPServerDaemon", LOG_PID, LOG_DAEMON);
+    TRC_INIT(LOG_PID, LOG_DAEMON);
 
     try
     {
@@ -40,6 +43,8 @@ int main(int argc, char *argv[])
         jobExecutor.start();
 
         Request request;
+
+        TRC_INFO(0U, ( "Application started" ), NULL);
 
         // infinite message loop
         while ((request = dispatcher.readRequest()))
@@ -60,7 +65,7 @@ int main(int argc, char *argv[])
         TRC_ERROR(0U, ( "Application terminated" ), NULL);
     }
 
-    closelog();
+    TRC_DEINIT();
 
     return 0;
 }
@@ -114,6 +119,8 @@ void daemonize()
     {
         close (x);
     }
+
+    hook_signals();
 }
 
 //---------------------------------------------------------------------------------------
@@ -165,4 +172,79 @@ port               - port number to listen for client connection. By default: 80
 work_dir           - working directory to start the server. By default: current dir.\n\
 max_num_of_threads - maximum number of threads. By default: 4\n");
 
+}
+
+//---------------------------------------------------------------------------------------
+void hook_signals()
+{
+    struct sigaction sigact;
+    sigset_t         sigset;
+    int             signo;
+    int             status;
+
+    // сигналы об ошибках в программе будут обрататывать более тщательно
+    // указываем что хотим получать расширенную информацию об ошибках
+    sigact.sa_flags = SA_SIGINFO;
+    // задаем функцию обработчик сигналов
+    sigact.sa_sigaction = signal_error;
+
+    sigemptyset(&sigact.sa_mask);
+
+    // установим наш обработчик на сигналы
+
+    sigaction(SIGFPE,  &sigact, 0); // ошибка FPU
+    sigaction(SIGILL,  &sigact, 0); // ошибочная инструкция
+    sigaction(SIGSEGV, &sigact, 0); // ошибка доступа к памяти
+    sigaction(SIGBUS,  &sigact, 0); // ошибка шины, при обращении к физической памяти
+    sigaction(SIGQUIT, &sigact, 0); // ошибка шины, при обращении к физической памяти
+    sigaction(SIGINT,  &sigact, 0); // ошибка шины, при обращении к физической памяти
+    sigaction(SIGTERM, &sigact, 0); // ошибка шины, при обращении к физической памяти
+
+}
+
+//---------------------------------------------------------------------------------------
+static void signal_error(int sig, siginfo_t *si, void *ptr)
+{
+    void* ErrorAddr;
+    void* Trace[16];
+    int    x;
+    int    TraceSize;
+    char** Messages;
+
+    // ddfdf
+    TRC_DEBUG(0U, ("Signal: %s, Addr: 0x%0.16X"), strsignal(sig), si->si_addr);
+
+    #if __WORDSIZE == 64 // если дело имеем с 64 битной ОС
+        // получим адрес инструкции которая вызвала ошибку
+        ErrorAddr = (void*)((ucontext_t*)ptr)->uc_mcontext.gregs[REG_RIP];
+    #else
+        // получим адрес инструкции которая вызвала ошибку
+        ErrorAddr = (void*)((ucontext_t*)ptr)->uc_mcontext.gregs[REG_EIP];
+    #endif
+
+    // произведем backtrace чтобы получить весь стек вызовов
+    TraceSize = backtrace(Trace, 16);
+    Trace[1] = ErrorAddr;
+
+    // получим расшифровку трасировки
+    Messages = backtrace_symbols(Trace, TraceSize);
+    if (Messages)
+    {
+        TRC_DEBUG(0U, ("== Backtrace =="), NULL);
+
+        // запишем в лог
+        for (x = 1; x < TraceSize; x++)
+        {
+            TRC_DEBUG(0U, ("%s"), Messages[x]);
+        }
+
+        TRC_DEBUG(0U, ("== End Backtrace =="), NULL);
+        free(Messages);
+    }
+
+    TRC_DEBUG(0U, ("Stopped"), NULL);
+
+
+    // завершим процесс с кодом требующим перезапуска
+    exit(CHILD_NEED_WORK);
 }
