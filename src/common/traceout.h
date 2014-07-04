@@ -46,12 +46,13 @@ extern "C" {
    #ifdef __ENABLE_DEV_DEBUG_SLOG__
       #include <syslog.h>
       #define NO_PARENTHESES(...) __VA_ARGS__
+      #define PF syslog( LOG_DEBUG, __PRETTY_FUNCTION__);
       #define TRC_INIT(option, facility)  openlog (TRC_GROUP, option, facility)
-      #define TRC_DEBUG(s,m,f) syslog( LOG_DEBUG, (const char *)NO_PARENTHESES m)
-      #define TRC_INFO(s,m,f)  syslog( LOG_INFO, (const char *)NO_PARENTHESES m)
-      #define TRC_WARN(s,m,f)  syslog( LOG_WARNING, (const char *)NO_PARENTHESES m)
-      #define TRC_ERROR(s,m,f) syslog( LOG_ERR, (const char *)NO_PARENTHESES m)
-      #define TRC_FATAL(s,m,f) syslog( LOG_CRIT, (const char *)NO_PARENTHESES m)
+      #define TRC_DEBUG(s,m,f) PF syslog( LOG_DEBUG, (const char *)NO_PARENTHESES m)
+      #define TRC_INFO(s,m,f)  PF syslog( LOG_INFO, (const char *)NO_PARENTHESES m)
+      #define TRC_WARN(s,m,f)  PF syslog( LOG_WARNING, (const char *)NO_PARENTHESES m)
+      #define TRC_ERROR(s,m,f) PF syslog( LOG_ERR, (const char *)NO_PARENTHESES m)
+      #define TRC_FATAL(s,m,f) PF syslog( LOG_CRIT, (const char *)NO_PARENTHESES m)
       #define TRC_DEINIT()     closelog ()
    #else
       #define TRC_DEBUG(s,m,f) do { printf( TRC_GROUP "\t" ); printf( __PRETTY_FUNCTION__ ); printf( ": " ); printf m; printf ("\n"); } while(0);
