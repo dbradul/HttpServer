@@ -18,44 +18,48 @@
 //---------------------------------------------------------------------------------------
 PageBuilder::PageBuilder()
 {
-   // TODO Auto-generated constructor stub
+   TRC_DEBUG_FUNC_ENTER(0U, "");
+   TRC_DEBUG_FUNC_EXIT (0U);
 }
 
 //---------------------------------------------------------------------------------------
 PageBuilder::~PageBuilder()
 {
-   // TODO Auto-generated destructor stub
+   TRC_DEBUG_FUNC_ENTER(0U, "");
+   TRC_DEBUG_FUNC_EXIT (0U);
 }
 
 //---------------------------------------------------------------------------------------
 std::string PageBuilder::buildRootLayout(std::string& path)
 {
-   TRC_INFO(0, ("START"), NULL);
+   TRC_DEBUG_FUNC_ENTER(0U, "path='%s'", path.c_str());
 
    Templater templater(Templater::TEMPLATE_ROOT_LAYOUT);
+
+   TRC_INFO(0, "Templater for root layout is created");
 
    std::string content;
 
    try
    {
-      TRC_INFO(0, ("Utils::endsWith(path, \"/\")"), NULL);
+      TRC_INFO(0, "Utils::endsWith(path, \"/\")");
 
       if (Utils::endsWith(path, "/"))
       {
-         TRC_INFO(0, ("Reading dir content. Why here!?"), NULL);
+         TRC_INFO(0, "Reading dir content. Why here!?");
 
          content = buildPageTable(path);
       }
       else
       {
-         TRC_INFO(0, ("Reading file content. Why here!?"), NULL);
+         TRC_INFO(0, "Reading file content. Why here!?");
 
          content = buildFileContent(path);
       }
    }
    catch (const std::exception& e)
    {
-      TRC_ERROR(0U, ( "Reading dir content has failed" ), NULL);
+      TRC_ERROR(0U, "Reading dir content has failed");
       content = "Reading content has failed for \"" + path + "\"";
    }
 
@@ -63,7 +67,7 @@ std::string PageBuilder::buildRootLayout(std::string& path)
    templater.setMacro("content", content);
    templater.setMacro("time", Utils::getCurrentDateTime());
 
-   TRC_INFO(0, ("EXIT"), NULL);
+   TRC_DEBUG_FUNC_EXIT (0U);
 
    return templater.generate();
 }
@@ -71,12 +75,16 @@ std::string PageBuilder::buildRootLayout(std::string& path)
 //---------------------------------------------------------------------------------------
 std::string PageBuilder::buildPageTable(const std::string& dirPath)
 {
+   TRC_DEBUG_FUNC_ENTER(0U, "dirPath='%s'", dirPath.c_str());
+
    Templater templater(Templater::TEMPLATE_PAGE_TABLE);
 
    std::vector<File> flist;
 
    std::string workingDir;
    Config::getValue(Config::CONFIG_WORKING_DIR, workingDir);
+
+   TRC_INFO(0U, "workingDir='%s'", workingDir.c_str());
 
    if (!Utils::readDir(workingDir, dirPath, flist))
    {
@@ -94,17 +102,23 @@ std::string PageBuilder::buildPageTable(const std::string& dirPath)
       templater.setMacro("table_body", tableBody);
    }
 
+   TRC_DEBUG_FUNC_EXIT(0U);
+
    return templater.generate();
 }
 
 //---------------------------------------------------------------------------------------
 std::string PageBuilder::buildPageTableLine(const File& file)
 {
+   TRC_DEBUG_FUNC_ENTER(0U, "file='%s'", file.name.c_str());
+
    Templater templater(Templater::TEMPLATE_PAGE_TABLE_LINE);
    templater.setMacro("filename", file.name);
    templater.setMacro("filepath", "\"" + file.relativeFilePath + (file.isDir ? "/" : "") + "\""); //TODO: sync with buildRootLayout logic
    templater.setMacro("size", (file.size ? Utils::to_string(file.size) : ""));
    templater.setMacro("perms", file.permissions);
+
+   TRC_DEBUG_FUNC_EXIT(0U);
 
    return templater.generate();
 }
@@ -112,6 +126,8 @@ std::string PageBuilder::buildPageTableLine(const File& file)
 //---------------------------------------------------------------------------------------
 std::string PageBuilder::buildFileContent(const std::string& filePath)
 {
+   TRC_DEBUG_FUNC_ENTER(0U, "filePath='%s'", filePath.c_str());
+
    std::string fileContent;
    std::string output;
    Templater templater(Templater::TEMPLATE_FILE_CONTENT);
@@ -139,12 +155,16 @@ std::string PageBuilder::buildFileContent(const std::string& filePath)
 
    templater.setMacro("file_content", output);
 
+   TRC_DEBUG_FUNC_EXIT(0U);
+
    return templater.generate();
 }
 
 //---------------------------------------------------------------------------------------
 std::string PageBuilder::buildFileContentLine(const std::string& contentLine, int idx)
 {
+   TRC_DEBUG_FUNC_ENTER(0U, "contentLine='%s', idx=%d", contentLine.c_str(), idx);
+
    Templater templater(Templater::TEMPLATE_FILE_CONTENT_LINE);
 
    std::string result = contentLine;
@@ -154,6 +174,8 @@ std::string PageBuilder::buildFileContentLine(const std::string& contentLine, in
 
    templater.setMacro("idx", Utils::to_string(idx));
    templater.setMacro("line_content", result);
+
+   TRC_DEBUG_FUNC_EXIT(0U);
 
    return templater.generate();
 }

@@ -12,14 +12,15 @@
 //---------------------------------------------------------------------------------------
 JobFactoryPOST::JobFactoryPOST()
 {
-    // TODO Auto-generated constructor stub
-
+   TRC_DEBUG_FUNC_ENTER(0U, "");
+   TRC_DEBUG_FUNC_EXIT (0U);
 }
 
 //---------------------------------------------------------------------------------------
 JobFactoryPOST::~JobFactoryPOST()
 {
-    // TODO Auto-generated destructor stub
+   TRC_DEBUG_FUNC_ENTER(0U, "");
+   TRC_DEBUG_FUNC_EXIT (0U);
 }
 
 //---------------------------------------------------------------------------------------
@@ -55,7 +56,7 @@ Callback JobFactoryPOST::createJobCallback(const Dispatcher& dispatcher, const i
 
         if( !dispatcher.writeResponse(response, sessionId) )
         {
-            TRC_ERROR(0U, ( "Failed responding" ), NULL);
+            TRC_ERROR(0U, "Failed responding");
         }
     };
 }

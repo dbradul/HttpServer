@@ -18,14 +18,17 @@ class IJob
         IJob();
         virtual ~IJob();
 
-        void start();
+        bool start();
         void setOnFinishCallback(Callback callback);
+        //TODO: const ref?
+        void setOnErrorCallback(Callback callback);
 
     protected:
         virtual std::string doJob() = 0;
 
     private:
         Callback mCallback;
+        Callback mErrorCallback;
 };
 
 #endif /* IJOB_H_ */

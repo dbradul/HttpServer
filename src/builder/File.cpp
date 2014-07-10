@@ -1,20 +1,24 @@
 /*******************************************************************
  * File.cpp
  *
- *  @date: 5 черв. 2014
+ *  @date: 5 пїЅпїЅпїЅпїЅ. 2014
  *  @author: DB
  ******************************************************************/
 
 #include <builder/File.h>
+#include "common/traceout.h"
 
 File::File()
+: size(0),
+  isDir(false)
 {
-    // TODO Auto-generated constructor stub
-
+   TRC_DEBUG_FUNC_ENTER(0U, "");
+   TRC_DEBUG_FUNC_EXIT (0U);
 }
 
 File::~File()
 {
-    // TODO Auto-generated destructor stub
+   TRC_DEBUG_FUNC_ENTER(0U, "");
+   TRC_DEBUG_FUNC_EXIT (0U);
 }
 

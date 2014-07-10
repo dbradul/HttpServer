@@ -50,11 +50,11 @@ void JobExecutor::submitJob(IJob* job)
 
 void JobExecutor::run()
 {
-    while(IJob* job = mJobQueue.pop())
+    while(IJob* pJob = mJobQueue.pop())
     {
-        TRC_INFO(0U, ( "New job popped" ), NULL);
+        TRC_INFO(0U, "New job started: pJob=0x%x", (pJob));
 
-        job->start();
+        pJob->start();
     }
 }
 

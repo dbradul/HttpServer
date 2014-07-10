@@ -1,7 +1,7 @@
 /*******************************************************************
  * JobFactory.h
  *
- *  @date: 2 трав. 2014
+ *  @date: 2 пїЅпїЅпїЅпїЅ. 2014
  *  @author: DB
  ******************************************************************/
 
@@ -22,6 +22,7 @@ class IJobFactory
 
         virtual IJob* createJob(const Request& request)=0;
         virtual Callback createJobCallback(const Dispatcher& dispatcher, const int sessionId)=0;
+        virtual Callback createJobErrorCallback(const Dispatcher& dispatcher, const int sessionId);
 };
 
 #endif /* JOBFACTORY_H_ */

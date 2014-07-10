@@ -1,7 +1,7 @@
 /*******************************************************************
  * Config.cpp
  *
- *  @date: 5 черв. 2014
+ *  @date: 5 пїЅпїЅпїЅпїЅ. 2014
  *  @author: DB
  ******************************************************************/
 
@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <common/Utils.h>
+#include "common/traceout.h"
 
 //---------------------------------------------------------------------------------------
 // Protocol constants
@@ -28,11 +29,14 @@ std::map<std::string, std::string> Config::settings =
 
 Config::Config()
 {
+   TRC_DEBUG_FUNC_ENTER(0U, "");
+   TRC_DEBUG_FUNC_EXIT (0U);
 }
 
 Config::~Config()
 {
-    // TODO Auto-generated destructor stub
+   TRC_DEBUG_FUNC_ENTER(0U, "");
+   TRC_DEBUG_FUNC_EXIT (0U);
 }
 
 void Config::setValue(std::string valueName, std::string value)

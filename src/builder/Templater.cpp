@@ -16,23 +16,25 @@
 //---------------------------------------------------------------------------------------
 Templater::Templater()
 {
+   TRC_DEBUG_FUNC_ENTER(0U, "");
+   TRC_DEBUG_FUNC_EXIT (0U);
 }
 
 //---------------------------------------------------------------------------------------
 Templater::Templater(const std::string& templateFilepath)
 {
-   TRC_INFO(0, ("START: templateFilePath='%s'", templateFilepath.c_str()), NULL);
+   TRC_DEBUG_FUNC_ENTER(0U, "templateFilepath='%s'", templateFilepath.c_str());
 
-   ////mTemplate = Utils::getTextFileContent(templateFilepath.c_str());;
    mTemplate = lookupTemplate(templateFilepath);
 
-   TRC_INFO(0, ("EXIT"), NULL);
+   TRC_DEBUG_FUNC_EXIT (0U);
 }
 
 //---------------------------------------------------------------------------------------
 Templater::~Templater()
 {
-   // TODO Auto-generated destructor stub
+   TRC_DEBUG_FUNC_ENTER(0U, "");
+   TRC_DEBUG_FUNC_EXIT (0U);
 }
 
 //---------------------------------------------------------------------------------------
@@ -151,11 +153,14 @@ std::string Templater::lookupTemplate(const std::string& templateName)
    if (iter == mTemplateMap.end())
    {
       mTemplateMap.insert(
-      { templateName, Utils::getTextFileContent(templateName.c_str()) });
+                           {
+                              templateName,
+                              Utils::getTextFileContent(templateName.c_str())
+                           }
+                         );
 
       iter = mTemplateMap.find(templateName);
    }
 
    return iter->second;
 }
-

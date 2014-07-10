@@ -42,6 +42,7 @@ class Response : public Message
         static const std::string RESPONSE_OK;
         static const std::string RESPONSE_FAIL_BAD_REQUEST;
         static const std::string RESPONSE_FAIL_NOT_FOUND;
+        static const std::string RESPONSE_FAIL_INTERNAL_SERVER_ERROR;
 
     private:
         Header mHeader;

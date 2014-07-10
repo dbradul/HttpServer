@@ -24,7 +24,6 @@
 #include "bits/unique_ptr.h"
 #include "common/traceout.h"
 #include <exception>
-
 #include "builder/File.h"
 
 using namespace std;
@@ -32,47 +31,47 @@ using namespace std;
 //---------------------------------------------------------------------------------------
 Utils::Utils()
 {
-    // TODO Auto-generated constructor stub
+   // TODO Auto-generated constructor stub
 
 }
 
 //---------------------------------------------------------------------------------------
 Utils::~Utils()
 {
-    // TODO Auto-generated destructor stub
+   // TODO Auto-generated destructor stub
 }
 
 //---------------------------------------------------------------------------------------
 const std::string Utils::getCurrentDateTime()
 {
-    // Get current date/time, format is YYYY-MM-DD.HH:mm:ss
-    time_t     now = time(0);
-    struct tm  tstruct;
-    char       buf[80];
-    tstruct = *localtime(&now);
-    // Visit http://en.cppreference.com/w/cpp/chrono/c/strftime
-    // for more information about date/time format
-    strftime(buf, sizeof(buf), "%Y-%m-%d.%X", &tstruct);
+   // Get current date/time, format is YYYY-MM-DD.HH:mm:ss
+   time_t now = time(0);
+   struct tm tstruct;
+   char buf[80];
+   tstruct = *localtime(&now);
+   // Visit http://en.cppreference.com/w/cpp/chrono/c/strftime
+   // for more information about date/time format
+   strftime(buf, sizeof(buf), "%Y-%m-%d.%X", &tstruct);
 
-    return buf;
+   return buf;
 }
 
 //---------------------------------------------------------------------------------------
 void Utils::split(std::vector<std::string> &tokens, const std::string &text, const std::string & delim)
 {
-    size_t start = 0, end = 0;
-    while ((end = text.find(delim, start)) != std::string::npos)
-    {
-        tokens.push_back(text.substr(start, end - start));
-        start = end + delim.length();
-    }
-    tokens.push_back(text.substr(start));
+   size_t start = 0, end = 0;
+   while ((end = text.find(delim, start)) != std::string::npos)
+   {
+      tokens.push_back(text.substr(start, end - start));
+      start = end + delim.length();
+   }
+   tokens.push_back(text.substr(start));
 }
 
 //---------------------------------------------------------------------------------------
 Url::Url(const string& url_s)
 {
-    parse(url_s);
+   parse(url_s);
 }
 
 //---------------------------------------------------------------------------------------
@@ -105,213 +104,219 @@ void Url::parse(const string& url)
 
 const std::string& Url::getProtocol() const
 {
-    return mProtocol;
+   return mProtocol;
 }
 
 const std::string& Url::getHost() const
 {
-    return mHost;
+   return mHost;
 }
 
 const std::string& Url::getPath() const
 {
-    return mPath;
+   return mPath;
 }
 
 const std::string& Url::getQuery() const
 {
-    return mQuery;
+   return mQuery;
 }
 
 //---------------------------------------------------------------------------------------
 // TODO: error handling
 bool Utils::readDir(const std::string& root, const std::string& relativePath, std::vector<File>& fileList)
 {
-    DIR *mydirhandle;
-    bool bResult = true;
+   TRC_DEBUG_FUNC_ENTER(0U, "root='%s', relativePath='%s', fileList.size()=%d", root.c_str(), relativePath.c_str(), fileList.size());
 
-    struct dirent *mydirent;
+   DIR *mydirhandle;
+   bool bResult = true;
 
-    if (root.c_str() == NULL)
-    {
-        bResult = false;
-    }
+   struct dirent *mydirent;
 
-    else if ((mydirhandle = opendir((root+relativePath).c_str())) == NULL)
-    {
-        perror("opendir");
-        bResult = false;
-    }
+   if (root.c_str() == NULL)
+   {
+      bResult = false;
+   }
 
-    else
-    {
-        while ((mydirent = readdir(mydirhandle)) != NULL)
-        {
-            if ((strcmp(mydirent->d_name, ".") == 0) /*|| (strcmp(mydirent->d_name, "..") == 0)*/)
+   else if ((mydirhandle = opendir((root + relativePath).c_str())) == NULL)
+   {
+      perror("opendir");
+      bResult = false;
+   }
+
+   else
+   {
+      while ((mydirent = readdir(mydirhandle)) != NULL)
+      {
+         if ((strcmp(mydirent->d_name, ".") == 0) /*|| (strcmp(mydirent->d_name, "..") == 0)*/)
+         {
+            continue;
+         }
+
+         else
+         {
+            struct stat statInfo;
+            std::string fullPath = root + relativePath + mydirent->d_name;
+
+            if (stat(fullPath.c_str(), &statInfo) == -1)
             {
-                continue;
+               perror("stat");
+               bResult = false;
             }
 
-            else
-            {
-                struct stat statInfo;
-                std::string fullPath = root + relativePath + mydirent->d_name;
+            char perms[1 + 3 + 3 + 3];
+            sprintf(perms, "%c%c%c%c%c%c%c%c%c%c",
 
-                if (stat(fullPath.c_str(), &statInfo) == -1)
-                {
-                    perror("stat");
-                    bResult = false;
-                }
+            S_ISDIR(statInfo.st_mode) ? 'd' : '-',
 
-                char perms[1+3+3+3];
-                sprintf(perms,
-                        "%c%c%c%c%c%c%c%c%c%c",
+            statInfo.st_mode && S_IRUSR ? 'r' : '-', statInfo.st_mode && S_IWUSR ? 'w' : '-',
+                  statInfo.st_mode && S_IXUSR ? 'x' : '-',
 
-                        S_ISDIR(statInfo.st_mode)?'d':'-',
+                  statInfo.st_mode && S_IRGRP ? 'r' : '-', statInfo.st_mode && S_IWGRP ? 'w' : '-',
+                  statInfo.st_mode && S_IXGRP ? 'x' : '-',
 
-                        statInfo.st_mode && S_IRUSR ? 'r':'-',
-                        statInfo.st_mode && S_IWUSR ? 'w':'-',
-                        statInfo.st_mode && S_IXUSR ? 'x':'-',
+                  statInfo.st_mode && S_IROTH ? 'r' : '-', statInfo.st_mode && S_IWOTH ? 'w' : '-',
+                  statInfo.st_mode && S_IXOTH ? 'x' : '-');
 
-                        statInfo.st_mode && S_IRGRP ? 'r':'-',
-                        statInfo.st_mode && S_IWGRP ? 'w':'-',
-                        statInfo.st_mode && S_IXGRP ? 'x':'-',
+            File file;
+            file.size = statInfo.st_size;
+            file.isDir = (mydirent->d_type == DT_DIR);
+            file.name = mydirent->d_name;
+            file.relativeFilePath = relativePath + mydirent->d_name;
+            file.permissions = perms;
 
-                        statInfo.st_mode && S_IROTH ? 'r':'-',
-                        statInfo.st_mode && S_IWOTH ? 'w':'-',
-                        statInfo.st_mode && S_IXOTH ? 'x':'-');
+            fileList.push_back(file);
+         }
+      }
 
-                File file;
-                file.size               = statInfo.st_size;
-                file.isDir              = (mydirent->d_type == DT_DIR);
-                file.name               = mydirent->d_name;
-                file.relativeFilePath   = relativePath + mydirent->d_name;
-                file.permissions        = perms;
+      closedir(mydirhandle);
+   }
 
-                fileList.push_back(file);
-            }
-        }
+//   std::ifstream t("file.txt");
+//   std::stringstream buffer;
+//   buffer << t.rdbuf();
 
-        closedir(mydirhandle);
-    }
+   TRC_DEBUG_FUNC_EXIT(0U);
 
-    std::ifstream t("file.txt");
-    std::stringstream buffer;
-    buffer << t.rdbuf();
-
-
-    return bResult;
+   return bResult;
 }
-
 
 //---------------------------------------------------------------------------------------
 std::string Utils::getTextFileContent(const char *filename)
 {
-    std::ifstream in(filename, std::ios::in | std::ios::binary);
-    if (in)
-    {
-        std::string contents;
-        in.seekg(0, std::ios::end);
-        contents.resize(in.tellg());
-        in.seekg(0, std::ios::beg);
-        in.read(&contents[0], contents.size());
-        in.close();
-        return (contents);
-    }
-    throw(errno);
+   TRC_DEBUG_FUNC_ENTER(0, "filename='%s'", filename);
 
-    return "";
+   std::string contents;
+//   char workingDir[FILENAME_MAX];
+//   TRC_INFO(0, "working dir='%s'", std::string(getcwd(workingDir, sizeof(workingDir))).c_str());
+
+   std::ifstream in(filename, std::ios::in | std::ios::binary);
+
+   if (!in)
+   {
+      throw(ios_base::failure(strerror(errno)));
+   }
+
+   else
+   {
+      in.seekg(0, std::ios::end);
+      contents.resize(in.tellg());
+      in.seekg(0, std::ios::beg);
+      in.read(&contents[0], contents.size());
+      in.close();
+   }
+
+   TRC_DEBUG_FUNC_EXIT(0);
+
+   return contents;
 }
-
 
 //---------------------------------------------------------------------------------------
 bool Utils::readAndCheckIfItIsBinary(const char *filename, std::string& content)
 {
-    std::ifstream in(filename, std::ios::in | std::ios::binary);
+   std::ifstream in(filename, std::ios::in | std::ios::binary);
 
-    const char binaryArray[] =
-    {
-        0x1,  0x2,  0x3,  0x4,  0x5,  0x6,  0x7,  0x8,  0x9,  0xB,
-        0xC,  0xE,  0xF,  0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16,
-        0x17, 0x18, 0x19, 0x16, 0x16, 0x7F, 0x0
-    };
+   const char binaryArray[] =
+   { 0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9, 0xB, 0xC, 0xE, 0xF, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17,
+         0x18, 0x19, 0x16, 0x16, 0x7F, 0x0 };
 
-    bool bBinary = false;
+   bool bBinary = false;
 
-    const int BUFF_SIZE = 2048;
-    char buffer[BUFF_SIZE] = {0};
+   const int BUFF_SIZE = 2048;
+   char buffer[BUFF_SIZE] =
+   { 0 };
 
-    if (in)
-    {
-        ifstream::pos_type fileSize;
-        in.seekg(0, std::ios::end);
-        fileSize = in.tellg();
-        int readBytes = 0;
-        int bytesToRead = std::min(BUFF_SIZE, static_cast<int>(fileSize));
+   if (in)
+   {
+      ifstream::pos_type fileSize;
+      in.seekg(0, std::ios::end);
+      fileSize = in.tellg();
+      int readBytes = 0;
+      int bytesToRead = std::min(BUFF_SIZE, static_cast<int>(fileSize));
 
-        while (bytesToRead > 0 && !bBinary)
-        {
-            in.seekg(readBytes, ios::beg);
-            if(!in.read(&buffer[0], bytesToRead))
+      while (bytesToRead > 0 && !bBinary)
+      {
+         in.seekg(readBytes, ios::beg);
+         if (!in.read(&buffer[0], bytesToRead))
+         {
+            TRC_ERROR(0U, "Failed to read the file: %s", filename);
+            throw std::exception();
+         }
+
+         int cntr = 0;
+         while (cntr < bytesToRead)
+         {
+            if (strchr(binaryArray, buffer[cntr]))
             {
-                TRC_ERROR(0U, ( "Failed to read the file: %s", filename ), "%s");
-                throw std::exception();
+               bBinary = true;
+               break;
             }
+            cntr++;
+         }
 
-            int cntr = 0;
-            while (cntr < bytesToRead)
-            {
-                if (strchr(binaryArray, buffer[cntr]))
-                {
-                    bBinary = true;
-                    break;
-                }
-                cntr++;
-            }
+         buffer[bytesToRead] = '\0';
+         content += buffer;
+         readBytes += bytesToRead;
+         bytesToRead = std::min(BUFF_SIZE, static_cast<int>(fileSize) - readBytes);
+      }
 
-            buffer[bytesToRead] = '\0';
-            content += buffer;
-            readBytes += bytesToRead;
-            bytesToRead = std::min(BUFF_SIZE, static_cast<int>(fileSize) - readBytes);
-        }
+      in.close();
+   }
 
-        in.close();
-    }
-
-    return bBinary;
+   return bBinary;
 }
 
 //---------------------------------------------------------------------------------------
 bool Utils::endsWith(const std::string &str, const std::string &suffix)
 {
-    return str.size() >= suffix.size() &&
-           str.compare(str.size() - suffix.size(), suffix.size(), suffix) == 0;
+   return str.size() >= suffix.size() && str.compare(str.size() - suffix.size(), suffix.size(), suffix) == 0;
 }
 
 //---------------------------------------------------------------------------------------
-void Utils::replaceAll( std::string &s, const std::string & search, const std::string & replace )
+void Utils::replaceAll(std::string &s, const std::string & search, const std::string & replace)
 {
-    for( size_t pos = 0; ; pos += replace.length() )
-    {
-        // Locate the substring to replace
-        pos = s.find( search, pos );
-        if( pos == string::npos ) break;
-        // Replace by erasing and inserting
-        s.erase( pos, search.length() );
-        s.insert( pos, replace );
-    }
+   for (size_t pos = 0;; pos += replace.length())
+   {
+      // Locate the substring to replace
+      pos = s.find(search, pos);
+      if (pos == string::npos)
+         break;
+      // Replace by erasing and inserting
+      s.erase(pos, search.length());
+      s.insert(pos, replace);
+   }
 }
 
 //---------------------------------------------------------------------------------------
 std::string Utils::to_string(unsigned long int_value)
 {
-    char buffer[16];
-    sprintf(buffer, "%lu", int_value);
-    return buffer;
+   char buffer[16];
+   sprintf(buffer, "%lu", int_value);
+   return buffer;
 }
 
 //---------------------------------------------------------------------------------------
 unsigned long Utils::atoi(std::string str_value)
 {
-    return ::atoi(str_value.c_str());
+   return ::atoi(str_value.c_str());
 }

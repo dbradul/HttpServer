@@ -29,13 +29,18 @@ const std::string Response::RESPONSE_FAIL_NOT_FOUND = "HTTP/1.0 404 Not Found\r\
 Content-Length: %d\r\n\
 Content-type: text/html\r\n";
 
+//----------------------------------------------------------------------
+//fail RESPONSE INTERNAL SERVER ERROR
+//---------------------------------------------------------------------------------------
+const std::string Response::RESPONSE_FAIL_INTERNAL_SERVER_ERROR = "HTTP/1.0 500 Internal server error\r\n\
+Content-Length: %d\r\n\
+Content-type: text/html\r\n";
 
 //---------------------------------------------------------------------------------------
 Response::Response()
 //---------------------------------------------------------------------------------------
 {
     // TODO Auto-generated constructor stub
-
 }
 
 //---------------------------------------------------------------------------------------

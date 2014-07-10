@@ -26,99 +26,98 @@
 
 //---------------------------------------------------------------------------------------
 Dispatcher::Dispatcher()
-    : mbStarted(false)
-    , mSocketDesc(-1)
-    , mSessionId(-1)
+      : mbStarted(false), mSocketDesc(-1), mSessionId(-1)
 {
-    TRC_DEBUG(0U, ( "ENTER" ), NULL);
-    TRC_DEBUG(0U, ( "EXIT" ), NULL);
+   TRC_DEBUG_FUNC_ENTER(0U, "");
+   TRC_DEBUG_FUNC_EXIT(0U);
 }
 
 //---------------------------------------------------------------------------------------
 Dispatcher::~Dispatcher()
 {
-    TRC_DEBUG(0U, ( "ENTER" ), NULL);
-    stop();
-    TRC_DEBUG(0U, ( "EXIT" ), NULL);
+   TRC_DEBUG_FUNC_ENTER(0U, "");
+   stop();
+   TRC_DEBUG_FUNC_EXIT(0U);
 }
 
 //---------------------------------------------------------------------------------------
 void Dispatcher::start()
 {
-    TRC_DEBUG(0U, ( "ENTER" ), NULL);
+   TRC_DEBUG_FUNC_ENTER(0U, "");
 
-    if (!mbStarted)
-    {
-        int sockoptval = 1;
+   if (!mbStarted)
+   {
+      int sockoptval = 1;
 
-        // Two socket address structures - One for the server itself and the other for client
-        struct sockaddr_in serv_addr = {0};
+      // Two socket address structures - One for the server itself and the other for client
+      struct sockaddr_in serv_addr =
+      { 0 };
 
-        // Create socket of domain - Internet (IP) address, type - Stream based (TCP) and protocol unspecified
-        // since it is only useful when underlying stack allows more than one protocol and we are choosing one.
-        // 0 means choose the default protocol.
-        mSocketDesc = socket(AF_INET, SOCK_STREAM, 0);
+      // Create socket of domain - Internet (IP) address, type - Stream based (TCP) and protocol unspecified
+      // since it is only useful when underlying stack allows more than one protocol and we are choosing one.
+      // 0 means choose the default protocol.
+      mSocketDesc = socket(AF_INET, SOCK_STREAM, 0);
 
-        // A valid descriptor is always a positive value
-        if(mSocketDesc < 0)
-        {
-            TRC_ERROR(0U, ( "Failed creating socket" ), NULL);
-        }
+      // A valid descriptor is always a positive value
+      if (mSocketDesc < 0)
+      {
+         TRC_ERROR(0U, "Failed creating socket");
+      }
 
-        // allow immediate reuse of the port
-        else if( 0 != setsockopt(mSocketDesc, SOL_SOCKET, SO_REUSEADDR, &sockoptval, sizeof(int)))
-        {
-            TRC_ERROR(0U, ( "Failed configuring socket" ), NULL);
-        }
+      // allow immediate reuse of the port
+      else if (0 != setsockopt(mSocketDesc, SOL_SOCKET, SO_REUSEADDR, &sockoptval, sizeof(int)))
+      {
+         TRC_ERROR(0U, "Failed configuring socket");
+      }
 
-        else
-        {
-            unsigned long portNumber;
-            Config::getValue(Config::CONFIG_PORT, portNumber);
+      else
+      {
+         unsigned long portNumber;
+         Config::getValue(Config::CONFIG_PORT, portNumber);
 
-            // Fill server's settings
-            serv_addr.sin_family        = AF_INET;
-            serv_addr.sin_addr.s_addr   = INADDR_ANY;
-            serv_addr.sin_port          = htons(portNumber);
+         // Fill server's settings
+         serv_addr.sin_family = AF_INET;
+         serv_addr.sin_addr.s_addr = INADDR_ANY;
+         serv_addr.sin_port = htons(portNumber);
 
-            // Attach the server socket to a port.
-            // TODO we should fail if the port is busy
-            if (bind(mSocketDesc, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0)
-            {
-                TRC_ERROR(0U, ( "Binding has failed" ), NULL);
-            }
+         // Attach the server socket to a port.
+         // TODO we should fail if the port is busy
+         if (bind(mSocketDesc, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0)
+         {
+            TRC_ERROR(0U, "Binding has failed");
+         }
 
-            else if (0 != listen(mSocketDesc, 4))
-            {
-                TRC_ERROR(0U, ( "Listening has failed" ), NULL);
-            }
+         else if (0 != listen(mSocketDesc, 4))
+         {
+            TRC_ERROR(0U, "Listening has failed");
+         }
 
-            else
-            {
-                mbStarted = true;
-            }
+         else
+         {
+            mbStarted = true;
+         }
 
-            if (!mbStarted)
-            {
-                throw std::exception();
-            }
-        }
-    }
+         if (!mbStarted)
+         {
+            throw std::exception();
+         }
+      }
+   }
 
-    TRC_DEBUG(0U, ( "EXIT" ), NULL);
+   TRC_DEBUG_FUNC_EXIT(0U);
 }
 
 //---------------------------------------------------------------------------------------
 void Dispatcher::stop()
 {
-    if (mbStarted)
-    {
-        // Program should always close all sockets (the connected one as well as the listening one)
-        // as soon as it is done processing with it
-        //close(conn_desc);
-        close(mSocketDesc);
-        mbStarted = false;
-    }
+   if (mbStarted)
+   {
+      // Program should always close all sockets (the connected one as well as the listening one)
+      // as soon as it is done processing with it
+      //close(conn_desc);
+      close(mSocketDesc);
+      mbStarted = false;
+   }
 }
 
 //---------------------------------------------------------------------------------------
@@ -128,72 +127,71 @@ void Dispatcher::stop()
 //---------------------------------------------------------------------------------------
 Request Dispatcher::readRequest()
 {
-    Request request;
+   Request request;
 
-    struct sockaddr client_addr = {0};
-    socklen_t size = sizeof(client_addr);
-    int connDesc = -1;
-    mSessionId = -1;
-    bool bMessageCompleted = false;
+   struct sockaddr client_addr =
+   { 0 };
+   socklen_t size = sizeof(client_addr);
+   int connDesc = -1;
+   mSessionId = -1;
+   bool bMessageCompleted = false;
 
-    TRC_INFO(0U, ( "Waiting for connection..." ), NULL);
+   TRC_INFO(0U, "Waiting for connection...");
 
-    // Server blocks on this call until a client tries to establish connection.
-    // When a connection is established, it returns a 'connected socket descriptor' different
-    // from the one created earlier.
-    while ( !bMessageCompleted
-            && -1 != (connDesc = accept(mSocketDesc, (struct sockaddr *) &client_addr, &size)))
-    {
-        TRC_INFO(0U, ( "Connected: desc=%d", connDesc ), "%d");
+   // Server blocks on this call until a client tries to establish connection.
+   // When a connection is established, it returns a 'connected socket descriptor' different
+   // from the one created earlier.
+   while (!bMessageCompleted && -1 != (connDesc = accept(mSocketDesc, (struct sockaddr *) &client_addr, &size)))
+   {
+      TRC_INFO(0U, "Connected: desc=%d", connDesc);
 
-        char buff[1024] = {0};
+      char buff[1024] = { 0 };
 
-        // The new descriptor can be simply read from / written up just like a normal file descriptor
-        int nbytes = 0;
-        std::string message;
+      // The new descriptor can be simply read from / written up just like a normal file descriptor
+      int nbytes = 0;
+      std::string message;
 
-        // read until message delimiter is found
-        while (!bMessageCompleted
-            && (nbytes = read(connDesc, buff, sizeof(buff) - 1)) > 0)
-        {
-            TRC_INFO(0U, ( "Received: %d bytes", nbytes ), "%d");
-            TRC_INFO(0U, ( "Received data: %s", buff ), "%s");
+      // read until message delimiter is found
+      while (!bMessageCompleted && (nbytes = read(connDesc, buff, sizeof(buff) - 1)) > 0)
+      {
+         TRC_INFO(0U, "Received: %d bytes", nbytes);
+         TRC_INFO(0U, "Received data: %s", buff);
 
-            message += buff;
-            std::size_t end_idx = message.find("\r\n\r\n");
+         message += buff;
+         std::size_t end_idx = message.find("\r\n\r\n");
 
-            if (end_idx != std::string::npos)
-            {
-                message.resize(end_idx + 1);
-                request = Request::parse(message);
-                request.setValid(true);
-                request.setSessionId(connDesc);
-                bMessageCompleted = true;
-                mSessionId = connDesc;
-            }
-        }
-    }
+         if (end_idx != std::string::npos)
+         {
+            message.resize(end_idx + 1);
+            request = Request::parse(message);
+            request.setValid(true);
+            request.setSessionId(connDesc);
+            bMessageCompleted = true;
+            mSessionId = connDesc;
+         }
+      }
+   }
 
-    return request;
+   return request;
 }
 
 //---------------------------------------------------------------------------------------
 bool Dispatcher::writeResponse(Response response, int sessionId) const
 {
-    bool bResult = true;
+   bool bResult = true;
 
-    int nbytes = response.toString().size();
+   int nbytes = response.toString().size();
 
-    if(nbytes != write(sessionId, response.toString().c_str(), nbytes))
-    {
-        bResult = false;
-    }
+   if (nbytes != write(sessionId, response.toString().c_str(), nbytes))
+   {
+      bResult = false;
+   }
 
-    return bResult;
+   return bResult;
 }
 
 //---------------------------------------------------------------------------------------
 int Dispatcher::getSessionId() const
 {
-    return mSessionId;
+   return mSessionId;
 }

@@ -16,13 +16,15 @@
 //---------------------------------------------------------------------------------------
 JobFactoryGET::JobFactoryGET()
 {
-    // TODO Auto-generated constructor stub
+   TRC_DEBUG_FUNC_ENTER(0U, "");
+   TRC_DEBUG_FUNC_EXIT (0U);
 }
 
 //---------------------------------------------------------------------------------------
 JobFactoryGET::~JobFactoryGET()
 {
-    // TODO Auto-generated destructor stub
+   TRC_DEBUG_FUNC_ENTER(0U, "");
+   TRC_DEBUG_FUNC_EXIT (0U);
 }
 
 //---------------------------------------------------------------------------------------
@@ -33,7 +35,7 @@ IJob* JobFactoryGET::createJob(const Request& request)
       public:
          std::string doJob()
          {
-            TRC_INFO(0, ("Building root layout for the path: %s", mPath.c_str()), NULL);
+            TRC_INFO(0, "Building root layout for the path: %s", mPath.c_str());
 
             PageBuilder builder;
             return builder.buildRootLayout(mPath);
@@ -60,11 +62,12 @@ Callback JobFactoryGET::createJobCallback(const Dispatcher& dispatcher, const in
         response.setHeader  (Response::RESPONSE_OK);
         response.setBody    (result);
 
-        TRC_INFO(0, ("Response constructed: %s", response.getHeader().toString().c_str()), NULL);
-        TRC_INFO(0, ("Sending the response back to caller"), NULL);
+        TRC_INFO(0, "Response constructed: %s", response.getHeader().toString().c_str());
+        TRC_INFO(0, "Sending the response back to caller");
+
         if( !dispatcher.writeResponse(response, sessionId) )
         {
-            TRC_ERROR(0U, ( "Failed responding" ), NULL);
+            TRC_ERROR(0U, "Failed responding");
         }
     };
 }

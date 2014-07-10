@@ -1,7 +1,7 @@
 /*******************************************************************
  * JobFactory.cpp
  *
- *  @date: 2 трав. 2014
+ *  @date: 2 пїЅпїЅпїЅпїЅ. 2014
  *  @author: DB
  ******************************************************************/
 
@@ -14,31 +14,55 @@
 //---------------------------------------------------------------------------------------
 IJobFactory::IJobFactory()
 {
-    // TODO Auto-generated constructor stub
+   TRC_DEBUG_FUNC_ENTER(0U, "");
+   TRC_DEBUG_FUNC_EXIT (0U);
 }
 
 //---------------------------------------------------------------------------------------
 IJobFactory::~IJobFactory()
 {
-    // TODO Auto-generated destructor stub
+   TRC_DEBUG_FUNC_ENTER(0U, "");
+   TRC_DEBUG_FUNC_EXIT (0U);
 }
 
 //---------------------------------------------------------------------------------------
 // TODO: put into map to avoid recreation?
 IJobFactory* IJobFactory::create(const std::string& request)
 {
-    IJobFactory* pJobFactory = NULL;
+   TRC_DEBUG_FUNC_ENTER (0U, "");
 
-    if(request == "GET")
-    {
-        pJobFactory = new JobFactoryGET;
-    }
+   IJobFactory* pJobFactory = NULL;
 
-    else if(request == "POST")
-    {
-        pJobFactory = new JobFactoryPOST;
-    }
+   if (request == "GET")
+   {
+      pJobFactory = new JobFactoryGET;
+   }
 
-    return pJobFactory;
+   else if (request == "POST")
+   {
+      pJobFactory = new JobFactoryPOST;
+   }
+
+   TRC_DEBUG_FUNC_EXIT (0U);
+
+   return pJobFactory;
+}
+
+//---------------------------------------------------------------------------------------
+Callback IJobFactory::createJobErrorCallback(const Dispatcher& dispatcher, const int sessionId)
+{
+   return [&dispatcher, sessionId] (const std::string& result)
+   {
+      Response response;
+      response.setHeader (Response::RESPONSE_FAIL_INTERNAL_SERVER_ERROR);
+      response.setBody (result);
+
+      TRC_INFO(0U, "Response will be sent to a caller: %s", response.getHeader().toString().c_str());
+
+      if( !dispatcher.writeResponse(response, sessionId) )
+      {
+         TRC_ERROR(0U, "Failed responding");
+      }
+   };
 }
 

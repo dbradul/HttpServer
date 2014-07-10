@@ -17,7 +17,6 @@
 #include <string.h>
 #include "TestHarness.h"
 
-
 bool parseOptions(int argc, char *argv[]);
 void printUsage();
 void daemonize();
@@ -27,157 +26,160 @@ void hook_signals();
 //---------------------------------------------------------------------------------------
 int main(int argc, char *argv[])
 {
+   TRC_DEBUG_FUNC_ENTER(0U, "Application started");
+//
+//   test::unit::Runner::run(false);
+//   return 0;
 
-   test::unit::Runner::run(false);
+   if (!parseOptions(argc, argv))
+   {
+      exit(EXIT_FAILURE);
+   }
+
+   TRC_INFO(0U, "Application is about to be demonized");
+   ////daemonize();
+
+   /* Open the log file */
+   TRC_INIT(LOG_PID, LOG_DAEMON);
+
+   try
+   {
+      Dispatcher dispatcher;
+      dispatcher.start();
+
+      JobExecutor jobExecutor;
+      jobExecutor.start();
+
+      Request request;
+
+      // infinite message loop
+      while ((request = dispatcher.readRequest()))
+      {
+         IJobFactory* jobFactory = IJobFactory::create(request.getMethodType());
+
+         IJob* pJob = jobFactory->createJob(request);
+
+         Callback jobCallback = jobFactory->createJobCallback(dispatcher, request.getSessionId());
+         Callback jobErrorCallback = jobFactory->createJobErrorCallback(dispatcher, request.getSessionId());
+
+         pJob->setOnFinishCallback(jobCallback);
+         pJob->setOnErrorCallback(jobErrorCallback);
+
+         TRC_INFO(0U, "New job is created and assigned with callbacks: pJob=0x%x", pJob);
+         jobExecutor.submitJob(pJob);
+
+         TRC_INFO(0U, "The job is queued: pJob=0x%x", pJob);
+      }
+   }
+
+   catch (const std::exception& e)
+   {
+      TRC_ERROR(0U, "Application terminated");
+   }
+
+   TRC_DEINIT();
+
    return 0;
-
-    if (!parseOptions(argc, argv))
-    {
-        exit(EXIT_FAILURE);
-    }
-
-    clock_t start_time = std::clock();
-    //stuff to measure
-    std::cout << static_cast<float>(std::clock()-start_time)/CLOCKS_PER_SEC << std::endl;
-
-    daemonize();
-
-    /* Open the log file */
-    TRC_INIT(LOG_PID, LOG_DAEMON);
-
-    try
-    {
-        Dispatcher dispatcher;
-        dispatcher.start();
-
-        JobExecutor jobExecutor;
-        jobExecutor.start();
-
-        Request request;
-
-        TRC_INFO(0U, ( "Application started" ), NULL);
-
-        // infinite message loop
-        while ((request = dispatcher.readRequest()))
-        {
-            IJobFactory* jobFactory = IJobFactory::create(request.getMethodType());
-
-            IJob*            pJob = jobFactory->createJob(request);
-            Callback jobCallback  = jobFactory->createJobCallback( dispatcher, request.getSessionId() );
-
-            pJob->setOnFinishCallback(jobCallback);
-
-            jobExecutor.submitJob(pJob);
-        }
-    }
-
-    catch(const std::exception& e)
-    {
-        TRC_ERROR(0U, ( "Application terminated" ), NULL);
-    }
-
-    TRC_DEINIT();
-
-    return 0;
 }
 
 //---------------------------------------------------------------------------------------
 void daemonize()
 {
-    pid_t pid;
+   pid_t pid;
 
-    /* Fork off the parent process */
-    pid = fork();
+   /* Fork off the parent process */
+   pid = fork();
 
-    /* An error occurred */
-    if (pid < 0)
-        exit(EXIT_FAILURE);
+   /* An error occurred */
+   if (pid < 0)
+      exit(EXIT_FAILURE);
 
-    /* Success: Let the parent terminate */
-    if (pid > 0)
-        exit(EXIT_SUCCESS);
+   /* Success: Let the parent terminate */
+   if (pid > 0)
+      exit(EXIT_SUCCESS);
 
-    /* On success: The child process becomes session leader */
-    if (setsid() < 0)
-        exit(EXIT_FAILURE);
+   /* On success: The child process becomes session leader */
+   if (setsid() < 0)
+      exit(EXIT_FAILURE);
 
-    /* Catch, ignore and handle signals */
-    //TODO: Implement a working signal handler */
-    signal(SIGCHLD, SIG_IGN);
-    signal(SIGHUP, SIG_IGN);
+   /* Catch, ignore and handle signals */
+   //TODO: Implement a working signal handler */
+   signal(SIGCHLD, SIG_IGN );
+   signal(SIGHUP, SIG_IGN );
 
-    /* Fork off for the second time*/
-    pid = fork();
+   /* Fork off for the second time*/
+   pid = fork();
 
-    /* An error occurred */
-    if (pid < 0)
-        exit(EXIT_FAILURE);
+   /* An error occurred */
+   if (pid < 0)
+      exit(EXIT_FAILURE);
 
-    /* Success: Let the parent terminate */
-    if (pid > 0)
-        exit(EXIT_SUCCESS);
+   /* Success: Let the parent terminate */
+   if (pid > 0)
+      exit(EXIT_SUCCESS);
 
-    /* Set new file permissions */
-    umask(0);
+   /* Set new file permissions */
+   umask(0);
 
-    /* Change the working directory to the root directory */
-    /* or another appropriated directory */
-    chdir("/");
+   /* Change the working directory to the root directory */
+   /* or another appropriated directory */
+   chdir("/");
 
-    /* Close all open file descriptors */
-    int x;
-    for (x = sysconf(_SC_OPEN_MAX); x>0; x--)
-    {
-        close (x);
-    }
+   /* Close all open file descriptors */
+   int x;
+   for (x = sysconf(_SC_OPEN_MAX); x > 0; x--)
+   {
+      close(x);
+   }
 
-    hook_signals();
+   hook_signals();
 }
 
 //---------------------------------------------------------------------------------------
 bool parseOptions(int argc, char *argv[])
 {
-    bool bResult = true;
-    int c;
+   bool bResult = true;
+   int c;
 
-    opterr = 0;
+   opterr = 0;
 
-    while ((c = getopt (argc, argv, "p:d:t:")) != -1)
-    {
-        switch (c)
-        {
-            case 'p':
-                Config::setValue(Config::CONFIG_PORT, Utils::atoi(optarg));
-                break;
+   while ((c = getopt(argc, argv, "p:d:t:")) != -1)
+   {
+      switch (c)
+      {
+      case 'p':
+         Config::setValue(Config::CONFIG_PORT, Utils::atoi(optarg));
+         break;
 
-            case 'd':
-                Config::setValue(Config::CONFIG_WORKING_DIR, std::string(optarg));
-                break;
+      case 'd':
+         Config::setValue(Config::CONFIG_WORKING_DIR, std::string(optarg));
+         break;
 
-            case 't':
-                Config::setValue(Config::CONFIG_MAX_THREAD_NUMBER, Utils::atoi(optarg));
-                break;
+      case 't':
+         Config::setValue(Config::CONFIG_MAX_THREAD_NUMBER, Utils::atoi(optarg));
+         break;
 
-            case '?':
-                fprintf (stdout, "Unknown/invalid arguments.\n\n");
-                printUsage();
-                bResult = false;
-                break;
+      case '?':
+         fprintf(stdout, "Unknown/invalid arguments.\n\n");
+         printUsage();
+         bResult = false;
+         break;
 
-            default:
-                fprintf (stdout, "Unknown/invalid arguments.\n\n");
-                printUsage();
-                bResult = false;
-        }
-    }
+      default:
+         fprintf(stdout, "Unknown/invalid arguments.\n\n");
+         printUsage();
+         bResult = false;
+      }
+   }
 
-    return bResult;
+   return bResult;
 }
 
 //---------------------------------------------------------------------------------------
 void printUsage()
 {
-    fprintf (stdout, "Usage: HttpServer [-p <port>] [-d <work_dir>] [-t <max_num_of_threads>] \n\
+   fprintf(stdout,
+         "Usage: HttpServer [-p <port>] [-d <work_dir>] [-t <max_num_of_threads>] \n\
 \n\
 port               - port number to listen for client connection. By default: 8080\n\
 work_dir           - working directory to start the server. By default: current dir.\n\
@@ -188,28 +190,28 @@ max_num_of_threads - maximum number of threads. By default: 4\n");
 //---------------------------------------------------------------------------------------
 void hook_signals()
 {
-    struct sigaction sigact;
-    sigset_t         sigset;
-    int             signo;
-    int             status;
+   struct sigaction sigact;
+   sigset_t sigset;
+   int signo;
+   int status;
 
-    // ������� �� ������� � ��������� ����� ������������ ����� ���������
-    // ��������� ��� ����� �������� ����������� ���������� �� �������
-    sigact.sa_flags = SA_SIGINFO;
-    // ������ ������� ���������� ��������
-    sigact.sa_sigaction = signal_error;
+   // ������� �� ������� � ��������� ����� ������������ ����� ���������
+   // ��������� ��� ����� �������� ����������� ���������� �� �������
+   sigact.sa_flags = SA_SIGINFO;
+   // ������ ������� ���������� ��������
+   sigact.sa_sigaction = signal_error;
 
-    sigemptyset(&sigact.sa_mask);
+   sigemptyset(&sigact.sa_mask);
 
-    // ��������� ��� ���������� �� �������
+   // ��������� ��� ���������� �� �������
 
-    sigaction(SIGFPE,  &sigact, 0); // ������ FPU
-    sigaction(SIGILL,  &sigact, 0); // ��������� ����������
-    sigaction(SIGSEGV, &sigact, 0); // ������ ������� � ������
-    sigaction(SIGBUS,  &sigact, 0); // ������ ����, ��� ��������� � ���������� ������
-    sigaction(SIGQUIT, &sigact, 0); // ������ ����, ��� ��������� � ���������� ������
-    sigaction(SIGINT,  &sigact, 0); // ������ ����, ��� ��������� � ���������� ������
-    sigaction(SIGTERM, &sigact, 0); // ������ ����, ��� ��������� � ���������� ������
+   sigaction(SIGFPE, &sigact, 0); // ������ FPU
+   sigaction(SIGILL, &sigact, 0); // ��������� ����������
+   sigaction(SIGSEGV, &sigact, 0); // ������ ������� � ������
+   sigaction(SIGBUS, &sigact, 0); // ������ ����, ��� ��������� � ���������� ������
+   sigaction(SIGQUIT, &sigact, 0); // ������ ����, ��� ��������� � ���������� ������
+   sigaction(SIGINT, &sigact, 0); // ������ ����, ��� ��������� � ���������� ������
+   sigaction(SIGTERM, &sigact, 0); // ������ ����, ��� ��������� � ���������� ������
 }
 
 //---------------------------------------------------------------------------------------
