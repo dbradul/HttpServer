@@ -1,7 +1,7 @@
 /*******************************************************************
  * Templater.cpp
  *
- *  @date: 16 ����. 2014
+ *  @date: 16 Jul 2014
  *  @author: DB
  ******************************************************************/
 
@@ -12,6 +12,11 @@
 #include "common/Utils.h"
 #include "stdlib.h"
 #include "common/traceout.h"
+
+//---------------------------------------------------------------------------------------
+Templater::Templater()
+{
+}
 
 //---------------------------------------------------------------------------------------
 Templater::Templater(const std::string& templateFilepath)
@@ -33,13 +38,14 @@ Templater::~Templater()
 //---------------------------------------------------------------------------------------
 std::map<std::string, std::string> Templater::macroses =
 {
-{ "root", "NOT DEFINED" },
-{ "filepath", "NOT DEFINED" },
-{ "filename", "NOT DEFINED" },
-{ "perms", "NOT DEFINED" },
-{ "size", "NOT DEFINED" },
-{ "time", "NOT DEFINED" },
-{ "idx", "NOT DEFINED" }, };
+   {"root",     "NOT DEFINED"},
+   {"filepath", "NOT DEFINED"},
+   {"filename", "NOT DEFINED"},
+   {"perms",    "NOT DEFINED"},
+   {"size",     "NOT DEFINED"},
+   {"time",     "NOT DEFINED"},
+   {"idx",      "NOT DEFINED"},
+};
 
 std::map<std::string, std::string> Templater::mTemplateMap =
 {
@@ -48,7 +54,7 @@ std::map<std::string, std::string> Templater::mTemplateMap =
 //   {TEMPLATE_PAGE_TABLE_LINE,   ""},
 //   {TEMPLATE_FILE_CONTENT,      ""},
 //   {TEMPLATE_FILE_CONTENT_LINE, ""},
-      };
+};
 
 //---------------------------------------------------------------------------------------
 // Protocol constants
