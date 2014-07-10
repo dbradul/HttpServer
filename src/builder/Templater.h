@@ -15,6 +15,7 @@
 class Templater
 {
     public:
+        Templater();
         Templater(const std::string& templateFilepath);
         virtual ~Templater();
 

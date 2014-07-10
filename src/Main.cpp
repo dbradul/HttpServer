@@ -13,7 +13,8 @@
 #include <signal.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <execinfo.h>
+#include "TestHarness.h"
+////#include <execinfo.h>
 
 bool parseOptions(int argc, char *argv[]);
 void printUsage();
@@ -24,10 +25,18 @@ void hook_signals();
 //---------------------------------------------------------------------------------------
 int main(int argc, char *argv[])
 {
+
+   test::unit::Runner::run(false);
+   return 0;
+
     if (!parseOptions(argc, argv))
     {
         exit(EXIT_FAILURE);
     }
+
+    clock_t start_time = std::clock();
+    //stuff to measure
+    std::cout << static_cast<float>(std::clock()-start_time)/CLOCKS_PER_SEC << std::endl;
 
     daemonize();
 
@@ -205,46 +214,46 @@ void hook_signals()
 //---------------------------------------------------------------------------------------
 static void signal_error(int sig, siginfo_t *si, void *ptr)
 {
-    void* ErrorAddr;
-    void* Trace[16];
-    int    x;
-    int    TraceSize;
-    char** Messages;
-
-    // ddfdf
-    TRC_DEBUG(0U, ("Signal: %s, Addr: 0x%0.16X"), strsignal(sig), si->si_addr);
-
-    #if __WORDSIZE == 64 // если дело имеем с 64 битной ОС
-        // получим адрес инструкции которая вызвала ошибку
-        ErrorAddr = (void*)((ucontext_t*)ptr)->uc_mcontext.gregs[REG_RIP];
-    #else
-        // получим адрес инструкции которая вызвала ошибку
-        ErrorAddr = (void*)((ucontext_t*)ptr)->uc_mcontext.gregs[REG_EIP];
-    #endif
-
-    // произведем backtrace чтобы получить весь стек вызовов
-    TraceSize = backtrace(Trace, 16);
-    Trace[1] = ErrorAddr;
-
-    // получим расшифровку трасировки
-    Messages = backtrace_symbols(Trace, TraceSize);
-    if (Messages)
-    {
-        TRC_DEBUG(0U, ("== Backtrace =="), NULL);
-
-        // запишем в лог
-        for (x = 1; x < TraceSize; x++)
-        {
-            TRC_DEBUG(0U, ("%s"), Messages[x]);
-        }
-
-        TRC_DEBUG(0U, ("== End Backtrace =="), NULL);
-        free(Messages);
-    }
-
-    TRC_DEBUG(0U, ("Stopped"), NULL);
-
-
-    // завершим процесс с кодом требующим перезапуска
-    exit(CHILD_NEED_WORK);
+//    void* ErrorAddr;
+//    void* Trace[16];
+//    int    x;
+//    int    TraceSize;
+//    char** Messages;
+//
+//    // ddfdf
+//    TRC_DEBUG(0U, ("Signal: %s, Addr: 0x%0.16X"), strsignal(sig), si->si_addr);
+//
+//    #if __WORDSIZE == 64 // если дело имеем с 64 битной ОС
+//        // получим адрес инструкции которая вызвала ошибку
+//        ErrorAddr = (void*)((ucontext_t*)ptr)->uc_mcontext.gregs[REG_RIP];
+//    #else
+//        // получим адрес инструкции которая вызвала ошибку
+//        ErrorAddr = (void*)((ucontext_t*)ptr)->uc_mcontext.gregs[REG_EIP];
+//    #endif
+//
+//    // произведем backtrace чтобы получить весь стек вызовов
+//    TraceSize = backtrace(Trace, 16);
+//    Trace[1] = ErrorAddr;
+//
+//    // получим расшифровку трасировки
+//    Messages = backtrace_symbols(Trace, TraceSize);
+//    if (Messages)
+//    {
+//        TRC_DEBUG(0U, ("== Backtrace =="), NULL);
+//
+//        // запишем в лог
+//        for (x = 1; x < TraceSize; x++)
+//        {
+//            TRC_DEBUG(0U, ("%s"), Messages[x]);
+//        }
+//
+//        TRC_DEBUG(0U, ("== End Backtrace =="), NULL);
+//        free(Messages);
+//    }
+//
+//    TRC_DEBUG(0U, ("Stopped"), NULL);
+//
+//
+//    // завершим процесс с кодом требующим перезапуска
+//    exit(CHILD_NEED_WORK);
 }

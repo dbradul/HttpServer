@@ -13,6 +13,11 @@
 #include "stdlib.h"
 
 //---------------------------------------------------------------------------------------
+Templater::Templater()
+{
+}
+
+//---------------------------------------------------------------------------------------
 Templater::Templater(const std::string& templateFilepath)
 {
     ////mTemplate = Utils::getTextFileContent(templateFilepath.c_str());;
@@ -34,7 +39,7 @@ std::map<std::string, std::string> Templater::macroses =
    {"perms",    "NOT DEFINED"},
    {"size",     "NOT DEFINED"},
    {"time",     "NOT DEFINED"},
-   {"idx",     "NOT DEFINED"},
+   {"idx",      "NOT DEFINED"},
 };
 
 
