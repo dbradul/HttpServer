@@ -7,6 +7,7 @@
 
 #include "JobExecutor.h"
 #include "common/Config.h"
+#include "common/traceout.h"
 
 const int JobExecutor::THREAD_NUM_UPPER_BOUND = 1024;
 
@@ -51,6 +52,8 @@ void JobExecutor::run()
 {
     while(IJob* job = mJobQueue.pop())
     {
+        TRC_INFO(0U, ( "New job popped" ), NULL);
+
         job->start();
     }
 }

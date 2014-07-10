@@ -1,7 +1,7 @@
 /*******************************************************************
  * JobFactoryPOST.cpp
  *
- *  @date: 12 трав. 2014
+ *  @date: 12 пїЅпїЅпїЅпїЅ. 2014
  *  @author: DB
  ******************************************************************/
 
@@ -44,7 +44,14 @@ Callback JobFactoryPOST::createJobCallback(const Dispatcher& dispatcher, const i
     {
         Response response;
         response.setHeader  (Response::RESPONSE_FAIL_BAD_REQUEST);
-        response.setBody    ("Not supported");
+        response.setBody    (
+                             "<html>\n\
+                                 <body>\n\
+                                    <h1>Bad Request</h1>\n\
+                                    <p>This server did not understand your request.</p>\n\
+                                 </body>\n\
+                              </html>\n"
+                            );
 
         if( !dispatcher.writeResponse(response, sessionId) )
         {

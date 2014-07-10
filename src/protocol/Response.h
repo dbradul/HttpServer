@@ -1,7 +1,7 @@
 /*******************************************************************
  * Response.h
  *
- *  @date: 28 квіт. 2014
+ *  @date: 28 пїЅпїЅпїЅ. 2014
  *  @author: DB
  ******************************************************************/
 
@@ -16,16 +16,16 @@
 
 class Response : public Message
 {
-        class Header
-        {
-            typedef std::map<std::string, std::list<std::string> > tHeader;
+	class Header
+	{
+		typedef std::map<std::string, std::list<std::string> > tHeader;
 
-            public:
-                Header() {}
-                Header(std::string header) {mHeaderStr = header;}
-                std::string toString() {return mHeaderStr;};
-                std::string mHeaderStr;
-        };
+		public:
+			Header() {}
+			Header(std::string header) {mHeaderStr = header;}
+			const std::string& toString()const {return mHeaderStr;} ;
+			std::string mHeaderStr;
+	};
 
     public:
         Response();
@@ -35,8 +35,9 @@ class Response : public Message
 
         void setHeader(const std::string& header);
         void setBody(const std::string& body);
+        const Header& getHeader() const;
         std::string assembleResponse(const std::string& body);
-        std::string toString();
+        std::string toString() const;
 
         static const std::string RESPONSE_OK;
         static const std::string RESPONSE_FAIL_BAD_REQUEST;

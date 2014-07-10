@@ -1,7 +1,7 @@
 /*******************************************************************
  * IJob.h
  *
- *  @date: 28 квіт. 2014
+ *  @date: 28 пїЅпїЅпїЅ. 2014
  *  @author: DB
  ******************************************************************/
 
@@ -18,16 +18,8 @@ class IJob
         IJob();
         virtual ~IJob();
 
-        void start()
-        {
-            std::string result = doJob();
-            mCallback(result);
-        }
-
-        void setOnFinishCallback(Callback callback)
-        {
-            mCallback = callback;
-        }
+        void start();
+        void setOnFinishCallback(Callback callback);
 
     protected:
         virtual std::string doJob() = 0;

@@ -156,7 +156,7 @@ Request Dispatcher::readRequest()
         while (!bMessageCompleted
             && (nbytes = read(connDesc, buff, sizeof(buff) - 1)) > 0)
         {
-            TRC_INFO(0U, ( "Received: %d", nbytes ), "%d");
+            TRC_INFO(0U, ( "Received: %d bytes", nbytes ), "%d");
             TRC_INFO(0U, ( "Received data: %s", buff ), "%s");
 
             message += buff;

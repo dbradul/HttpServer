@@ -1,7 +1,7 @@
 /*******************************************************************
  * Response.cpp
  *
- *  @date: 28 квіт. 2014
+ *  @date: 28 пїЅпїЅпїЅ. 2014
  *  @author: DB
  ******************************************************************/
 
@@ -13,35 +13,21 @@
 //---------------------------------------------------------------------------------------
 const std::string Response::RESPONSE_OK = "HTTP/1.0 200 OK\r\n\
 Content-Length: %d\r\n\
-Content-type: text/html\r\n\
-\r\n";
+Content-type: text/html\r\n";
 
 //----------------------------------------------------------------------
-//fail response bad request
+//fail RESPONSE BAD REQUEST
 //---------------------------------------------------------------------------------------
 const std::string Response::RESPONSE_FAIL_BAD_REQUEST = "HTTP/1.0 400 Bad Request\r\n\
 Content-Length: %d\r\n\
-Content-type: text/html\r\n\
-\r\n\
-<html>\n\
- <body>\n\
-  <h1>Bad Request</h1>\n\
-  <p>This server did not understand your request.</p>\n\
- </body>\n\
-</html>\n";
+Content-type: text/html\r\n";
 
 //----------------------------------------------------------------------
-//fail response not found
+//fail RESPONSE NOT FOUND
 //---------------------------------------------------------------------------------------
 const std::string Response::RESPONSE_FAIL_NOT_FOUND = "HTTP/1.0 404 Not Found\r\n\
-Content-type: text/html\r\n\
-\r\n\
-<html>\n\
- <body>\n\
-  <h1>Not Found</h1>\n\
-  <p>The requested URL %s was not found on this server.</p>\n\
- </body>\n\
-</html>\n";
+Content-Length: %d\r\n\
+Content-type: text/html\r\n";
 
 
 //---------------------------------------------------------------------------------------
@@ -74,11 +60,23 @@ void Response::setHeader(const std::string& header)
 }
 
 //---------------------------------------------------------------------------------------
-std::string Response::toString()
+const Response::Header& Response::getHeader() const
+//---------------------------------------------------------------------------------------
+{
+    return mHeader;
+}
+
+//---------------------------------------------------------------------------------------
+std::string Response::toString() const
 //---------------------------------------------------------------------------------------
 {
     //FIXME can we format better?
-    char buff[1024] = {0};
-    sprintf(buff, mHeader.toString().c_str(), mBody.length());
-    return (buff + mBody);
+    std::string fmtHeader;
+    fmtHeader.resize(mHeader.toString().size() + 24);
+    sprintf(&fmtHeader[0], mHeader.toString().c_str(), mBody.length());
+    return (
+             fmtHeader +
+             MESSAGE_HEADER_FIELD_DELIMITER +
+             mBody
+           );
 }
