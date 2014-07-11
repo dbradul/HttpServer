@@ -85,11 +85,10 @@ void Templater::setMacro(const std::string& macroName, unsigned long macroValue)
 }
 
 //---------------------------------------------------------------------------------------
-bool isMacro(std::string const &token, std::string const &tag, std::string& macroTrimmed);
-
-//---------------------------------------------------------------------------------------
 std::string Templater::generate()
 {
+   TRC_DEBUG_FUNC_ENTER(0U, "");
+
    std::string result;
    std::stringstream sstream(mTemplate);
 
@@ -102,47 +101,50 @@ std::string Templater::generate()
       std::string token;
       while (sstream >> token)
       {
-         std::string macro;
-         if (isMacro(token, MACRO_TAG, macro))
+         TRC_DEBUG(0U, "token extracted: '%s'", token.c_str());
+         std::string trimmedToken = trimTags(token);
+
+         auto iter = macroses.find(trimmedToken);
+         if (iter != macroses.end())
          {
-            auto iter = macroses.find(macro);
-            if (iter != macroses.end())
-            {
-               result += iter->second;
-               result += " ";
-            }
+            TRC_DEBUG(0U, "macro recognized: '%s' -> '%s'", trimmedToken.c_str(), iter->second.c_str());
+
+            result += (iter->second + " ");
          }
+
          else
          {
-            result += token;
-            result += " ";
+            result += (token + " ");
          }
       }
    }
+
+   TRC_DEBUG_FUNC_EXIT(0U);
 
    return result;
 }
 
 //---------------------------------------------------------------------------------------
 // regex optimization
-bool isMacro(std::string const &token, std::string const &tag, std::string& macroTrimmed)
+std::string Templater::trimTags(std::string const &token)
 {
-   bool isMacro = false;
-   macroTrimmed = token;
+   bool isTagged = false;
+   std::string trimmed = token;
+   const std::string tag = Templater::MACRO_TAG;
    size_t lengthOf2Tags = 2 * tag.length();
 
    if (token.length() >= lengthOf2Tags)
    {
-      isMacro = (0 == token.compare(0, tag.length(), tag));
-      isMacro &= (0 == token.compare(token.length() - tag.length(), tag.length(), tag));
+      isTagged = (0 == token.compare(0, tag.length(), tag));
+      isTagged &= (0 == token.compare(token.length() - tag.length(), tag.length(), tag));
 
-      if (isMacro)
+      if (isTagged)
       {
-         macroTrimmed = token.substr(tag.length(), token.length() - lengthOf2Tags);
+         trimmed = token.substr(tag.length(), token.length() - lengthOf2Tags);
       }
    }
 
-   return isMacro;
+   return trimmed;
 }
 
 //---------------------------------------------------------------------------------------

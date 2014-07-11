@@ -1,7 +1,7 @@
 /*******************************************************************
  * Templater.h
  *
- *  @date: 16 трав. 2014
+ *  @date: 16 пїЅпїЅпїЅпїЅ. 2014
  *  @author: DB
  ******************************************************************/
 
@@ -22,7 +22,7 @@ class Templater
         std::string generate();
         void setMacro(const std::string& macroName, const std::string& macroValue);
         void setMacro(const std::string& macroName, unsigned long macroValue);
-        static std::map<std::string, std::string> mTemplateMap;
+        std::string trimTags(std::string const &token);
 
         static const std::string TEMPLATE_ROOT_LAYOUT;
         static const std::string TEMPLATE_PAGE_TABLE;
@@ -31,6 +31,7 @@ class Templater
         static const std::string TEMPLATE_FILE_CONTENT_LINE;
 
     private:
+        static std::map<std::string, std::string> mTemplateMap;
         std::string lookupTemplate(const std::string& templateName);
         static std::map<std::string, std::string> macroses;
         static const std::string MACRO_TAG;

@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
          pJob->setOnFinishCallback(jobCallback);
          pJob->setOnErrorCallback(jobErrorCallback);
 
-         TRC_INFO(0U, "New job is created and assigned with callbacks: pJob=0x%x", pJob);
+         TRC_INFO(0U, "New job is created and assigned with callbacks: pJob=0x%x, sessionId=%d", pJob, request.getSessionId());
          jobExecutor.submitJob(pJob);
 
          TRC_INFO(0U, "The job is queued: pJob=0x%x", pJob);
