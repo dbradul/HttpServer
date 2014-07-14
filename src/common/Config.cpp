@@ -18,8 +18,9 @@
 const std::string Config::CONFIG_MAX_THREAD_NUMBER  = "PUTIN_HUYLO";
 const std::string Config::CONFIG_PORT               = "SLAVA_UKRAYNI";
 const std::string Config::CONFIG_WORKING_DIR        = "HEROYAM_SLAVA";
+const std::string Config::CONFIG_ROOT_DIR           = "LALALALALALA";
 
-char workingDir[FILENAME_MAX];
+char workingDir[FILENAME_MAX]={0};
 std::map<std::string, std::string> Config::settings =
 {
    {CONFIG_MAX_THREAD_NUMBER,   "4"},

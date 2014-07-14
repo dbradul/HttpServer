@@ -30,19 +30,17 @@ using namespace std;
 
 //---------------------------------------------------------------------------------------
 Utils::Utils()
-{
-   // TODO Auto-generated constructor stub
-
-}
+//---------------------------------------------------------------------------------------
+{}
 
 //---------------------------------------------------------------------------------------
 Utils::~Utils()
-{
-   // TODO Auto-generated destructor stub
-}
+//---------------------------------------------------------------------------------------
+{}
 
 //---------------------------------------------------------------------------------------
 const std::string Utils::getCurrentDateTime()
+//---------------------------------------------------------------------------------------
 {
    // Get current date/time, format is YYYY-MM-DD.HH:mm:ss
    time_t now = time(0);
@@ -58,6 +56,7 @@ const std::string Utils::getCurrentDateTime()
 
 //---------------------------------------------------------------------------------------
 void Utils::split(std::vector<std::string> &tokens, const std::string &text, const std::string & delim)
+//---------------------------------------------------------------------------------------
 {
    size_t start = 0, end = 0;
    while ((end = text.find(delim, start)) != std::string::npos)
@@ -70,12 +69,14 @@ void Utils::split(std::vector<std::string> &tokens, const std::string &text, con
 
 //---------------------------------------------------------------------------------------
 Url::Url(const string& url_s)
+//---------------------------------------------------------------------------------------
 {
    parse(url_s);
 }
 
 //---------------------------------------------------------------------------------------
 void Url::parse(const string& url)
+//---------------------------------------------------------------------------------------
 {
 //    const std::string prot_end("://");
 //    std::string::const_iterator protIdx = std::search(url.begin(), url.end(), prot_end.begin(), prot_end.end());
@@ -214,7 +215,7 @@ std::string Utils::getTextFileContent(const char *filename)
 
    if (!in)
    {
-      throw(ios_base::failure(strerror(errno)));
+      throw(ios_base::failure(std::string("Read '") + filename + "': " + strerror(errno)));
    }
 
    else

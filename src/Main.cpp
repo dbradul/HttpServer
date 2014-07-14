@@ -122,7 +122,10 @@ void daemonize()
 
    /* Change the working directory to the root directory */
    /* or another appropriated directory */
-   chdir("/");
+   std::string workDir;
+   Config::getValue(Config::CONFIG_WORKING_DIR, workDir);
+////   chdir("/");
+   chdir(workDir.c_str());
 
    /* Close all open file descriptors */
    int x;

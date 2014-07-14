@@ -13,6 +13,7 @@
 #include <builder/Templater.h>
 #include "common/Utils.h"
 #include "common/traceout.h"
+#include "common/Config.h"
 
 //---------------------------------------------------------------------------------------
 Templater::Templater()
@@ -62,11 +63,11 @@ std::map<std::string, std::string> Templater::mTemplateMap =
 //---------------------------------------------------------------------------------------
 // Protocol constants
 //---------------------------------------------------------------------------------------
-const std::string Templater::TEMPLATE_ROOT_LAYOUT        = "templates/rootlayout.tmpl";
-const std::string Templater::TEMPLATE_PAGE_TABLE         = "templates/pagetable.tmpl";
-const std::string Templater::TEMPLATE_PAGE_TABLE_LINE    = "templates/pagetableline.tmpl";
-const std::string Templater::TEMPLATE_FILE_CONTENT       = "templates/filecontent.tmpl";
-const std::string Templater::TEMPLATE_FILE_CONTENT_LINE  = "templates/filecontentline.tmpl";
+const std::string Templater::TEMPLATE_ROOT_LAYOUT        = "/templates/rootlayout.tmpl";
+const std::string Templater::TEMPLATE_PAGE_TABLE         = "/templates/pagetable.tmpl";
+const std::string Templater::TEMPLATE_PAGE_TABLE_LINE    = "/templates/pagetableline.tmpl";
+const std::string Templater::TEMPLATE_FILE_CONTENT       = "/templates/filecontent.tmpl";
+const std::string Templater::TEMPLATE_FILE_CONTENT_LINE  = "/templates/filecontentline.tmpl";
 
 //---------------------------------------------------------------------------------------
 const std::string Templater::MACRO_TAG = "##";
@@ -154,10 +155,13 @@ std::string Templater::lookupTemplate(const std::string& templateName)
 
    if (iter == mTemplateMap.end())
    {
+      std::string workDir;
+      Config::getValue(Config::CONFIG_WORKING_DIR, workDir);
+
       mTemplateMap.insert(
                            {
                               templateName,
-                              Utils::getTextFileContent(templateName.c_str())
+                              Utils::getTextFileContent((workDir + templateName).c_str())
                            }
                          );
 
