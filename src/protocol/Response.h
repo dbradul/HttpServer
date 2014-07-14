@@ -16,16 +16,7 @@
 
 class Response : public Message
 {
-	class Header
-	{
-		typedef std::map<std::string, std::list<std::string> > tHeader;
 
-		public:
-			Header() {}
-			Header(std::string header) {mHeaderStr = header;}
-			const std::string& toString()const {return mHeaderStr;} ;
-			std::string mHeaderStr;
-	};
 
     public:
         Response();
@@ -33,11 +24,7 @@ class Response : public Message
 
         static Response parse(std::string& rawMessage);
 
-        void setHeader(const std::string& header);
-        void setBody(const std::string& body);
-        const Header& getHeader() const;
         std::string assembleResponse(const std::string& body);
-        std::string toString() const;
 
         static const std::string RESPONSE_OK;
         static const std::string RESPONSE_FAIL_BAD_REQUEST;
@@ -45,8 +32,8 @@ class Response : public Message
         static const std::string RESPONSE_FAIL_INTERNAL_SERVER_ERROR;
 
     private:
-        Header mHeader;
-        std::string mBody;
+
+
 };
 
 #endif /* RESPONSE_H_ */

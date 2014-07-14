@@ -9,22 +9,56 @@
 #define MESSAGE_H_
 
 #include <string>
+#include <map>
+#include <list>
+
 
 class Message
 {
-    public:
-        Message();
-        virtual ~Message();
+   protected:
+      class Header
+      {
+         typedef std::map<std::string, std::list<std::string> > tHeader;
 
-        const std::string& getRawMessage() const;
+         public:
+            Header()
+            {
+            }
 
-        static const std::string MESSAGE_HEADER_BODY_DELIMITER;
-        static const std::string MESSAGE_HEADER_FIRST_FIELD_ENTRIES_DELIMITER;
-        static const std::string MESSAGE_HEADER_FIELD_DELIMITER;
-        static const std::string MESSAGE_HEADER_FIELD_NAME_DELIMITER;
+            Header(std::string header)
+            {
+               mHeaderStr = header;
+            }
 
-    protected:
-        std::string mRawMessage;
+            const std::string& toString() const
+            {
+               return mHeaderStr;
+            };
+
+            std::string mHeaderStr;
+            tHeader mHeaderFields;
+      };
+
+   public:
+      Message();
+      virtual ~Message();
+
+      void setHeader(const std::string& header);
+      void setBody(const std::string& body);
+
+      const std::string& getRawMessage() const;
+      const Header& getHeader() const;
+      std::string toString() const;
+
+      static const std::string MESSAGE_HEADER_BODY_DELIMITER;
+      static const std::string MESSAGE_HEADER_FIRST_FIELD_ENTRIES_DELIMITER;
+      static const std::string MESSAGE_HEADER_FIELD_DELIMITER;
+      static const std::string MESSAGE_HEADER_FIELD_NAME_DELIMITER;
+
+   protected:
+      mutable std::string mRawMessage;
+      Header mHeader;
+      std::string mBody;
 };
 
 #endif /* MESSAGE_H_ */

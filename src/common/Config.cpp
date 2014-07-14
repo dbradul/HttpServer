@@ -25,6 +25,7 @@ std::map<std::string, std::string> Config::settings =
    {CONFIG_MAX_THREAD_NUMBER,   "4"},
    {CONFIG_PORT,                "8080"},
    {CONFIG_WORKING_DIR,         std::string(getcwd(workingDir, sizeof(workingDir)))},
+   {CONFIG_ROOT_DIR,            std::string(getcwd(workingDir, sizeof(workingDir)))},
 };
 
 Config::Config()

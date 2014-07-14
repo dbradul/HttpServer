@@ -13,7 +13,7 @@
 #include <signal.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <execinfo.h>
+////#include <execinfo.h>
 #include <string.h>
 #include "TestHarness.h"
 
@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
       exit(EXIT_FAILURE);
    }
 
-   TRC_INFO(0U, "Application is about to be demonized");
+   TRC_INFO(0U, "Application started and is about to be daemonized");
    ////daemonize();
 
    /* Open the log file */
@@ -50,25 +50,24 @@ int main(int argc, char *argv[])
       JobExecutor jobExecutor;
       jobExecutor.start();
 
-      Request request;
-
       // infinite message loop
-      while ((request = dispatcher.readRequest()))
+      while (Request request = dispatcher.readRequest())
       {
+         TRC_INFO(0U, "The new request is received: request='%s'", request.getHeader().toString().c_str());
+
          IJobFactory* jobFactory = IJobFactory::create(request.getMethodType());
 
-         IJob* pJob = jobFactory->createJob(request);
-
-         Callback jobCallback = jobFactory->createJobCallback(dispatcher, request.getSessionId());
-         Callback jobErrorCallback = jobFactory->createJobErrorCallback(dispatcher, request.getSessionId());
+         IJob*    pJob              = jobFactory->createJob             (request);
+         Callback jobCallback       = jobFactory->createJobCallback     (dispatcher, request.getSessionId());
+         Callback jobErrorCallback  = jobFactory->createJobErrorCallback(dispatcher, request.getSessionId());
 
          pJob->setOnFinishCallback(jobCallback);
          pJob->setOnErrorCallback(jobErrorCallback);
 
-         TRC_INFO(0U, "New job is created and assigned with callbacks: pJob=0x%x, sessionId=%d", pJob, request.getSessionId());
          jobExecutor.submitJob(pJob);
 
-         TRC_INFO(0U, "The job is queued: pJob=0x%x", pJob);
+         TRC_INFO(0U, "The corresponding job is queued: pJob=0x%x, sessionId=%d", pJob,
+                                                                                  request.getSessionId());
       }
    }
 
@@ -143,7 +142,7 @@ bool parseOptions(int argc, char *argv[])
 
    opterr = 0;
 
-   while ((c = getopt(argc, argv, "p:d:t:")) != -1)
+   while ((c = getopt(argc, argv, "p:d:t:r:")) != -1)
    {
       switch (c)
       {
@@ -153,6 +152,10 @@ bool parseOptions(int argc, char *argv[])
 
       case 'd':
          Config::setValue(Config::CONFIG_WORKING_DIR, std::string(optarg));
+         break;
+
+      case 'r':
+         Config::setValue(Config::CONFIG_ROOT_DIR, std::string(optarg));
          break;
 
       case 't':
@@ -179,12 +182,12 @@ bool parseOptions(int argc, char *argv[])
 void printUsage()
 {
    fprintf(stdout,
-         "Usage: HttpServer [-p <port>] [-d <work_dir>] [-t <max_num_of_threads>] \n\
+         "Usage: HttpServer [-p <port>] [-d <work_dir>] [-r <root_dir>] [-t <max_num_of_threads>] \n\
 \n\
 port               - port number to listen for client connection. By default: 8080\n\
-work_dir           - working directory to start the server. By default: current dir.\n\
+work_dir           - working server directory. The one that contains 'templates' folder. By default: current dir.\n\
+root_dir           - root directory to start the server in. By default: current dir.\n\
 max_num_of_threads - maximum number of threads. By default: 4\n");
-
 }
 
 //---------------------------------------------------------------------------------------

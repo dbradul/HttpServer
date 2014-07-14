@@ -28,6 +28,7 @@ class Config
         static const std::string CONFIG_MAX_THREAD_NUMBER;
         static const std::string CONFIG_PORT;
         static const std::string CONFIG_WORKING_DIR;
+        static const std::string CONFIG_ROOT_DIR;
 
     private:
          static std::map<std::string, std::string> settings;

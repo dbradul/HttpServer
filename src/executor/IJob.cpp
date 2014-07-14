@@ -18,10 +18,8 @@ IJob::~IJob()
    // TODO Auto-generated destructor stub
 }
 
-bool IJob::start()
+void IJob::start()
 {
-   bool bResult = true;
-
    try
    {
       TRC_INFO(0, "Starting job execution");
@@ -36,21 +34,8 @@ bool IJob::start()
    catch(const std::exception& e)
    {
       TRC_ERROR(0, "Failed to execute job: %s", e.what());
-      bResult = false;
+      mErrorCallback(e.what());
    }
-
-   catch(...)
-   {
-      TRC_ERROR(0, "Failed to execute job.");
-      bResult = false;
-   }
-
-   if(!bResult)
-   {
-      mErrorCallback("<Put failure reason here from exception>");
-   }
-
-   return bResult;
 }
 
 void IJob::setOnFinishCallback(Callback callback)

@@ -30,6 +30,7 @@ Request::~Request()
 }
 
 //TODO FSM?
+//TODO Move to the parent class?
 Request Request::parse(const std::string& rawMessage)
 {
     Request result;
@@ -44,6 +45,8 @@ Request Request::parse(const std::string& rawMessage)
     {
         result.mBody = headerBody[1];
     }
+
+    result.setHeader(headerBody[0]);
 
     //error checking (parsing)
     Utils::split(headerEntries, headerBody[0], MESSAGE_HEADER_FIELD_DELIMITER);

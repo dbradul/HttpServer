@@ -22,7 +22,7 @@ extern "C" {
 #define TRC_GROUP "HttpServer"
 
 #define __ENABLE_DEV_DEBUG_OUT__
-#define __ENABLE_DEV_DEBUG_SLOG__
+///#define __ENABLE_DEV_DEBUG_SLOG__
 #ifdef __ENABLE_DEV_DEBUG_OUT__
    #ifdef TRC_DEBUG
       #undef TRC_DEBUG
@@ -43,7 +43,7 @@ extern "C" {
       #undef TRC_FATAL
    #endif
 
-   #ifdef __linux__
+   #ifdef __ENABLE_DEV_DEBUG_SLOG__
       #include <syslog.h>
       #define NO_PARENTHESES(...) __VA_ARGS__
       #define TRC_INIT(option, facility)  openlog (TRC_GROUP, option, facility)
@@ -58,12 +58,18 @@ extern "C" {
       #define TRC_DEBUG_FUNC_ENTER(scope, fmt, args...) syslog( LOG_INFO, "%s: ENTER: " fmt, __PRETTY_FUNCTION__, ##args)
       #define TRC_DEBUG_FUNC_EXIT( scope) syslog( LOG_INFO, "%s: EXIT", __PRETTY_FUNCTION__)
 
-#else
-      #define TRC_DEBUG(scope, fmt,  args...) do { printf( TRC_GROUP "\t" ); printf( "%s: " fmt, __PRETTY_FUNCTION__, args); printf ("\n"); } while(0);
-      #define TRC_INFO (scope, fmt,  args...) do { printf( TRC_GROUP "\t" ); printf( "%s: " fmt, __PRETTY_FUNCTION__, args); printf ("\n"); } while(0);
-      #define TRC_WARN (scope, fmt,  args...) do { printf( TRC_GROUP "\t" ); printf( "%s: " fmt, __PRETTY_FUNCTION__, args); printf ("\n"); } while(0);
-      #define TRC_ERROR(scope, fmt,  args...) do { printf( TRC_GROUP "\t" ); printf( "%s: " fmt, __PRETTY_FUNCTION__, args); printf ("\n"); } while(0);
-      #define TRC_FATAL(scope, fmt,  args...) do { printf( TRC_GROUP "\t" ); printf( "%s: " fmt, __PRETTY_FUNCTION__, args); printf ("\n"); } while(0);
+   #else
+      #define TRC_DEBUG(scope, fmt,  args...) do { printf( TRC_GROUP "\t" ); printf( "%s: " fmt, __PRETTY_FUNCTION__, ##args); printf ("\n"); } while(0)
+      #define TRC_INFO( scope, fmt,  args...) do { printf( TRC_GROUP "\t" ); printf( "%s: " fmt, __PRETTY_FUNCTION__, ##args); printf ("\n"); } while(0)
+      #define TRC_WARN( scope, fmt,  args...) do { printf( TRC_GROUP "\t" ); printf( "%s: " fmt, __PRETTY_FUNCTION__, ##args); printf ("\n"); } while(0)
+      #define TRC_ERROR(scope, fmt,  args...) do { printf( TRC_GROUP "\t" ); printf( "%s: " fmt, __PRETTY_FUNCTION__, ##args); printf ("\n"); } while(0)
+      #define TRC_FATAL(scope, fmt,  args...) do { printf( TRC_GROUP "\t" ); printf( "%s: " fmt, __PRETTY_FUNCTION__, ##args); printf ("\n"); } while(0)
+
+      #define TRC_INIT(option, facility)
+      #define TRC_DEINIT()
+
+      #define TRC_DEBUG_FUNC_ENTER(scope, fmt,  args...)  do { printf( TRC_GROUP "\t" ); printf( "%s: ENTER: " fmt, __PRETTY_FUNCTION__, ##args); printf ("\n"); } while(0)
+      #define TRC_DEBUG_FUNC_EXIT( scope) do { printf( TRC_GROUP "\t" ); printf( "%s: EXIT", __PRETTY_FUNCTION__); printf ("\n"); } while(0)
    #endif
 #else
    #define TRC_DEBUG(s,m,f)

@@ -5,12 +5,13 @@
  *  @author: DB
  ******************************************************************/
 
-#include <builder/Templater.h>
-#include <errno.h>
 #include <fstream>
 #include <sstream>
-#include "common/Utils.h"
+#include "errno.h"
 #include "stdlib.h"
+
+#include <builder/Templater.h>
+#include "common/Utils.h"
 #include "common/traceout.h"
 
 //---------------------------------------------------------------------------------------
@@ -61,11 +62,11 @@ std::map<std::string, std::string> Templater::mTemplateMap =
 //---------------------------------------------------------------------------------------
 // Protocol constants
 //---------------------------------------------------------------------------------------
-const std::string Templater::TEMPLATE_ROOT_LAYOUT = "templates/rootlayout.tmpl";
-const std::string Templater::TEMPLATE_PAGE_TABLE = "templates/pagetable.tmpl";
-const std::string Templater::TEMPLATE_PAGE_TABLE_LINE = "templates/pagetableline.tmpl";
-const std::string Templater::TEMPLATE_FILE_CONTENT = "templates/filecontent.tmpl";
-const std::string Templater::TEMPLATE_FILE_CONTENT_LINE = "templates/filecontentline.tmpl";
+const std::string Templater::TEMPLATE_ROOT_LAYOUT        = "templates/rootlayout.tmpl";
+const std::string Templater::TEMPLATE_PAGE_TABLE         = "templates/pagetable.tmpl";
+const std::string Templater::TEMPLATE_PAGE_TABLE_LINE    = "templates/pagetableline.tmpl";
+const std::string Templater::TEMPLATE_FILE_CONTENT       = "templates/filecontent.tmpl";
+const std::string Templater::TEMPLATE_FILE_CONTENT_LINE  = "templates/filecontentline.tmpl";
 
 //---------------------------------------------------------------------------------------
 const std::string Templater::MACRO_TAG = "##";
@@ -79,9 +80,7 @@ void Templater::setMacro(const std::string& macroName, const std::string& macroV
 //---------------------------------------------------------------------------------------
 void Templater::setMacro(const std::string& macroName, unsigned long macroValue)
 {
-   char buffer[16];
-   sprintf(buffer, "%lu", macroValue);
-   setMacro(macroName, buffer);
+   setMacro(macroName, Utils::to_string(macroValue));
 }
 
 //---------------------------------------------------------------------------------------
@@ -107,7 +106,8 @@ std::string Templater::generate()
          auto iter = macroses.find(trimmedToken);
          if (iter != macroses.end())
          {
-            TRC_DEBUG(0U, "macro recognized: '%s' -> '%s'", trimmedToken.c_str(), iter->second.c_str());
+            TRC_DEBUG(0U, "macro recognized: '%s' -> '%s'", trimmedToken.c_str(),
+                                                            iter->second.c_str());
 
             result += (iter->second + " ");
          }
@@ -128,13 +128,13 @@ std::string Templater::generate()
 // regex optimization
 std::string Templater::trimTags(std::string const &token)
 {
-   bool isTagged = false;
    std::string trimmed = token;
    const std::string tag = Templater::MACRO_TAG;
    size_t lengthOf2Tags = 2 * tag.length();
 
    if (token.length() >= lengthOf2Tags)
    {
+      bool isTagged = false;
       isTagged = (0 == token.compare(0, tag.length(), tag));
       isTagged &= (0 == token.compare(token.length() - tag.length(), tag.length(), tag));
 

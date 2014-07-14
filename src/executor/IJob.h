@@ -18,7 +18,7 @@ class IJob
         IJob();
         virtual ~IJob();
 
-        bool start();
+        void start();
         void setOnFinishCallback(Callback callback);
         //TODO: const ref?
         void setOnErrorCallback(Callback callback);

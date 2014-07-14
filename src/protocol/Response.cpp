@@ -7,6 +7,7 @@
 
 #include "Response.h"
 #include "stdio.h"
+#include "common/traceout.h"
 
 //----------------------------------------------------------------------
 //ok response template
@@ -40,48 +41,17 @@ Content-type: text/html\r\n";
 Response::Response()
 //---------------------------------------------------------------------------------------
 {
-    // TODO Auto-generated constructor stub
+   TRC_DEBUG_FUNC_ENTER(0U, "");
+   TRC_DEBUG_FUNC_EXIT(0U);
 }
 
 //---------------------------------------------------------------------------------------
 Response::~Response()
 //---------------------------------------------------------------------------------------
 {
-    // TODO Auto-generated destructor stub
+   TRC_DEBUG_FUNC_ENTER(0U, "");
+   TRC_DEBUG_FUNC_EXIT(0U);
 }
 
-//---------------------------------------------------------------------------------------
-void Response::setBody(const std::string& body)
-//---------------------------------------------------------------------------------------
-{
-    mBody = body;
-}
 
-//---------------------------------------------------------------------------------------
-void Response::setHeader(const std::string& header)
-//---------------------------------------------------------------------------------------
-{
-    mHeader = Header(header);
-}
 
-//---------------------------------------------------------------------------------------
-const Response::Header& Response::getHeader() const
-//---------------------------------------------------------------------------------------
-{
-    return mHeader;
-}
-
-//---------------------------------------------------------------------------------------
-std::string Response::toString() const
-//---------------------------------------------------------------------------------------
-{
-    //FIXME can we format better?
-    std::string fmtHeader;
-    fmtHeader.resize(mHeader.toString().size() + 24);
-    sprintf(&fmtHeader[0], mHeader.toString().c_str(), mBody.length());
-    return (
-             fmtHeader +
-             MESSAGE_HEADER_FIELD_DELIMITER +
-             mBody
-           );
-}

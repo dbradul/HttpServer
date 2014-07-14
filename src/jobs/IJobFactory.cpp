@@ -35,12 +35,12 @@ IJobFactory* IJobFactory::create(const std::string& request)
 
    if (request == "GET")
    {
-      pJobFactory = new JobFactoryGET;
+      pJobFactory = new JobFactoryGET();
    }
 
    else if (request == "POST")
    {
-      pJobFactory = new JobFactoryPOST;
+      pJobFactory = new JobFactoryPOST();
    }
 
    TRC_DEBUG_FUNC_EXIT (0U);
@@ -55,13 +55,19 @@ Callback IJobFactory::createJobErrorCallback(const Dispatcher& dispatcher, const
    {
       Response response;
       response.setHeader (Response::RESPONSE_FAIL_INTERNAL_SERVER_ERROR);
-      response.setBody (result);
+      response.setBody (
+                        "<html>\n\
+                            <body>\n\
+                               <h1>Internal error</h1>\n\
+                               <p>" + result + ".</p>\n\
+                            </body>\n\
+                         </html>\n");
 
       TRC_INFO(0U, "Response will be sent to a caller: %s", response.getHeader().toString().c_str());
 
       if( !dispatcher.writeResponse(response, sessionId) )
       {
-         TRC_ERROR(0U, "Failed responding");
+         TRC_ERROR(0U, "Failed responding", NULL);
       }
    };
 }

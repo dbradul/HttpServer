@@ -38,7 +38,6 @@ class Request : public Message
         std::string mMethod;
         std::string mPath;
         tHeader     mHeaderFields;
-        std::string mBody;
         bool        mbValid;
         int         mSessionId;
 };
