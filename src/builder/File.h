@@ -21,6 +21,14 @@ class File
         std::string name;
         std::string relativeFilePath;
         bool isDir;
+
+        ///friend bool operator< (const File& a, const File& b);
+        bool operator< (const File& rhs) const
+        {
+           return ( (isDir == rhs.isDir) ?
+                    name < rhs.name :
+                    isDir && !rhs.isDir );
+        }
 };
 
 #endif /* FILE_H_ */

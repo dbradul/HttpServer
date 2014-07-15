@@ -92,6 +92,13 @@ std::string PageBuilder::buildPageTable(const std::string& dirPath)
    }
    else
    {
+      // sort using a lambda expression
+      std::sort(flist.begin(), flist.end());
+//      std::sort(flist.begin(), flist.end(), [](File a, File b) {
+//         return a.name < b.name;
+//         ////return ::strcmp(a.name.c_str(), b.name.c_str());
+//      });
+
       std::string tableBody;
 
       for_each(flist.begin(), flist.end(), [&](const File& file)

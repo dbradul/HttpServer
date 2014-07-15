@@ -244,8 +244,7 @@ bool Utils::readAndCheckIfItIsBinary(const char *filename, std::string& content)
    bool bBinary = false;
 
    const int BUFF_SIZE = 2048;
-   char buffer[BUFF_SIZE] =
-   { 0 };
+   char buffer[BUFF_SIZE+1] = { 0 };
 
    if (in)
    {

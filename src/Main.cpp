@@ -27,7 +27,7 @@ void hook_signals();
 int main(int argc, char *argv[])
 {
    TRC_DEBUG_FUNC_ENTER(0U, "Application started");
-//
+
 //   test::unit::Runner::run(false);
 //   return 0;
 
@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
    }
 
    TRC_INFO(0U, "Application started and is about to be daemonized");
-   ////daemonize();
+   daemonize();
 
    /* Open the log file */
    TRC_INIT(LOG_PID, LOG_DAEMON);
