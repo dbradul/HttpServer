@@ -1,7 +1,7 @@
 OBJS = 
 CC = g++
 DEBUG = -g
-CFLAGS = -Wall -c -std=c++0x -I"D:\work\projects\HttpServer\src" -I"D:\work\projects\HttpServer\unittests" $(DEBUG)
+CFLAGS = -Wall -c -std=c++0x -I$(CURDIR)/src -I$(CURDIR)/unittests $(DEBUG)
 LFLAGS = -Wall $(DEBUG)
 BIN_DIR = Debug
 BIN_OUT = $(BIN_DIR)/HttpServer.exe
