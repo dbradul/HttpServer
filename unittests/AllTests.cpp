@@ -58,13 +58,13 @@ TEST(File, simple_test)
    File dir_a;
    File dir_b;
 
-   file_a.name = "aaa";
-   file_b.name = "bbb";
+   file_a.mName = "aaa";
+   file_b.mName = "bbb";
 
-   dir_a.name  = "ccc";
-   dir_a.isDir = true;
-   dir_b.name  = "ddd";
-   dir_b.isDir = true;
+   dir_a.mName  = "ccc";
+   dir_a.mIsDir = true;
+   dir_b.mName  = "ddd";
+   dir_b.mIsDir = true;
 
    // Act
    // Assert

@@ -58,7 +58,7 @@ int main(int argc, char *argv[])
    }
 
    TRC_INFO(0U, "Application started and is about to be daemonized");
-   ////daemonize();
+   daemonize();
 
    /* Open the log file */
    TRC_INIT(LOG_PID, LOG_DAEMON);

@@ -133,7 +133,7 @@ void Utils::readDir(const std::string& root, const std::string& relativePath, st
 
    struct dirent *mydirent;
 
-   std::string errMsg = std::string("Readind dir '") + (root + relativePath) + "' failed: ";
+   std::string errMsg = std::string("Dailed to read dir '") + (root + relativePath) + "': ";
 
    if (root.c_str() == NULL)
    {
@@ -245,7 +245,7 @@ bool Utils::readAndCheckIfItIsBinary(const char *filename, std::string& content)
 
    if (!in)
    {
-      throw(ios_base::failure(std::string("Read '") + filename + "': " + strerror(errno)));
+      throw(ios_base::failure(std::string("Failed to read the file '") + filename + "': " + strerror(errno)));
    }
 
    else
@@ -264,8 +264,8 @@ bool Utils::readAndCheckIfItIsBinary(const char *filename, std::string& content)
          in.seekg(readBytes, ios::beg);
          if (!in.read(&buffer[0], bytesToRead))
          {
-            TRC_ERROR(0U, "Failed to read the file: %s", filename);
-            throw std::exception();
+            TRC_ERROR(0U, "Failed to read the file '%s': ", filename, strerror(errno));
+            throw(ios_base::failure(std::string("Failed to read the file '") + filename + "': " + strerror(errno)));
          }
 
          int cntr = 0;
