@@ -56,6 +56,7 @@ void Config::setValue(std::string valueName, bool value)
     setValue(valueName, std::string("TRUE"));
 }
 
+//TODO: ->getValueStr
 bool Config::getValue(std::string valueName, std::string& value)
 {
     bool result = false;
@@ -70,6 +71,7 @@ bool Config::getValue(std::string valueName, std::string& value)
     return result;
 }
 
+//TODO: ->getValueInt
 bool Config::getValue(const std::string& valueName, unsigned long& value)
 {
     std::string valueStr;

@@ -26,7 +26,7 @@ class JobExecutor
         static const int THREAD_NUM_UPPER_BOUND;
 
     private:
-        void run();
+        void processingLoop();
         std::vector<std::thread*> mThreadPool;
         bool mbStarted;
         int mMaxThreadNum;

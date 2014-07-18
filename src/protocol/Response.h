@@ -16,15 +16,9 @@
 
 class Response : public Message
 {
-
-
     public:
         Response();
         virtual ~Response();
-
-        static Response parse(std::string& rawMessage);
-
-        std::string assembleResponse(const std::string& body);
 
         static const std::string RESPONSE_OK;
         static const std::string RESPONSE_FAIL_BAD_REQUEST;

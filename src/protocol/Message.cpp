@@ -11,10 +11,10 @@
 //----------------------------------------------------------------------
 // Protocol constants
 //---------------------------------------------------------------------------------------
-const std::string Message::MESSAGE_HEADER_BODY_DELIMITER      = "\r\n\r\n";
-const std::string Message::MESSAGE_HEADER_FIRST_FIELD_ENTRIES_DELIMITER      = " ";
-const std::string Message::MESSAGE_HEADER_FIELD_DELIMITER       = "\r\n";
-const std::string Message::MESSAGE_HEADER_FIELD_NAME_DELIMITER  = ": ";
+const std::string Message::MESSAGE_HEADER_BODY_DELIMITER                = "\r\n\r\n";
+const std::string Message::MESSAGE_HEADER_FIRST_FIELD_ENTRIES_DELIMITER = " ";
+const std::string Message::MESSAGE_HEADER_FIELD_DELIMITER               = "\r\n";
+const std::string Message::MESSAGE_HEADER_FIELD_NAME_DELIMITER          = ": ";
 
 //---------------------------------------------------------------------------------------
 Message::Message()
@@ -80,4 +80,11 @@ void Message::setHeader(const std::string& header)
 {
     mHeader = Header(header);
     mRawMessage.resize(0);
+}
+
+//---------------------------------------------------------------------------------------
+const std::string& Message::getBody() const
+//---------------------------------------------------------------------------------------
+{
+   return mBody;
 }

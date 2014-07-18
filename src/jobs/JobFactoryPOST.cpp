@@ -11,52 +11,58 @@
 
 //---------------------------------------------------------------------------------------
 JobFactoryPOST::JobFactoryPOST()
+//---------------------------------------------------------------------------------------
 {
    TRC_DEBUG_FUNC_ENTER(0U, "");
-   TRC_DEBUG_FUNC_EXIT (0U);
+   TRC_DEBUG_FUNC_EXIT(0U);
 }
 
 //---------------------------------------------------------------------------------------
 JobFactoryPOST::~JobFactoryPOST()
+//---------------------------------------------------------------------------------------
 {
    TRC_DEBUG_FUNC_ENTER(0U, "");
-   TRC_DEBUG_FUNC_EXIT (0U);
+   TRC_DEBUG_FUNC_EXIT(0U);
 }
 
 //---------------------------------------------------------------------------------------
 IJob* JobFactoryPOST::createJob(const Request& request)
+//---------------------------------------------------------------------------------------
 {
-    class JobNOP : public IJob
-    {
-        public:
-            std::string doJob()
-            {
-                return "";
-            }
-    };
+   class JobNOP: public IJob
+   {
+      public:
+         std::string execute()
+         {
+            return "";
+         }
+   };
 
-    return new JobNOP;
+   return new JobNOP;
 }
 
 //---------------------------------------------------------------------------------------
 Callback JobFactoryPOST::createJobCallback(const Dispatcher& dispatcher, const int sessionId)
+//---------------------------------------------------------------------------------------
 {
-    return [&] (const std::string& result)
-    {
-        Response response;
-        response.setHeader  (Response::RESPONSE_FAIL_BAD_REQUEST);
-        response.setBody    (
-                             "<html>\n\
-                                 <body>\n\
-                                    <h1>Bad Request</h1>\n\
-                                    <p>This server did not understand your request.</p>\n\
-                                 </body>\n\
-                              </html>\n"
-                            );
+   return [&] (const std::string& result)
+   {
+      Response response;
+      response.setHeader (Response::RESPONSE_FAIL_BAD_REQUEST);
 
-        if( !dispatcher.writeResponse(response, sessionId) )
-        {
-            TRC_ERROR(0U, "Failed responding");
-        }
-    };
+      //TODO: error template??
+      response.setBody (
+                           "<html>\n\
+                               <body>\n\
+                                  <h1>Bad Request</h1>\n\
+                                  <p>This server did not understand your request.</p>\n\
+                               </body>\n\
+                            </html>\n"
+                       );
+
+      if( !dispatcher.writeResponse(response, sessionId) )
+      {
+         TRC_ERROR(0U, "Failed responding");
+      }
+   };
 }

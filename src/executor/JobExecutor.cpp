@@ -11,54 +11,95 @@
 
 const int JobExecutor::THREAD_NUM_UPPER_BOUND = 1024;
 
-JobExecutor::JobExecutor()
-:mbStarted(false)
+//---------------------------------------------------------------------------------------
+JobExecutor::JobExecutor() :
+      mbStarted(false)
+//---------------------------------------------------------------------------------------
 {
-    unsigned long portNumber;
-    Config::getValue(Config::CONFIG_MAX_THREAD_NUMBER, portNumber);
-    mMaxThreadNum = portNumber;
+   unsigned long portNumber;
+   Config::getValue(Config::CONFIG_MAX_THREAD_NUMBER, portNumber);
+   mMaxThreadNum = portNumber;
 }
 
+//---------------------------------------------------------------------------------------
 JobExecutor::~JobExecutor()
+//---------------------------------------------------------------------------------------
 {
-    // TODO Auto-generated destructor stub
+   TRC_DEBUG_FUNC_ENTER(0U, "");
+   TRC_DEBUG_FUNC_EXIT(0U);
 }
 
+//---------------------------------------------------------------------------------------
+//TODO: beautify comments for functions
+//---------------------------------------------------------------------------------------
 void JobExecutor::start()
+//---------------------------------------------------------------------------------------
 {
-    if(!mbStarted)
-    {
-        // we must guarantee that at least one thread will be started!
-        int maxNumThread = std::max(1, mMaxThreadNum);
+   TRC_DEBUG_FUNC_ENTER(0U, "");
 
-        // we must ensure that the app will not exhaust system resources
-        maxNumThread = std::min(THREAD_NUM_UPPER_BOUND, maxNumThread);
+   if (!mbStarted)
+   {
+      // we must guarantee that at least one thread will be started!
+      int maxNumThread = std::max(1, mMaxThreadNum);
 
-        for(int i=0; i<maxNumThread; ++i)
-        {
-            mThreadPool.push_back(new std::thread(&JobExecutor::run, this));
-        }
+      // we must ensure that the app will not exhaust system resources
+      maxNumThread = std::min(THREAD_NUM_UPPER_BOUND, maxNumThread);
 
-        mbStarted = true;
-    }
+      for (int i = 0; i < maxNumThread; ++i)
+      {
+         mThreadPool.push_back(new std::thread(&JobExecutor::processingLoop, this));
+      }
+
+      mbStarted = true;
+   }
+
+   TRC_DEBUG_FUNC_EXIT(0U);
 }
 
+//---------------------------------------------------------------------------------------
 void JobExecutor::submitJob(IJob* job)
+//---------------------------------------------------------------------------------------
 {
-    mJobQueue.push(job);
+   TRC_DEBUG_FUNC_ENTER(0U, "");
+
+   mJobQueue.push(job);
+
+   TRC_DEBUG_FUNC_EXIT(0U);
 }
 
-void JobExecutor::run()
+//TODO: watchdog thread
+//---------------------------------------------------------------------------------------
+void JobExecutor::processingLoop()
+//---------------------------------------------------------------------------------------
 {
-    while(IJob* pJob = mJobQueue.pop())
-    {
-        TRC_INFO(0U, "New job started: pJob=0x%x", (pJob));
+   TRC_DEBUG_FUNC_ENTER(0U, "");
 
-        pJob->start();
-    }
+   while (IJob* pJob = mJobQueue.pop())
+   {
+      TRC_INFO(0U, "New job started: pJob=0x%x", (pJob));
+
+      try
+      {
+         TRC_INFO(0, "Starting job execution");
+         std::string result = pJob->execute();
+
+         TRC_INFO(0, "The following result is being returned via callback: '%s'", result.c_str());
+         pJob->getOnFinishCallback()(result);
+      }
+
+      catch (const std::exception& e)
+      {
+         TRC_ERROR(0, "Job execution failed: '%s'", e.what());
+         pJob->getOnErrorCallback()(e.what());
+      }
+   }
+
+   TRC_DEBUG_FUNC_EXIT(0U);
 }
 
+//---------------------------------------------------------------------------------------
 void JobExecutor::setMaxThreadNum(int maxThreadNum)
+//---------------------------------------------------------------------------------------
 {
-    mMaxThreadNum = maxThreadNum;
+   mMaxThreadNum = maxThreadNum;
 }

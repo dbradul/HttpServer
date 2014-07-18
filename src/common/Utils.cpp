@@ -125,24 +125,24 @@ const std::string& Url::getQuery() const
 
 //---------------------------------------------------------------------------------------
 // TODO: error handling
-bool Utils::readDir(const std::string& root, const std::string& relativePath, std::vector<File>& fileList)
+void Utils::readDir(const std::string& root, const std::string& relativePath, std::vector<File>& fileList)
 {
    TRC_DEBUG_FUNC_ENTER(0U, "root='%s', relativePath='%s', fileList.size()=%d", root.c_str(), relativePath.c_str(), fileList.size());
 
    DIR *mydirhandle;
-   bool bResult = true;
 
    struct dirent *mydirent;
 
+   std::string errMsg = std::string("Readind dir '") + (root + relativePath) + "' failed: ";
+
    if (root.c_str() == NULL)
    {
-      bResult = false;
+      throw(ios_base::failure(errMsg + "Root is not defined"));
    }
 
    else if ((mydirhandle = opendir((root + relativePath).c_str())) == NULL)
    {
-      perror("opendir");
-      bResult = false;
+      throw(ios_base::failure(errMsg + strerror(errno)));
    }
 
    else
@@ -161,8 +161,7 @@ bool Utils::readDir(const std::string& root, const std::string& relativePath, st
 
             if (stat(fullPath.c_str(), &statInfo) == -1)
             {
-               perror("stat");
-               bResult = false;
+               throw(ios_base::failure(errMsg + strerror(errno)));
             }
 
             char perms[1 + 3 + 3 + 3];
@@ -171,20 +170,20 @@ bool Utils::readDir(const std::string& root, const std::string& relativePath, st
             S_ISDIR(statInfo.st_mode) ? 'd' : '-',
 
             statInfo.st_mode && S_IRUSR ? 'r' : '-', statInfo.st_mode && S_IWUSR ? 'w' : '-',
-                  statInfo.st_mode && S_IXUSR ? 'x' : '-',
+            statInfo.st_mode && S_IXUSR ? 'x' : '-',
 
-                  statInfo.st_mode && S_IRGRP ? 'r' : '-', statInfo.st_mode && S_IWGRP ? 'w' : '-',
-                  statInfo.st_mode && S_IXGRP ? 'x' : '-',
+            statInfo.st_mode && S_IRGRP ? 'r' : '-', statInfo.st_mode && S_IWGRP ? 'w' : '-',
+            statInfo.st_mode && S_IXGRP ? 'x' : '-',
 
-                  statInfo.st_mode && S_IROTH ? 'r' : '-', statInfo.st_mode && S_IWOTH ? 'w' : '-',
-                  statInfo.st_mode && S_IXOTH ? 'x' : '-');
+            statInfo.st_mode && S_IROTH ? 'r' : '-', statInfo.st_mode && S_IWOTH ? 'w' : '-',
+            statInfo.st_mode && S_IXOTH ? 'x' : '-');
 
             File file;
-            file.size = statInfo.st_size;
-            file.isDir = (mydirent->d_type == DT_DIR);
-            file.name = mydirent->d_name;
-            file.relativeFilePath = relativePath + mydirent->d_name;
-            file.permissions = perms;
+            file.size   = statInfo.st_size;
+            file.mIsDir = (mydirent->d_type == DT_DIR);
+            file.mName  = mydirent->d_name;
+            file.mRelativeFilePath = relativePath + mydirent->d_name;
+            file.mPermissions = perms;
 
             fileList.push_back(file);
          }
@@ -198,8 +197,6 @@ bool Utils::readDir(const std::string& root, const std::string& relativePath, st
 //   buffer << t.rdbuf();
 
    TRC_DEBUG_FUNC_EXIT(0U);
-
-   return bResult;
 }
 
 //---------------------------------------------------------------------------------------
@@ -215,7 +212,7 @@ std::string Utils::getTextFileContent(const char *filename)
 
    if (!in)
    {
-      throw(ios_base::failure(std::string("Read '") + filename + "': " + strerror(errno)));
+      throw(ios_base::failure(std::string("Reading file '") + filename + "' failed: " + strerror(errno)));
    }
 
    else
@@ -235,19 +232,27 @@ std::string Utils::getTextFileContent(const char *filename)
 //---------------------------------------------------------------------------------------
 bool Utils::readAndCheckIfItIsBinary(const char *filename, std::string& content)
 {
-   std::ifstream in(filename, std::ios::in | std::ios::binary);
-
-   const char binaryArray[] =
-   { 0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9, 0xB, 0xC, 0xE, 0xF, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17,
-         0x18, 0x19, 0x16, 0x16, 0x7F, 0x0 };
-
    bool bBinary = false;
 
-   const int BUFF_SIZE = 2048;
-   char buffer[BUFF_SIZE+1] = { 0 };
-
-   if (in)
+   const char binaryArray[] =
    {
+      0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9, 0xB,
+      0xC, 0xE, 0xF, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15,
+      0x16, 0x17, 0x18, 0x19, 0x16, 0x16, 0x7F, 0x0
+   };
+
+   std::ifstream in(filename, std::ios::in | std::ios::binary);
+
+   if (!in)
+   {
+      throw(ios_base::failure(std::string("Read '") + filename + "': " + strerror(errno)));
+   }
+
+   else
+   {
+      const int BUFF_SIZE = 2048;
+      char buffer[BUFF_SIZE+1] = { 0 };
+
       ifstream::pos_type fileSize;
       in.seekg(0, std::ios::end);
       fileSize = in.tellg();

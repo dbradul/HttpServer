@@ -15,6 +15,7 @@
 
 //---------------------------------------------------------------------------------------
 JobFactoryGET::JobFactoryGET()
+//---------------------------------------------------------------------------------------
 {
    TRC_DEBUG_FUNC_ENTER(0U, "");
    TRC_DEBUG_FUNC_EXIT (0U);
@@ -22,6 +23,7 @@ JobFactoryGET::JobFactoryGET()
 
 //---------------------------------------------------------------------------------------
 JobFactoryGET::~JobFactoryGET()
+//---------------------------------------------------------------------------------------
 {
    TRC_DEBUG_FUNC_ENTER(0U, "");
    TRC_DEBUG_FUNC_EXIT (0U);
@@ -29,11 +31,12 @@ JobFactoryGET::~JobFactoryGET()
 
 //---------------------------------------------------------------------------------------
 IJob* JobFactoryGET::createJob(const Request& request)
+//---------------------------------------------------------------------------------------
 {
    class JobDirReader: public IJob
    {
       public:
-         std::string doJob()
+         std::string execute()
          {
             TRC_INFO(0, "Building root layout for the path: %s", mPath.c_str());
 
@@ -55,6 +58,7 @@ IJob* JobFactoryGET::createJob(const Request& request)
 
 //---------------------------------------------------------------------------------------
 Callback JobFactoryGET::createJobCallback(const Dispatcher& dispatcher, const int sessionId)
+//---------------------------------------------------------------------------------------
 {
     return [&dispatcher, sessionId] (const std::string& result)
     {

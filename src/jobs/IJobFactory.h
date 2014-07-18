@@ -18,8 +18,9 @@ class IJobFactory
         IJobFactory();
         virtual ~IJobFactory();
 
-        static IJobFactory* create(const std::string& request);
+        static IJobFactory* createInstance(const std::string& request);
 
+        //TODO: make it templated
         virtual IJob* createJob(const Request& request)=0;
         virtual Callback createJobCallback(const Dispatcher& dispatcher, const int sessionId)=0;
         virtual Callback createJobErrorCallback(const Dispatcher& dispatcher, const int sessionId);

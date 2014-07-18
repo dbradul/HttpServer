@@ -5,6 +5,7 @@
 #include "jobs/IJobFactory.h"
 #include "executor/JobExecutor.h"
 #include "protocol/Request.h"
+#include "builder/Templater.h"
 #include "common/traceout.h"
 #include "common/Utils.h"
 #include "common/Config.h"
@@ -23,6 +24,19 @@ void daemonize();
 static void signal_error(int sig, siginfo_t *si, void *ptr);
 void hook_signals();
 
+bool checkEnv()
+{
+   bool bResult = true;
+
+   bResult &= File(Templater::TEMPLATE_ROOT_LAYOUT)        .exists();
+   bResult &= File(Templater::TEMPLATE_PAGE_TABLE)         .exists();
+   bResult &= File(Templater::TEMPLATE_PAGE_TABLE_LINE)    .exists();
+   bResult &= File(Templater::TEMPLATE_FILE_CONTENT)       .exists();
+   bResult &= File(Templater::TEMPLATE_FILE_CONTENT_LINE)  .exists();
+
+   return bResult;
+}
+
 //---------------------------------------------------------------------------------------
 int main(int argc, char *argv[])
 {
@@ -33,6 +47,13 @@ int main(int argc, char *argv[])
 
    if (!parseOptions(argc, argv))
    {
+      printUsage();
+      exit(EXIT_FAILURE);
+   }
+
+   if (!checkEnv())
+   {
+      printUsage();
       exit(EXIT_FAILURE);
    }
 
@@ -55,7 +76,7 @@ int main(int argc, char *argv[])
       {
          TRC_INFO(0U, "The new request is received: request='%s'", request.getHeader().toString().c_str());
 
-         IJobFactory* jobFactory = IJobFactory::create(request.getMethodType());
+         IJobFactory* jobFactory = IJobFactory::createInstance(request.getMethodType());
 
          IJob*    pJob              = jobFactory->createJob             (request);
          Callback jobCallback       = jobFactory->createJobCallback     (dispatcher, request.getSessionId());
@@ -66,8 +87,7 @@ int main(int argc, char *argv[])
 
          jobExecutor.submitJob(pJob);
 
-         TRC_INFO(0U, "The corresponding job is queued: pJob=0x%x, sessionId=%d", pJob,
-                                                                                  request.getSessionId());
+         TRC_INFO(0U, "The corresponding job is queued: pJob=0x%x, sessionId=%d", pJob, request.getSessionId());
       }
    }
 
@@ -167,13 +187,11 @@ bool parseOptions(int argc, char *argv[])
 
       case '?':
          fprintf(stdout, "Unknown/invalid arguments.\n\n");
-         printUsage();
          bResult = false;
          break;
 
       default:
          fprintf(stdout, "Unknown/invalid arguments.\n\n");
-         printUsage();
          bResult = false;
       }
    }
@@ -188,9 +206,11 @@ void printUsage()
          "Usage: HttpServer [-p <port>] [-d <work_dir>] [-r <root_dir>] [-t <max_num_of_threads>] \n\
 \n\
 port               - port number to listen for client connection. By default: 8080\n\
-work_dir           - working server directory. The one that contains 'templates' folder. By default: current dir.\n\
+work_dir           - working server directory. MUST contain 'templates' folder. By default: current dir.\n\
 root_dir           - root directory to start the server in. By default: current dir.\n\
-max_num_of_threads - maximum number of threads. By default: 4\n");
+max_num_of_threads - maximum number of threads. By default: 4\n\
+\n\
+WARNING: If working directory ('work dir' param) doesn't contain 'templates' folder, the program will terminate! \n");
 }
 
 //---------------------------------------------------------------------------------------

@@ -48,6 +48,7 @@ class Message
 
       const std::string& getRawMessage() const;
       const Header& getHeader() const;
+      const std::string& getBody() const;
       std::string toString() const;
 
       static const std::string MESSAGE_HEADER_BODY_DELIMITER;

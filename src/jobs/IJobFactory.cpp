@@ -13,6 +13,7 @@
 
 //---------------------------------------------------------------------------------------
 IJobFactory::IJobFactory()
+//---------------------------------------------------------------------------------------
 {
    TRC_DEBUG_FUNC_ENTER(0U, "");
    TRC_DEBUG_FUNC_EXIT (0U);
@@ -20,6 +21,7 @@ IJobFactory::IJobFactory()
 
 //---------------------------------------------------------------------------------------
 IJobFactory::~IJobFactory()
+//---------------------------------------------------------------------------------------
 {
    TRC_DEBUG_FUNC_ENTER(0U, "");
    TRC_DEBUG_FUNC_EXIT (0U);
@@ -27,7 +29,8 @@ IJobFactory::~IJobFactory()
 
 //---------------------------------------------------------------------------------------
 // TODO: put into map to avoid recreation?
-IJobFactory* IJobFactory::create(const std::string& request)
+IJobFactory* IJobFactory::createInstance(const std::string& request)
+//---------------------------------------------------------------------------------------
 {
    TRC_DEBUG_FUNC_ENTER (0U, "");
 
@@ -50,6 +53,7 @@ IJobFactory* IJobFactory::create(const std::string& request)
 
 //---------------------------------------------------------------------------------------
 Callback IJobFactory::createJobErrorCallback(const Dispatcher& dispatcher, const int sessionId)
+//---------------------------------------------------------------------------------------
 {
    return [&dispatcher, sessionId] (const std::string& result)
    {

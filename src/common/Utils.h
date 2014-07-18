@@ -19,7 +19,7 @@ class Utils
     public:
         static const std::string getCurrentDateTime();
         static void split(std::vector<std::string> &tokens, const std::string &text, const std::string & delim);
-        static bool readDir(const std::string& root, const std::string& relativePath, std::vector<File>& fileList);
+        static void readDir(const std::string& root, const std::string& relativePath, std::vector<File>& fileList);
         static std::string getTextFileContent(const char *filename);
         static bool readAndCheckIfItIsBinary(const char *filename, std::string& content);
         static bool endsWith(const std::string &str, const std::string &suffix);

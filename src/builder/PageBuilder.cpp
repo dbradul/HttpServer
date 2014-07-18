@@ -40,8 +40,8 @@ std::string PageBuilder::buildRootLayout(std::string& path)
 
    std::string content;
 
-   try
-   {
+//   try
+//   {
       TRC_INFO(0, "Utils::endsWith(path, \"/\")");
 
       if (Utils::endsWith(path, "/"))
@@ -56,12 +56,12 @@ std::string PageBuilder::buildRootLayout(std::string& path)
 
          content = buildFileContent(path);
       }
-   }
-   catch (const std::exception& e)
-   {
-      TRC_ERROR(0U, "Reading dir content has failed");
-      content = "Reading content has failed for \"" + path + "\"";
-   }
+//   }
+//   catch (const std::exception& e)
+//   {
+//      TRC_ERROR(0U, "Reading dir content has failed");
+//      content = "Reading content has failed for \"" + path + "\"";
+//   }
 
    templater.setMacro("root", path);
    templater.setMacro("content", content);
@@ -81,49 +81,42 @@ std::string PageBuilder::buildPageTable(const std::string& dirPath)
 
    std::vector<File> flist;
 
-   std::string workingDir;
-   Config::getValue(Config::CONFIG_ROOT_DIR, workingDir);
+   std::string rootDir;
+   Config::getValue(Config::CONFIG_ROOT_DIR, rootDir);
 
-   TRC_INFO(0U, "workingDir='%s'", workingDir.c_str());
+   TRC_INFO(0U, "workingDir='%s'", rootDir.c_str());
 
-   if (!Utils::readDir(workingDir, dirPath, flist))
+   Utils::readDir(rootDir, dirPath, flist);
+
+   // sort to put dirs ahead of files
+   std::sort(flist.begin(), flist.end());
+
+   std::string tableBody;
+
+   for_each(flist.begin(), flist.end(), [&](const File& file)
    {
-      templater.setMacro("table_body", "ERROR while reading the dir!<br/>");
-   }
-   else
-   {
-      // sort using a lambda expression
-      std::sort(flist.begin(), flist.end());
-//      std::sort(flist.begin(), flist.end(), [](File a, File b) {
-//         return a.name < b.name;
-//         ////return ::strcmp(a.name.c_str(), b.name.c_str());
-//      });
+      tableBody += buildPageTableLine(file);
+   });
 
-      std::string tableBody;
+   templater.setMacro("table_body", tableBody);
 
-      for_each(flist.begin(), flist.end(), [&](const File& file)
-      {
-         tableBody += buildPageTableLine(file);
-      });
-
-      templater.setMacro("table_body", tableBody);
-   }
+   std::string result = templater.generate();
 
    TRC_DEBUG_FUNC_EXIT(0U);
 
-   return templater.generate();
+   return result;
 }
 
 //---------------------------------------------------------------------------------------
 std::string PageBuilder::buildPageTableLine(const File& file)
 {
-   TRC_DEBUG_FUNC_ENTER(0U, "file='%s'", file.name.c_str());
+   TRC_DEBUG_FUNC_ENTER(0U, "file='%s'", file.mName.c_str());
 
    Templater templater(Templater::TEMPLATE_PAGE_TABLE_LINE);
-   templater.setMacro("filename", file.name);
-   templater.setMacro("filepath", "\"" + file.relativeFilePath + (file.isDir ? "/" : "") + "\""); //TODO: sync with buildRootLayout logic
+   templater.setMacro("filename", file.mName);
+   templater.setMacro("filepath", "\"" + file.mRelativeFilePath + (file.mIsDir ? "/" : "") + "\""); //TODO: sync with buildRootLayout logic
    templater.setMacro("size", (file.size ? Utils::to_string(file.size) : ""));
-   templater.setMacro("perms", file.permissions);
+   templater.setMacro("perms", file.mPermissions);
 
    TRC_DEBUG_FUNC_EXIT(0U);
 
