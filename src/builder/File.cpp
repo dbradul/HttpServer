@@ -34,7 +34,7 @@ File::~File()
 bool File::exists()
 {
    std::string workDir;
-   Config::getValue(Config::CONFIG_WORKING_DIR, workDir);
+   Configuration::getValue(Configuration::CONFIG_WORKING_DIR, workDir);
 
    bool bResult = false;
    if(!mName.empty() && access( (workDir + mName).c_str(), F_OK ) != -1)

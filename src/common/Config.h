@@ -11,11 +11,13 @@
 #include <string>
 #include <map>
 
-class Config
+class Configuration
 {
     public:
-        virtual ~Config();
-        Config();
+        virtual ~Configuration();
+        Configuration();
+
+        bool isValid();
 
         static void setValue(std::string valueName, std::string value);
         static void setValue(std::string valueName, unsigned long value);

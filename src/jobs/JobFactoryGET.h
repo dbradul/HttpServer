@@ -17,7 +17,7 @@ class JobFactoryGET: public IJobFactory
       virtual ~JobFactoryGET();
 
       virtual IJob* createJob(const Request& request);
-      virtual Callback createJobCallback(const Dispatcher& dispatcher, const int sessionId);
+      virtual Callback createJobCallback(const Connector& dispatcher, const int sessionId);
 };
 
 #endif /* JOBFACTORYGET_H_ */

@@ -10,7 +10,7 @@
 
 #include "executor/IJob.h"
 #include "protocol/Request.h"
-#include "Dispatcher.h"
+#include "core/Connector.h"
 
 class IJobFactory
 {
@@ -22,8 +22,8 @@ class IJobFactory
 
         //TODO: make it templated
         virtual IJob* createJob(const Request& request)=0;
-        virtual Callback createJobCallback(const Dispatcher& dispatcher, const int sessionId)=0;
-        virtual Callback createJobErrorCallback(const Dispatcher& dispatcher, const int sessionId);
+        virtual Callback createJobCallback(const Connector& dispatcher, const int sessionId)=0;
+        virtual Callback createJobErrorCallback(const Connector& dispatcher, const int sessionId);
 };
 
 #endif /* JOBFACTORY_H_ */

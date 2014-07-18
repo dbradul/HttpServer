@@ -52,7 +52,7 @@ IJobFactory* IJobFactory::createInstance(const std::string& request)
 }
 
 //---------------------------------------------------------------------------------------
-Callback IJobFactory::createJobErrorCallback(const Dispatcher& dispatcher, const int sessionId)
+Callback IJobFactory::createJobErrorCallback(const Connector& dispatcher, const int sessionId)
 //---------------------------------------------------------------------------------------
 {
    return [&dispatcher, sessionId] (const std::string& result)

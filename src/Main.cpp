@@ -1,63 +1,52 @@
 #include "stdio.h"
 #include <exception>
-
-#include "Dispatcher.h"
-#include "jobs/IJobFactory.h"
-#include "executor/JobExecutor.h"
-#include "protocol/Request.h"
-#include "builder/Templater.h"
-#include "common/traceout.h"
-#include "common/Utils.h"
-#include "common/Config.h"
 #include <unistd.h>
 #include <stdlib.h>
 #include <signal.h>
+#include <string>
+
 #include <sys/types.h>
 #include <sys/stat.h>
-////#include <execinfo.h>
-#include <string.h>
+
+#include "core/Server.h"
+#include "core/Connector.h"
+#include "common/traceout.h"
+#include "common/Utils.h"
+#include "common/Config.h"
 #include "TestHarness.h"
 
-bool parseOptions(int argc, char *argv[]);
+
+//---------------------------------------------------------------------------------------
+// FORWARD DECLARATIONS
+//---------------------------------------------------------------------------------------
+bool parseOptions(int argc, char *argv[], Configuration& configuration);
 void printUsage();
 void daemonize();
-static void signal_error(int sig, siginfo_t *si, void *ptr);
-void hook_signals();
-
-bool checkEnv()
-{
-   bool bResult = true;
-
-   bResult &= File(Templater::TEMPLATE_ROOT_LAYOUT)        .exists();
-   bResult &= File(Templater::TEMPLATE_PAGE_TABLE)         .exists();
-   bResult &= File(Templater::TEMPLATE_PAGE_TABLE_LINE)    .exists();
-   bResult &= File(Templater::TEMPLATE_FILE_CONTENT)       .exists();
-   bResult &= File(Templater::TEMPLATE_FILE_CONTENT_LINE)  .exists();
-
-   return bResult;
-}
 
 //---------------------------------------------------------------------------------------
 int main(int argc, char *argv[])
+//---------------------------------------------------------------------------------------
 {
    TRC_DEBUG_FUNC_ENTER(0U, "Application started");
 
-//   test::unit::Runner::run(false);
-//   return 0;
+////   test::unit::Runner::run(false);
+////   return 0;
 
-   if (!parseOptions(argc, argv))
+   Configuration configuration;
+
+   if (!parseOptions(argc, argv, configuration))
    {
       printUsage();
       exit(EXIT_FAILURE);
    }
 
-   if (!checkEnv())
+   if (!configuration.isValid())
    {
       printUsage();
       exit(EXIT_FAILURE);
    }
 
-   TRC_INFO(0U, "Application started and is about to be daemonized");
+   TRC_INFO(0U, "Deamonization");
    daemonize();
 
    /* Open the log file */
@@ -65,35 +54,23 @@ int main(int argc, char *argv[])
 
    try
    {
-      Dispatcher dispatcher;
-      dispatcher.start();
+      Server server;
+      Connector connector;
 
-      JobExecutor jobExecutor;
-      jobExecutor.start();
+      // initialize
+      server.setConfiguration(configuration);
+      server.setConnector(connector);
 
-      // infinite message loop
-      while (Request request = dispatcher.readRequest())
-      {
-         TRC_INFO(0U, "The new request is received: request='%s'", request.getHeader().toString().c_str());
+      TRC_INFO(0U, "Server is being started...");
 
-         IJobFactory* jobFactory = IJobFactory::createInstance(request.getMethodType());
-
-         IJob*    pJob              = jobFactory->createJob             (request);
-         Callback jobCallback       = jobFactory->createJobCallback     (dispatcher, request.getSessionId());
-         Callback jobErrorCallback  = jobFactory->createJobErrorCallback(dispatcher, request.getSessionId());
-
-         pJob->setOnFinishCallback(jobCallback);
-         pJob->setOnErrorCallback(jobErrorCallback);
-
-         jobExecutor.submitJob(pJob);
-
-         TRC_INFO(0U, "The corresponding job is queued: pJob=0x%x, sessionId=%d", pJob, request.getSessionId());
-      }
+      // blocking call: starts infinite message loop
+      server.start();
    }
 
    catch (const std::exception& e)
    {
-      TRC_ERROR(0U, "Application terminated");
+      TRC_FATAL(0U, "Fatal error occured: '%s'", e.what());
+      TRC_FATAL(0U, "Application terminated!");
    }
 
    TRC_DEINIT();
@@ -103,6 +80,7 @@ int main(int argc, char *argv[])
 
 //---------------------------------------------------------------------------------------
 void daemonize()
+//---------------------------------------------------------------------------------------
 {
    pid_t pid;
 
@@ -143,22 +121,20 @@ void daemonize()
    /* Change the working directory to the root directory */
    /* or another appropriated directory */
    std::string workDir;
-   Config::getValue(Config::CONFIG_WORKING_DIR, workDir);
-////   chdir("/");
+   Configuration::getValue(Configuration::CONFIG_WORKING_DIR, workDir);
    chdir(workDir.c_str());
 
    /* Close all open file descriptors */
-   int x;
-   for (x = sysconf(_SC_OPEN_MAX); x > 0; x--)
+   int fileDescrs;
+   for (fileDescrs = sysconf(_SC_OPEN_MAX); fileDescrs > 0; fileDescrs--)
    {
-      close(x);
+      close(fileDescrs);
    }
-
-   hook_signals();
 }
 
 //---------------------------------------------------------------------------------------
-bool parseOptions(int argc, char *argv[])
+bool parseOptions(int argc, char *argv[], Configuration& configuration)
+//---------------------------------------------------------------------------------------
 {
    bool bResult = true;
    int c;
@@ -170,19 +146,19 @@ bool parseOptions(int argc, char *argv[])
       switch (c)
       {
       case 'p':
-         Config::setValue(Config::CONFIG_PORT, Utils::atoi(optarg));
+         Configuration::setValue(Configuration::CONFIG_PORT, Utils::atoi(optarg));
          break;
 
       case 'd':
-         Config::setValue(Config::CONFIG_WORKING_DIR, std::string(optarg));
+         Configuration::setValue(Configuration::CONFIG_WORKING_DIR, std::string(optarg));
          break;
 
       case 'r':
-         Config::setValue(Config::CONFIG_ROOT_DIR, std::string(optarg));
+         Configuration::setValue(Configuration::CONFIG_ROOT_DIR, std::string(optarg));
          break;
 
       case 't':
-         Config::setValue(Config::CONFIG_MAX_THREAD_NUMBER, Utils::atoi(optarg));
+         Configuration::setValue(Configuration::CONFIG_MAX_THREAD_NUMBER, Utils::atoi(optarg));
          break;
 
       case '?':
@@ -201,6 +177,7 @@ bool parseOptions(int argc, char *argv[])
 
 //---------------------------------------------------------------------------------------
 void printUsage()
+//---------------------------------------------------------------------------------------
 {
    fprintf(stdout,
          "Usage: HttpServer [-p <port>] [-d <work_dir>] [-r <root_dir>] [-t <max_num_of_threads>] \n\
@@ -211,79 +188,4 @@ root_dir           - root directory to start the server in. By default: current 
 max_num_of_threads - maximum number of threads. By default: 4\n\
 \n\
 WARNING: If working directory ('work dir' param) doesn't contain 'templates' folder, the program will terminate! \n");
-}
-
-//---------------------------------------------------------------------------------------
-void hook_signals()
-{
-   struct sigaction sigact;
-   sigset_t sigset;
-   int signo;
-   int status;
-
-   // ������� �� ������� � ��������� ����� ������������ ����� ���������
-   // ��������� ��� ����� �������� ����������� ���������� �� �������
-   sigact.sa_flags = SA_SIGINFO;
-   // ������ ������� ���������� ��������
-   sigact.sa_sigaction = signal_error;
-
-   sigemptyset(&sigact.sa_mask);
-
-   // ��������� ��� ���������� �� �������
-
-   sigaction(SIGFPE, &sigact, 0); // ������ FPU
-   sigaction(SIGILL, &sigact, 0); // ��������� ����������
-   sigaction(SIGSEGV, &sigact, 0); // ������ ������� � ������
-   sigaction(SIGBUS, &sigact, 0); // ������ ����, ��� ��������� � ���������� ������
-   sigaction(SIGQUIT, &sigact, 0); // ������ ����, ��� ��������� � ���������� ������
-   sigaction(SIGINT, &sigact, 0); // ������ ����, ��� ��������� � ���������� ������
-   sigaction(SIGTERM, &sigact, 0); // ������ ����, ��� ��������� � ���������� ������
-}
-
-//---------------------------------------------------------------------------------------
-static void signal_error(int sig, siginfo_t *si, void *ptr)
-{
-//    void* ErrorAddr;
-//    void* Trace[16];
-//    int    x;
-//    int    TraceSize;
-//    char** Messages;
-//
-//    // ddfdf
-//    TRC_DEBUG(0U, ("Signal: %s, Addr: 0x%0.16X"), strsignal(sig), si->si_addr);
-//
-//    #if __WORDSIZE == 64 // ���� ���� ����� � 64 ������ ��
-//        // ������� ����� ���������� ������� ������� ������
-//        ErrorAddr = (void*)((ucontext_t*)ptr)->uc_mcontext.gregs[REG_RIP];
-//    #else
-//        // ������� ����� ���������� ������� ������� ������
-//        ErrorAddr = (void*)((ucontext_t*)ptr)->uc_mcontext.gregs[REG_EIP];
-//    #endif
-//
-//    // ���������� backtrace ����� �������� ���� ���� �������
-//    TraceSize = backtrace(Trace, 16);
-//    Trace[1] = ErrorAddr;
-//
-//    // ������� ����������� ����������
-//    Messages = backtrace_symbols(Trace, TraceSize);
-//    if (Messages)
-//    {
-//        TRC_DEBUG(0U, ("== Backtrace =="), NULL);
-//
-//        // ������� � ���
-//        for (x = 1; x < TraceSize; x++)
-//        {
-//            TRC_DEBUG(0U, ("%s"), Messages[x]);
-//        }
-//
-//        TRC_DEBUG(0U, ("== End Backtrace =="), NULL);
-//        free(Messages);
-//    }
-//
-//    TRC_DEBUG(0U, ("Stopped"), NULL);
-//
-//
-//    // �������� ������� � ����� ��������� �����������
-//    exit(CHILD_NEED_WORK);
-
 }

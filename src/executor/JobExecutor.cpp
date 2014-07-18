@@ -17,7 +17,7 @@ JobExecutor::JobExecutor() :
 //---------------------------------------------------------------------------------------
 {
    unsigned long portNumber;
-   Config::getValue(Config::CONFIG_MAX_THREAD_NUMBER, portNumber);
+   Configuration::getValue(Configuration::CONFIG_MAX_THREAD_NUMBER, portNumber);
    mMaxThreadNum = portNumber;
 }
 
@@ -76,7 +76,7 @@ void JobExecutor::processingLoop()
 
    while (IJob* pJob = mJobQueue.pop())
    {
-      TRC_INFO(0U, "New job started: pJob=0x%x", (pJob));
+      TRC_INFO(0U, "New job started: pJob=0x%p", (pJob));
 
       try
       {

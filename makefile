@@ -12,5 +12,8 @@ include src/subdir.mk
 HttpServer : $(OBJS)
 	$(CC) $(LFLAGS) $(OBJS) -o $(BIN_OUT)
 
+#HttpServer_unittests : $(OBJS)
+#	$(CC) $(LFLAGS) $(OBJS) -o $(BIN_OUT)
+
 clean:
 	rm -rf $(BIN_DIR)/*.o $(BIN_OUT)

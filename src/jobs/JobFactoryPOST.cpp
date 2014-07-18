@@ -42,7 +42,7 @@ IJob* JobFactoryPOST::createJob(const Request& request)
 }
 
 //---------------------------------------------------------------------------------------
-Callback JobFactoryPOST::createJobCallback(const Dispatcher& dispatcher, const int sessionId)
+Callback JobFactoryPOST::createJobCallback(const Connector& dispatcher, const int sessionId)
 //---------------------------------------------------------------------------------------
 {
    return [&] (const std::string& result)
