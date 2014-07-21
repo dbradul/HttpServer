@@ -14,12 +14,15 @@ SRC_DIR = ./src
 OBJ_DIR = ./$(BIN_DIR)/$(SRC_DIR)
 
 # Add inputs and outputs
-CPP_SRCS += \
-$(SRC_DIR)/Main.cpp
+#CPP_SRCS += \
+#$(SRC_DIR)/Main.cpp
 
-OBJS += \
+OBJ_MAIN = \
 $(OBJ_DIR)/Main.o
 
 # Apply rules
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
+#$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
+#	$(CC) $(CFLAGS) -o "$@" "$<"
+
+$(OBJ_DIR)/Main.o: $(SRC_DIR)/Main.cpp
 	$(CC) $(CFLAGS) -o "$@" "$<"

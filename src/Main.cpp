@@ -13,7 +13,6 @@
 #include "common/traceout.h"
 #include "common/Utils.h"
 #include "common/Config.h"
-#include "TestHarness.h"
 
 
 //---------------------------------------------------------------------------------------
@@ -29,11 +28,8 @@ int main(int argc, char *argv[])
 {
    TRC_DEBUG_FUNC_ENTER(0U, "Application started");
 
-////   test::unit::Runner::run(false);
-////   return 0;
-
    Configuration configuration;
-
+                        
    if (!parseOptions(argc, argv, configuration))
    {
       printUsage();

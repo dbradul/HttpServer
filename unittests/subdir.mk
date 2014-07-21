@@ -3,15 +3,24 @@
 # DB, 2014
 ################################################################################
 
-# Add inputs and outputs from these tool invocations to the build variables 
+SRC_DIR_UNITTESTS = ./unittests
+OBJ_DIR_UNITTESTS = ./$(BIN_DIR)/$(SRC_DIR_UNITTESTS)
+
+# Add inputs and outputs 
 CPP_SRCS += \
-./unittests/AllTests.cpp
+$(SRC_DIR_UNITTESTS)/TestSuit.cpp \
+$(SRC_DIR_UNITTESTS)/ServerTest.cpp \
+$(SRC_DIR_UNITTESTS)/FileTest.cpp \
+$(SRC_DIR_UNITTESTS)/TemplaterTest.cpp
 
-OBJS += \
-./Debug/unittests/AllTests.o
+OBJS_UNITTESTS += \
+$(OBJ_DIR_UNITTESTS)/TestSuit.o \
+$(OBJ_DIR_UNITTESTS)/ServerTest.o \
+$(OBJ_DIR_UNITTESTS)/FileTest.o \
+$(OBJ_DIR_UNITTESTS)/TemplaterTest.o
 
-# Each subdirectory must supply rules for building sources it contributes
-Debug/unittests/%.o: ./unittests/%.cpp
-	$(CC) $(CFLAGS) "$<"
+# Apply rule
+$(OBJ_DIR_UNITTESTS)/%.o: $(SRC_DIR_UNITTESTS)/%.cpp
+	$(CC) $(CFLAGS) -o "$@" "$<"
 
 
