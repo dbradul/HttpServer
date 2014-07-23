@@ -10,7 +10,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <common/Utils.h>
-#include <builder/File.h>//TODO: move to common
+
 #include "common/traceout.h"
 #include "builder/Templater.h"
 
@@ -48,29 +48,6 @@ Configuration::~Configuration()
    TRC_DEBUG_FUNC_EXIT (0U);
 }
 
-
-//---------------------------------------------------------------------------------------
-bool checkEnv()
-//---------------------------------------------------------------------------------------
-{
-   bool bResult = true;
-
-   bResult &= File(Templater::TEMPLATE_ROOT_LAYOUT)        .exists();
-   bResult &= File(Templater::TEMPLATE_PAGE_TABLE)         .exists();
-   bResult &= File(Templater::TEMPLATE_PAGE_TABLE_LINE)    .exists();
-   bResult &= File(Templater::TEMPLATE_FILE_CONTENT)       .exists();
-   bResult &= File(Templater::TEMPLATE_FILE_CONTENT_LINE)  .exists();
-
-   return bResult;
-}
-
-//---------------------------------------------------------------------------------------
-bool Configuration::isValid()
-//---------------------------------------------------------------------------------------
-{
-   return checkEnv();
-}
-
 //---------------------------------------------------------------------------------------
 void Configuration::setValue(std::string valueName, std::string value)
 //---------------------------------------------------------------------------------------
@@ -86,44 +63,26 @@ void Configuration::setValue(std::string valueName, unsigned long value)
 }
 
 //---------------------------------------------------------------------------------------
-void Configuration::setValue(std::string valueName, bool value)
+const std::string& Configuration::getValueStr(const std::string& valueName)
 //---------------------------------------------------------------------------------------
 {
-   setValue(valueName, std::string("TRUE"));
-}
+   std::string result = "UNKNOWN";
 
-//TODO: ->getValueStr
-//---------------------------------------------------------------------------------------
-bool Configuration::getValue(std::string valueName, std::string& value)
-//---------------------------------------------------------------------------------------
-{
-   bool result = false;
    auto iter = settings.find(valueName);
 
    if (iter != settings.end())
    {
-      value = iter->second;
-      result = true;
+      result = iter->second;
    }
 
    return result;
 }
 
-//TODO: ->getValueInt
 //---------------------------------------------------------------------------------------
-bool Configuration::getValue(const std::string& valueName, unsigned long& value)
+unsigned long Configuration::getValueInt(const std::string& valueName)
 //---------------------------------------------------------------------------------------
 {
-   std::string valueStr;
-   getValue(valueName, valueStr);
-   value = atoi(valueStr.c_str());
-   return true;
+   std::string valueStr = getValueStr(valueName);
+   return Utils::to_int(valueStr.c_str());
 }
 
-//---------------------------------------------------------------------------------------
-bool Configuration::getValue(std::string valueName, bool& value)
-//---------------------------------------------------------------------------------------
-{
-   value = true;
-   return true;
-}

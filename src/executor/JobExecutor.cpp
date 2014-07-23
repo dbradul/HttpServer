@@ -13,12 +13,10 @@ const int JobExecutor::THREAD_NUM_UPPER_BOUND = 1024;
 
 //---------------------------------------------------------------------------------------
 JobExecutor::JobExecutor() :
-      mbStarted(false)
+      mbStarted(false),
+      mMaxThreadNum(Configuration::getValueInt(Configuration::CONFIG_MAX_THREAD_NUMBER))
 //---------------------------------------------------------------------------------------
 {
-   unsigned long portNumber;
-   Configuration::getValue(Configuration::CONFIG_MAX_THREAD_NUMBER, portNumber);
-   mMaxThreadNum = portNumber;
 }
 
 //---------------------------------------------------------------------------------------
@@ -29,8 +27,6 @@ JobExecutor::~JobExecutor()
    TRC_DEBUG_FUNC_EXIT(0U);
 }
 
-//---------------------------------------------------------------------------------------
-//TODO: beautify comments for functions
 //---------------------------------------------------------------------------------------
 void JobExecutor::start()
 //---------------------------------------------------------------------------------------

@@ -17,15 +17,11 @@ class Configuration
         virtual ~Configuration();
         Configuration();
 
-        bool isValid();
-
         static void setValue(std::string valueName, std::string value);
         static void setValue(std::string valueName, unsigned long value);
-        static void setValue(std::string valueName, bool value);
 
-        static bool getValue(std::string valueName, std::string& value);
-        static bool getValue(const std::string& valueName, unsigned long& value);
-        static bool getValue(std::string valueName, bool& value);
+        static const std::string& getValueStr(const std::string& valueName);
+        static unsigned long getValueInt(const std::string& valueName);
 
         static const std::string CONFIG_MAX_THREAD_NUMBER;
         static const std::string CONFIG_PORT;

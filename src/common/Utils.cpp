@@ -346,7 +346,7 @@ std::string Utils::to_string(unsigned long int_value)
 }
 
 //---------------------------------------------------------------------------------------
-unsigned long Utils::atoi(std::string str_value)
+unsigned long Utils::to_int(std::string str_value)
 {
    return ::atoi(str_value.c_str());
 }

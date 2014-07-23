@@ -13,7 +13,8 @@
 #include "common/traceout.h"
 #include "common/Utils.h"
 #include "common/Config.h"
-
+#include "builder/File.h"//TODO: move to common
+#include "builder/Templater.h"
 
 //---------------------------------------------------------------------------------------
 // FORWARD DECLARATIONS
@@ -21,6 +22,7 @@
 bool parseOptions(int argc, char *argv[], Configuration& configuration);
 void printUsage();
 void daemonize();
+bool checkEnv();
 
 //---------------------------------------------------------------------------------------
 int main(int argc, char *argv[])
@@ -29,14 +31,14 @@ int main(int argc, char *argv[])
    TRC_DEBUG_FUNC_ENTER(0U, "Application started");
 
    Configuration configuration;
-                        
+
    if (!parseOptions(argc, argv, configuration))
    {
       printUsage();
       exit(EXIT_FAILURE);
    }
 
-   if (!configuration.isValid())
+   if (!checkEnv())
    {
       printUsage();
       exit(EXIT_FAILURE);
@@ -54,7 +56,6 @@ int main(int argc, char *argv[])
       Connector connector;
 
       // initialize
-      server.setConfiguration(configuration);
       server.setConnector(connector);
 
       TRC_INFO(0U, "Server is being started...");
@@ -72,6 +73,24 @@ int main(int argc, char *argv[])
    TRC_DEINIT();
 
    return 0;
+}
+
+
+//---------------------------------------------------------------------------------------
+bool checkEnv()
+//---------------------------------------------------------------------------------------
+{
+   bool bResult = true;
+
+   std::string workDir = Configuration::getValueStr(Configuration::CONFIG_WORKING_DIR);
+
+   bResult &= File(workDir + Templater::TEMPLATE_ROOT_LAYOUT)        .exists();
+   bResult &= File(workDir + Templater::TEMPLATE_PAGE_TABLE)         .exists();
+   bResult &= File(workDir + Templater::TEMPLATE_PAGE_TABLE_LINE)    .exists();
+   bResult &= File(workDir + Templater::TEMPLATE_FILE_CONTENT)       .exists();
+   bResult &= File(workDir + Templater::TEMPLATE_FILE_CONTENT_LINE)  .exists();
+
+   return bResult;
 }
 
 //---------------------------------------------------------------------------------------
@@ -116,8 +135,7 @@ void daemonize()
 
    /* Change the working directory to the root directory */
    /* or another appropriated directory */
-   std::string workDir;
-   Configuration::getValue(Configuration::CONFIG_WORKING_DIR, workDir);
+   std::string workDir = Configuration::getValueStr(Configuration::CONFIG_WORKING_DIR);
    chdir(workDir.c_str());
 
    /* Close all open file descriptors */
@@ -142,7 +160,7 @@ bool parseOptions(int argc, char *argv[], Configuration& configuration)
       switch (c)
       {
       case 'p':
-         Configuration::setValue(Configuration::CONFIG_PORT, Utils::atoi(optarg));
+         Configuration::setValue(Configuration::CONFIG_PORT, Utils::to_int(optarg));
          break;
 
       case 'd':
@@ -154,7 +172,7 @@ bool parseOptions(int argc, char *argv[], Configuration& configuration)
          break;
 
       case 't':
-         Configuration::setValue(Configuration::CONFIG_MAX_THREAD_NUMBER, Utils::atoi(optarg));
+         Configuration::setValue(Configuration::CONFIG_MAX_THREAD_NUMBER, Utils::to_int(optarg));
          break;
 
       case '?':
@@ -179,9 +197,8 @@ void printUsage()
          "Usage: HttpServer [-p <port>] [-d <work_dir>] [-r <root_dir>] [-t <max_num_of_threads>] \n\
 \n\
 port               - port number to listen for client connection. By default: 8080\n\
-work_dir           - working server directory. MUST contain 'templates' folder. By default: current dir.\n\
+work_dir           - working server directory. MUST(!) contain 'templates' folder. By default: current dir.\n\
 root_dir           - root directory to start the server in. By default: current dir.\n\
 max_num_of_threads - maximum number of threads. By default: 4\n\
-\n\
-WARNING: If working directory ('work dir' param) doesn't contain 'templates' folder, the program will terminate! \n");
+\n");
 }

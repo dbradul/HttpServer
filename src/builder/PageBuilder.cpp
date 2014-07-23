@@ -81,8 +81,7 @@ std::string PageBuilder::buildPageTable(const std::string& dirPath)
 
    std::vector<File> flist;
 
-   std::string rootDir;
-   Configuration::getValue(Configuration::CONFIG_ROOT_DIR, rootDir);
+   std::string rootDir = Configuration::getValueStr(Configuration::CONFIG_ROOT_DIR);
 
    TRC_INFO(0U, "workingDir='%s'", rootDir.c_str());
 
@@ -132,8 +131,7 @@ std::string PageBuilder::buildFileContent(const std::string& filePath)
    std::string output;
    Templater templater(Templater::TEMPLATE_FILE_CONTENT);
 
-   std::string workingDir;
-   Configuration::getValue(Configuration::CONFIG_ROOT_DIR, workingDir);
+   std::string workingDir = Configuration::getValueStr(Configuration::CONFIG_ROOT_DIR);
 
    if (Utils::readAndCheckIfItIsBinary((workingDir + filePath).c_str(), fileContent))
    {

@@ -20,8 +20,8 @@ File::File()
 
 File::File(const std::string& name)
 : size(0),
-  mIsDir(false),
-  mName(name)
+  mName(name),
+  mIsDir(false)
 {
 }
 
@@ -33,14 +33,5 @@ File::~File()
 
 bool File::exists()
 {
-   std::string workDir;
-   Configuration::getValue(Configuration::CONFIG_WORKING_DIR, workDir);
-
-   bool bResult = false;
-   if(!mName.empty() && access( (workDir + mName).c_str(), F_OK ) != -1)
-   {
-      bResult = true;
-   }
-
-   return bResult;
+   return (!mName.empty() && access( mName.c_str(), F_OK ) != -1);
 }

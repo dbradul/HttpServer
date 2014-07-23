@@ -18,7 +18,6 @@ class Server
       virtual ~Server();
 
       void setConnector(const Connector& connector);
-      void setConfiguration(const Configuration& configuration){};
 
       void start();
 

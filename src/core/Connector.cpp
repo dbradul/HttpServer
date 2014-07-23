@@ -73,8 +73,7 @@ void Connector::connect()
 
       else
       {
-         unsigned long portNumber;
-         Configuration::getValue(Configuration::CONFIG_PORT, portNumber);
+         unsigned long portNumber = Configuration::getValueInt(Configuration::CONFIG_PORT);
 
          // Fill server's settings
          serv_addr.sin_family = AF_INET;
