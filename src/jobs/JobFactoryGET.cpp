@@ -53,7 +53,8 @@ IJob* JobFactoryGET::createJob(const Request& request)
          std::string mPath;
    };
 
-   return new JobDirReader(request.getPath());
+   return new JobDirReader(request.header(Message::PATH));
+   ////return new JobDirReader(request.getPath());
 }
 
 //---------------------------------------------------------------------------------------
@@ -71,7 +72,7 @@ Callback JobFactoryGET::createJobCallback(const Connector& dispatcher, const int
 
         if( !dispatcher.writeResponse(response, sessionId) )
         {
-            TRC_ERROR(0U, "Failed responding");
+            TRC_ERROR(0U, "Failed sending response");
         }
     };
 }

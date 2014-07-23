@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
    }
 
    TRC_INFO(0U, "Deamonization");
-   daemonize();
+   ////daemonize();
 
    /* Open the log file */
    TRC_INIT(LOG_PID, LOG_DAEMON);

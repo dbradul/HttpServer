@@ -14,31 +14,22 @@
 #include <list>
 #include "protocol/Message.h"
 
-typedef std::map<std::string, std::string> tHeader;
+//typedef std::map<std::string, std::string> tHeader;
 
 class Request : public Message
 {
     public:
         Request();
         Request(const std::string& rawMessage);
+        Request(const Message& message);
         virtual ~Request();
 
-        static Request parse(const std::string& rawMessage);
-        bool isValid();
-        void setValid(bool valid);
-        void setSessionId(int sessionId);
         operator bool();
 
-        const std::string& getHost() const;
-        const std::string& getPath() const;
-        const std::string& getMethodType() const;
+        void setSessionId(int sessionId);
         const int getSessionId() const;
 
     private:
-        std::string mMethod;
-        std::string mPath;
-        tHeader     mHeaderFields;
-        bool        mbValid;
         int         mSessionId;
 };
 

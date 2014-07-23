@@ -26,6 +26,7 @@ class Utils
         static void replaceAll(std::string &s, const std::string & search, const std::string & replace);
         static std::string to_string(unsigned long int_value);
         static unsigned long atoi(std::string str_value);
+        static std::string formatString(const std::string fmt_str, ...);
 
     private:
         // TODO: utility class, useful functions container. Replace with namespace?

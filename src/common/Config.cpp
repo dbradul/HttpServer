@@ -22,6 +22,7 @@ const std::string Configuration::CONFIG_PORT               = "SLAVA_UKRAYNI";
 const std::string Configuration::CONFIG_WORKING_DIR        = "HEROYAM_SLAVA";
 const std::string Configuration::CONFIG_ROOT_DIR           = "LALALALALALA";
 
+//---------------------------------------------------------------------------------------
 char workingDir[FILENAME_MAX]={0};
 std::map<std::string, std::string> Configuration::settings =
 {
@@ -31,20 +32,26 @@ std::map<std::string, std::string> Configuration::settings =
    {CONFIG_ROOT_DIR,            std::string(getcwd(workingDir, sizeof(workingDir)))},
 };
 
+//---------------------------------------------------------------------------------------
 Configuration::Configuration()
+//---------------------------------------------------------------------------------------
 {
    TRC_DEBUG_FUNC_ENTER(0U, "");
    TRC_DEBUG_FUNC_EXIT (0U);
 }
 
+//---------------------------------------------------------------------------------------
 Configuration::~Configuration()
+//---------------------------------------------------------------------------------------
 {
    TRC_DEBUG_FUNC_ENTER(0U, "");
    TRC_DEBUG_FUNC_EXIT (0U);
 }
 
 
+//---------------------------------------------------------------------------------------
 bool checkEnv()
+//---------------------------------------------------------------------------------------
 {
    bool bResult = true;
 
@@ -57,28 +64,38 @@ bool checkEnv()
    return bResult;
 }
 
+//---------------------------------------------------------------------------------------
 bool Configuration::isValid()
+//---------------------------------------------------------------------------------------
 {
    return checkEnv();
 }
 
+//---------------------------------------------------------------------------------------
 void Configuration::setValue(std::string valueName, std::string value)
+//---------------------------------------------------------------------------------------
 {
    settings[valueName] = value;
 }
 
+//---------------------------------------------------------------------------------------
 void Configuration::setValue(std::string valueName, unsigned long value)
+//---------------------------------------------------------------------------------------
 {
    setValue(valueName, Utils::to_string(value));
 }
 
+//---------------------------------------------------------------------------------------
 void Configuration::setValue(std::string valueName, bool value)
+//---------------------------------------------------------------------------------------
 {
    setValue(valueName, std::string("TRUE"));
 }
 
 //TODO: ->getValueStr
+//---------------------------------------------------------------------------------------
 bool Configuration::getValue(std::string valueName, std::string& value)
+//---------------------------------------------------------------------------------------
 {
    bool result = false;
    auto iter = settings.find(valueName);
@@ -93,7 +110,9 @@ bool Configuration::getValue(std::string valueName, std::string& value)
 }
 
 //TODO: ->getValueInt
+//---------------------------------------------------------------------------------------
 bool Configuration::getValue(const std::string& valueName, unsigned long& value)
+//---------------------------------------------------------------------------------------
 {
    std::string valueStr;
    getValue(valueName, valueStr);
@@ -101,7 +120,9 @@ bool Configuration::getValue(const std::string& valueName, unsigned long& value)
    return true;
 }
 
+//---------------------------------------------------------------------------------------
 bool Configuration::getValue(std::string valueName, bool& value)
+//---------------------------------------------------------------------------------------
 {
    value = true;
    return true;

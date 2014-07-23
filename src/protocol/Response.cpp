@@ -52,6 +52,3 @@ Response::~Response()
    TRC_DEBUG_FUNC_ENTER(0U, "");
    TRC_DEBUG_FUNC_EXIT(0U);
 }
-
-
-

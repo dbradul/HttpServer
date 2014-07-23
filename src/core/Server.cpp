@@ -11,56 +11,55 @@
 #include "protocol/Request.h"
 #include "common/traceout.h"
 
+//---------------------------------------------------------------------------------------
 Server::Server()
+//---------------------------------------------------------------------------------------
 {
    TRC_DEBUG_FUNC_ENTER(0U, "");
    TRC_DEBUG_FUNC_EXIT(0U);
 }
 
+//---------------------------------------------------------------------------------------
 Server::~Server()
+//---------------------------------------------------------------------------------------
 {
    TRC_DEBUG_FUNC_ENTER(0U, "");
    TRC_DEBUG_FUNC_EXIT(0U);
 }
 
+//---------------------------------------------------------------------------------------
 void Server::setConnector(const Connector& connector)
+//---------------------------------------------------------------------------------------
 {
    mConnector = connector;
 }
 
+//---------------------------------------------------------------------------------------
 void Server::start()
+//---------------------------------------------------------------------------------------
 {
-//   try
-//   {
+   JobExecutor jobExecutor;
+   jobExecutor.start();
 
-      JobExecutor jobExecutor;
-      jobExecutor.start();
+   mConnector.connect();
 
-      mConnector.connect();
+   // read and process requests until connection is closed
+   //TODO: have special signal for the server to restart?
+   while (Request request = mConnector.readRequest())
+   {
+      TRC_INFO(0U, "The new request is received: request='%s'", request.getHeader().toString().c_str());
 
-      // read and process requests until connection is closed
-      //TODO: have special signal for the server to restart?
-      while (Request request = mConnector.readRequest())
-      {
-         TRC_INFO(0U, "The new request is received: request='%s'", request.getHeader().toString().c_str());
+      IJobFactory* jobFactory = IJobFactory::createInstance(request.header(Message::METHOD));
 
-         IJobFactory* jobFactory = IJobFactory::createInstance(request.getMethodType());
+      IJob*    pJob             = jobFactory->createJob             (request);
+      Callback jobCallback      = jobFactory->createJobCallback     (mConnector, request.getSessionId());
+      Callback jobErrorCallback = jobFactory->createJobErrorCallback(mConnector, request.getSessionId());
 
-         IJob*    pJob             = jobFactory->createJob             (request);
-         Callback jobCallback      = jobFactory->createJobCallback     (mConnector, request.getSessionId());
-         Callback jobErrorCallback = jobFactory->createJobErrorCallback(mConnector, request.getSessionId());
+      pJob->setOnFinishCallback(jobCallback);
+      pJob->setOnErrorCallback(jobErrorCallback);
 
-         pJob->setOnFinishCallback(jobCallback);
-         pJob->setOnErrorCallback(jobErrorCallback);
+      jobExecutor.submitJob(pJob);
 
-         jobExecutor.submitJob(pJob);
-
-         TRC_INFO(0U, "The corresponding job is queued: pJob=0x%p, sessionId=%d", pJob, request.getSessionId());
-      }
-//   }
-//
-//   catch (const std::exception& e)
-//   {
-//      TRC_ERROR(0U, "Application terminated");
-//   }
+      TRC_INFO(0U, "The corresponding job is queued: pJob=0x%p, sessionId=%d", pJob, request.getSessionId());
+   }
 }

@@ -26,8 +26,6 @@ class Response : public Message
         static const std::string RESPONSE_FAIL_INTERNAL_SERVER_ERROR;
 
     private:
-
-
 };
 
 #endif /* RESPONSE_H_ */

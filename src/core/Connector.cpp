@@ -23,6 +23,7 @@
 #include "core/Connector.h"
 #include "common/traceout.h"
 #include "common/Config.h"
+#include "protocol/Message.h"
 
 //---------------------------------------------------------------------------------------
 Connector::Connector()
@@ -131,8 +132,7 @@ Request Connector::readRequest()
 {
    Request request;
 
-   struct sockaddr client_addr =
-   { 0 };
+   struct sockaddr client_addr = { 0 };
    socklen_t size = sizeof(client_addr);
    int connDesc = -1;
    mSessionId = -1;
@@ -147,25 +147,25 @@ Request Connector::readRequest()
    {
       TRC_INFO(0U, "Connected: desc=%d", connDesc);
 
-      char buff[1024] = { 0 };
+      char chunk[1024] = { 0 };
 
       // The new descriptor can be simply read from / written up just like a normal file descriptor
       int nbytes = 0;
       std::string message;
 
       // read until message delimiter is found
-      while (!bMessageCompleted && (nbytes = read(connDesc, buff, sizeof(buff) - 1)) > 0)
+      while (!bMessageCompleted && (nbytes = read(connDesc, chunk, sizeof(chunk) - 1)) > 0)
       {
          TRC_INFO(0U, "Received: %d bytes", nbytes);
-         TRC_INFO(0U, "Received data: %s", buff);
+         TRC_INFO(0U, "Received data: %s", chunk);
 
-         message += buff;
-         std::size_t end_idx = message.find("\r\n\r\n");
+         message += chunk;
+         std::size_t end_idx = message.find(Message::HEADER_BODY_DELIMITER);
 
          if (end_idx != std::string::npos)
          {
             message.resize(end_idx + 1);
-            request = Request::parse(message);
+            request = Request(Message::parse(message));
             request.setValid(true);
             request.setSessionId(connDesc);
             bMessageCompleted = true;

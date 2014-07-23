@@ -13,8 +13,10 @@
 #include <queue>
 #include <condition_variable>
 
+//---------------------------------------------------------------------------------------
 template<class T>
 class BlockingQueue
+//---------------------------------------------------------------------------------------
 {
     public:
         BlockingQueue();
@@ -31,29 +33,36 @@ class BlockingQueue
         std::queue<T>           mQueue;
 };
 
+//---------------------------------------------------------------------------------------
 template<class T>
 BlockingQueue<T>::BlockingQueue()
+//---------------------------------------------------------------------------------------
 {
     // TODO Auto-generated constructor stub
 }
 
+//---------------------------------------------------------------------------------------
 template<class T>
 BlockingQueue<T>::~BlockingQueue()
+//---------------------------------------------------------------------------------------
 {
     // TODO Auto-generated destructor stub
 }
 
-
+//---------------------------------------------------------------------------------------
 template<class T>
 void BlockingQueue<T>::push(T elem)
+//---------------------------------------------------------------------------------------
 {
     std::unique_lock<std::mutex> lock(mMutex);
     mQueue.push(elem);
     mCondVar.notify_one();
 }
 
+//---------------------------------------------------------------------------------------
 template<class T>
 T BlockingQueue<T>::pop()
+//---------------------------------------------------------------------------------------
 {
     std::unique_lock<std::mutex> lock(mMutex);
     while(0==mQueue.size())
