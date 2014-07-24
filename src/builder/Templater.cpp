@@ -155,7 +155,7 @@ std::string Templater::lookupTemplate(const std::string& templateName)
 
    if (iter == mTemplateMap.end())
    {
-      std::string workDir = Configuration::getValueStr(Configuration::CONFIG_WORKING_DIR);
+      std::string workDir = Configuration::getInstance().getValueStr(Configuration::CONFIG_WORKING_DIR);
 
       mTemplateMap.insert(
                            {

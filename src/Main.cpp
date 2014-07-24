@@ -21,8 +21,8 @@
 //---------------------------------------------------------------------------------------
 bool parseOptions(int argc, char *argv[], Configuration& configuration);
 void printUsage();
-void daemonize();
-bool checkEnv();
+void daemonize(const Configuration& configuration);
+bool checkEnv(const Configuration& configuration);
 
 //---------------------------------------------------------------------------------------
 int main(int argc, char *argv[])
@@ -30,22 +30,20 @@ int main(int argc, char *argv[])
 {
    TRC_DEBUG_FUNC_ENTER(0U, "Application started");
 
-   Configuration configuration;
-
-   if (!parseOptions(argc, argv, configuration))
+   if (!parseOptions(argc, argv, Configuration::getInstance()))
    {
       printUsage();
       exit(EXIT_FAILURE);
    }
 
-   if (!checkEnv())
+   if (!checkEnv(Configuration::getInstance()))
    {
       printUsage();
       exit(EXIT_FAILURE);
    }
 
    TRC_INFO(0U, "Deamonization");
-   ////daemonize();
+   ////daemonize(configuration);
 
    /* Open the log file */
    TRC_INIT(LOG_PID, LOG_DAEMON);
@@ -77,12 +75,12 @@ int main(int argc, char *argv[])
 
 
 //---------------------------------------------------------------------------------------
-bool checkEnv()
+bool checkEnv(const Configuration& configuration)
 //---------------------------------------------------------------------------------------
 {
    bool bResult = true;
 
-   std::string workDir = Configuration::getValueStr(Configuration::CONFIG_WORKING_DIR);
+   std::string workDir = configuration.getValueStr(Configuration::CONFIG_WORKING_DIR);
 
    bResult &= File(workDir + Templater::TEMPLATE_ROOT_LAYOUT)        .exists();
    bResult &= File(workDir + Templater::TEMPLATE_PAGE_TABLE)         .exists();
@@ -94,7 +92,7 @@ bool checkEnv()
 }
 
 //---------------------------------------------------------------------------------------
-void daemonize()
+void daemonize(const Configuration& configuration)
 //---------------------------------------------------------------------------------------
 {
    pid_t pid;
@@ -135,7 +133,7 @@ void daemonize()
 
    /* Change the working directory to the root directory */
    /* or another appropriated directory */
-   std::string workDir = Configuration::getValueStr(Configuration::CONFIG_WORKING_DIR);
+   std::string workDir = configuration.getValueStr(Configuration::CONFIG_WORKING_DIR);
    chdir(workDir.c_str());
 
    /* Close all open file descriptors */
@@ -160,19 +158,19 @@ bool parseOptions(int argc, char *argv[], Configuration& configuration)
       switch (c)
       {
       case 'p':
-         Configuration::setValue(Configuration::CONFIG_PORT, Utils::to_int(optarg));
+         configuration.setValue(Configuration::CONFIG_PORT, Utils::to_int(optarg));
          break;
 
       case 'd':
-         Configuration::setValue(Configuration::CONFIG_WORKING_DIR, std::string(optarg));
+         configuration.setValue(Configuration::CONFIG_WORKING_DIR, std::string(optarg));
          break;
 
       case 'r':
-         Configuration::setValue(Configuration::CONFIG_ROOT_DIR, std::string(optarg));
+         configuration.setValue(Configuration::CONFIG_ROOT_DIR, std::string(optarg));
          break;
 
       case 't':
-         Configuration::setValue(Configuration::CONFIG_MAX_THREAD_NUMBER, Utils::to_int(optarg));
+         configuration.setValue(Configuration::CONFIG_MAX_THREAD_NUMBER, Utils::to_int(optarg));
          break;
 
       case '?':

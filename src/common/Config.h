@@ -13,23 +13,26 @@
 
 class Configuration
 {
-    public:
-        virtual ~Configuration();
-        Configuration();
+   public:
+      static Configuration& getInstance();
+      virtual ~Configuration();
 
-        static void setValue(std::string valueName, std::string value);
-        static void setValue(std::string valueName, unsigned long value);
+      void setValue(std::string valueName, std::string value);
+      void setValue(std::string valueName, unsigned long value);
 
-        static const std::string& getValueStr(const std::string& valueName);
-        static unsigned long getValueInt(const std::string& valueName);
+      const std::string getValueStr(const std::string& valueName) const;
+      unsigned long getValueInt(const std::string& valueName) const;
 
-        static const std::string CONFIG_MAX_THREAD_NUMBER;
-        static const std::string CONFIG_PORT;
-        static const std::string CONFIG_WORKING_DIR;
-        static const std::string CONFIG_ROOT_DIR;
+      static const std::string CONFIG_MAX_THREAD_NUMBER;
+      static const std::string CONFIG_PORT;
+      static const std::string CONFIG_WORKING_DIR;
+      static const std::string CONFIG_ROOT_DIR;
 
-    private:
-         static std::map<std::string, std::string> settings;
+   private:
+      Configuration();
+      Configuration(const Configuration& rhs);
+      static std::map<std::string, std::string> settings;
+      static Configuration* mpInstance;
 };
 
 #endif /* CONFIG_H_ */

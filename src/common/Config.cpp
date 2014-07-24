@@ -32,6 +32,8 @@ std::map<std::string, std::string> Configuration::settings =
    {CONFIG_ROOT_DIR,            std::string(getcwd(workingDir, sizeof(workingDir)))},
 };
 
+Configuration* Configuration::mpInstance = NULL;
+
 //---------------------------------------------------------------------------------------
 Configuration::Configuration()
 //---------------------------------------------------------------------------------------
@@ -63,7 +65,7 @@ void Configuration::setValue(std::string valueName, unsigned long value)
 }
 
 //---------------------------------------------------------------------------------------
-const std::string& Configuration::getValueStr(const std::string& valueName)
+const std::string Configuration::getValueStr(const std::string& valueName) const
 //---------------------------------------------------------------------------------------
 {
    std::string result = "UNKNOWN";
@@ -79,10 +81,22 @@ const std::string& Configuration::getValueStr(const std::string& valueName)
 }
 
 //---------------------------------------------------------------------------------------
-unsigned long Configuration::getValueInt(const std::string& valueName)
+unsigned long Configuration::getValueInt(const std::string& valueName) const
 //---------------------------------------------------------------------------------------
 {
    std::string valueStr = getValueStr(valueName);
    return Utils::to_int(valueStr.c_str());
 }
 
+//TODO: lets forget about thread-safety for awhile
+//---------------------------------------------------------------------------------------
+Configuration& Configuration::getInstance()
+//---------------------------------------------------------------------------------------
+{
+   if(!mpInstance)
+   {
+      mpInstance = new Configuration();
+   }
+
+   return *mpInstance;
+}
