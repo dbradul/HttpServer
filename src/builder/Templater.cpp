@@ -17,6 +17,7 @@
 
 //---------------------------------------------------------------------------------------
 Templater::Templater()
+//---------------------------------------------------------------------------------------
 {
    TRC_DEBUG_FUNC_ENTER(0U, "");
    TRC_DEBUG_FUNC_EXIT (0U);
@@ -24,16 +25,18 @@ Templater::Templater()
 
 //---------------------------------------------------------------------------------------
 Templater::Templater(const std::string& templateFilepath)
+//---------------------------------------------------------------------------------------
 {
    TRC_DEBUG_FUNC_ENTER(0U, "templateFilepath='%s'", templateFilepath.c_str());
 
-   mTemplate = lookupTemplate(templateFilepath);
+   mTemplateContent = lookupTemplate(templateFilepath);
 
    TRC_DEBUG_FUNC_EXIT (0U);
 }
 
 //---------------------------------------------------------------------------------------
 Templater::~Templater()
+//---------------------------------------------------------------------------------------
 {
    TRC_DEBUG_FUNC_ENTER(0U, "");
    TRC_DEBUG_FUNC_EXIT (0U);
@@ -42,15 +45,16 @@ Templater::~Templater()
 //---------------------------------------------------------------------------------------
 std::map<std::string, std::string> Templater::macroses =
 {
-   {"root",     "NOT DEFINED"},
-   {"filepath", "NOT DEFINED"},
-   {"filename", "NOT DEFINED"},
-   {"perms",    "NOT DEFINED"},
-   {"size",     "NOT DEFINED"},
-   {"time",     "NOT DEFINED"},
-   {"idx",      "NOT DEFINED"},
+//   {"root",     "NOT DEFINED"},
+//   {"filepath", "NOT DEFINED"},
+//   {"filename", "NOT DEFINED"},
+//   {"perms",    "NOT DEFINED"},
+//   {"size",     "NOT DEFINED"},
+//   {"time",     "NOT DEFINED"},
+//   {"idx",      "NOT DEFINED"},
 };
 
+//---------------------------------------------------------------------------------------
 std::map<std::string, std::string> Templater::mTemplateMap =
 {
 //   {TEMPLATE_ROOT_LAYOUT,       ""},
@@ -61,36 +65,56 @@ std::map<std::string, std::string> Templater::mTemplateMap =
 };
 
 //---------------------------------------------------------------------------------------
-// Protocol constants
+// Template pathes constants
 //---------------------------------------------------------------------------------------
-const std::string Templater::TEMPLATE_ROOT_LAYOUT        = "/templates/rootlayout.tmpl";
-const std::string Templater::TEMPLATE_PAGE_TABLE         = "/templates/pagetable.tmpl";
-const std::string Templater::TEMPLATE_PAGE_TABLE_LINE    = "/templates/pagetableline.tmpl";
-const std::string Templater::TEMPLATE_FILE_CONTENT       = "/templates/filecontent.tmpl";
-const std::string Templater::TEMPLATE_FILE_CONTENT_LINE  = "/templates/filecontentline.tmpl";
+const std::string Templater::TEMPLATE_PATH_ROOT_LAYOUT         = "/templates/rootlayout.tmpl";
+const std::string Templater::TEMPLATE_PATH_PAGE_TABLE          = "/templates/pagetable.tmpl";
+const std::string Templater::TEMPLATE_PATH_PAGE_TABLE_LINE     = "/templates/pagetableline.tmpl";
+const std::string Templater::TEMPLATE_PATH_FILE_CONTENT        = "/templates/filecontent.tmpl";
+const std::string Templater::TEMPLATE_PATH_FILE_CONTENT_LINE   = "/templates/filecontentline.tmpl";
+
+//---------------------------------------------------------------------------------------
+// Macros constants
+//---------------------------------------------------------------------------------------
+const std::string Templater::TEMPLATE_MACROS_ROOT              = "root";
+const std::string Templater::TEMPLATE_MACROS_FILEPATH          = "filepath";
+const std::string Templater::TEMPLATE_MACROS_FILENAME          = "filename";
+const std::string Templater::TEMPLATE_MACROS_PERMS             = "perms";
+const std::string Templater::TEMPLATE_MACROS_SIZE              = "size";
+const std::string Templater::TEMPLATE_MACROS_TIME              = "time";
+const std::string Templater::TEMPLATE_MACROS_IDX               = "idx";
+
+const std::string Templater::TEMPLATE_MACROS_CONTENT           = "content";
+const std::string Templater::TEMPLATE_MACROS_FILE_CONTENT      = "file_content";
+const std::string Templater::TEMPLATE_MACROS_LINE_CONTENT      = "line_content";
+const std::string Templater::TEMPLATE_MACROS_TABLE_BODY        = "table_body";
+
 
 //---------------------------------------------------------------------------------------
 const std::string Templater::MACRO_TAG = "##";
 
 //---------------------------------------------------------------------------------------
 void Templater::setMacro(const std::string& macroName, const std::string& macroValue)
+//---------------------------------------------------------------------------------------
 {
    macroses[macroName] = macroValue;
 }
 
 //---------------------------------------------------------------------------------------
 void Templater::setMacro(const std::string& macroName, unsigned long macroValue)
+//---------------------------------------------------------------------------------------
 {
    setMacro(macroName, Utils::to_string(macroValue));
 }
 
 //---------------------------------------------------------------------------------------
 std::string Templater::generate()
+//---------------------------------------------------------------------------------------
 {
    TRC_DEBUG_FUNC_ENTER(0U, "");
 
    std::string result;
-   std::stringstream sstream(mTemplate);
+   std::stringstream sstream(mTemplateContent);
 
    if (sstream)
    {
@@ -126,8 +150,8 @@ std::string Templater::generate()
 }
 
 //---------------------------------------------------------------------------------------
-// regex optimization
 std::string Templater::trimTags(std::string const &token)
+//---------------------------------------------------------------------------------------
 {
    std::string trimmed = token;
    const std::string tag = Templater::MACRO_TAG;
@@ -150,6 +174,7 @@ std::string Templater::trimTags(std::string const &token)
 
 //---------------------------------------------------------------------------------------
 std::string Templater::lookupTemplate(const std::string& templateName)
+//---------------------------------------------------------------------------------------
 {
    auto iter = mTemplateMap.find(templateName);
 
@@ -168,4 +193,15 @@ std::string Templater::lookupTemplate(const std::string& templateName)
    }
 
    return iter->second;
+}
+
+//---------------------------------------------------------------------------------------
+void Templater::load(const std::string& templateFilepath)
+//---------------------------------------------------------------------------------------
+{
+   TRC_DEBUG_FUNC_ENTER(0U, "templateFilepath='%s'", templateFilepath.c_str());
+
+   mTemplateContent = lookupTemplate(templateFilepath);
+
+   TRC_DEBUG_FUNC_EXIT (0U);
 }

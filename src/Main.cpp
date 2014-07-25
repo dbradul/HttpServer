@@ -8,12 +8,12 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
-#include "core/Server.h"
+#include "core/Dispatcher.h"
 #include "core/Connector.h"
 #include "common/traceout.h"
 #include "common/Utils.h"
 #include "common/Config.h"
-#include "builder/File.h"//TODO: move to common
+#include "common/File.h"
 #include "builder/Templater.h"
 
 //---------------------------------------------------------------------------------------
@@ -50,16 +50,16 @@ int main(int argc, char *argv[])
 
    try
    {
-      Server server;
+      Dispatcher dispatcher;
       Connector connector;
 
       // initialize
-      server.setConnector(connector);
+      dispatcher.setConnector(connector);
 
       TRC_INFO(0U, "Server is being started...");
 
       // blocking call: starts infinite message loop
-      server.start();
+      dispatcher.start();
    }
 
    catch (const std::exception& e)
@@ -82,11 +82,11 @@ bool checkEnv(const Configuration& configuration)
 
    std::string workDir = configuration.getValueStr(Configuration::CONFIG_WORKING_DIR);
 
-   bResult &= File(workDir + Templater::TEMPLATE_ROOT_LAYOUT)        .exists();
-   bResult &= File(workDir + Templater::TEMPLATE_PAGE_TABLE)         .exists();
-   bResult &= File(workDir + Templater::TEMPLATE_PAGE_TABLE_LINE)    .exists();
-   bResult &= File(workDir + Templater::TEMPLATE_FILE_CONTENT)       .exists();
-   bResult &= File(workDir + Templater::TEMPLATE_FILE_CONTENT_LINE)  .exists();
+   bResult &= File(workDir + Templater::TEMPLATE_PATH_ROOT_LAYOUT)        .exists();
+   bResult &= File(workDir + Templater::TEMPLATE_PATH_PAGE_TABLE)         .exists();
+   bResult &= File(workDir + Templater::TEMPLATE_PATH_PAGE_TABLE_LINE)    .exists();
+   bResult &= File(workDir + Templater::TEMPLATE_PATH_FILE_CONTENT)       .exists();
+   bResult &= File(workDir + Templater::TEMPLATE_PATH_FILE_CONTENT_LINE)  .exists();
 
    return bResult;
 }

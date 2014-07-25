@@ -54,7 +54,6 @@ IJob* JobFactoryGET::createJob(const Request& request)
    };
 
    return new JobDirReader(request.header(Message::PATH));
-   ////return new JobDirReader(request.getPath());
 }
 
 //---------------------------------------------------------------------------------------

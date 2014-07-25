@@ -24,6 +24,8 @@ class IJobFactory
         virtual IJob* createJob(const Request& request)=0;
         virtual Callback createJobCallback(const Connector& dispatcher, const int sessionId)=0;
         virtual Callback createJobErrorCallback(const Connector& dispatcher, const int sessionId);
+
+
 };
 
 #endif /* JOBFACTORY_H_ */

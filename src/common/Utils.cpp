@@ -12,7 +12,6 @@
 #include <cctype>
 #include <functional>
 
-#include <stdio.h>
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -20,25 +19,18 @@
 #include <errno.h>
 #include <string.h>
 #include <regex>
-#include <fstream>
 #include "bits/unique_ptr.h"
 #include "common/traceout.h"
 #include <exception>
-#include "builder/File.h"
+#include "common/File.h"
+
+#include <stdio.h>
+#include <fstream>
 #include <stdarg.h>
 #include <memory>
 
 using namespace std;
 
-//---------------------------------------------------------------------------------------
-Utils::Utils()
-//---------------------------------------------------------------------------------------
-{}
-
-//---------------------------------------------------------------------------------------
-Utils::~Utils()
-//---------------------------------------------------------------------------------------
-{}
 
 //---------------------------------------------------------------------------------------
 const std::string Utils::getCurrentDateTime()
@@ -127,22 +119,22 @@ const std::string& Url::getQuery() const
 
 //---------------------------------------------------------------------------------------
 // TODO: error handling
-void Utils::readDir(const std::string& root, const std::string& relativePath, std::vector<File>& fileList)
+void Utils::readDir(const std::string& root, const std::string& requestPath, std::vector<File>& fileList)
 {
-   TRC_DEBUG_FUNC_ENTER(0U, "root='%s', relativePath='%s', fileList.size()=%d", root.c_str(), relativePath.c_str(), fileList.size());
+   TRC_DEBUG_FUNC_ENTER(0U, "root='%s', relativePath='%s', fileList.size()=%d", root.c_str(), requestPath.c_str(), fileList.size());
 
    DIR *mydirhandle;
 
    struct dirent *mydirent;
 
-   std::string errMsg = std::string("Dailed to read dir '") + (root + relativePath) + "': ";
+   std::string errMsg = std::string("Failed to read dir '") + (root + requestPath) + "': ";
 
    if (root.c_str() == NULL)
    {
       throw(ios_base::failure(errMsg + "Root is not defined"));
    }
 
-   else if ((mydirhandle = opendir((root + relativePath).c_str())) == NULL)
+   else if ((mydirhandle = opendir((root + requestPath).c_str())) == NULL)
    {
       throw(ios_base::failure(errMsg + strerror(errno)));
    }
@@ -158,34 +150,36 @@ void Utils::readDir(const std::string& root, const std::string& relativePath, st
 
          else
          {
-            struct stat statInfo;
-            std::string fullPath = root + relativePath + mydirent->d_name;
+//            struct stat statInfo;
+//            std::string fullPath = root + relativePath + mydirent->d_name;
+//
+//            if (stat(fullPath.c_str(), &statInfo) == -1)
+//            {
+//               throw(ios_base::failure(errMsg + strerror(errno)));
+//            }
+//
+//            char perms[1 + 3 + 3 + 3];
+//            sprintf( perms,
+//                     "%c%c%c%c%c%c%c%c%c%c",
+//
+//                     S_ISDIR(statInfo.st_mode) ? 'd' : '-',
+//
+//                     statInfo.st_mode && S_IRUSR ? 'r' : '-', statInfo.st_mode && S_IWUSR ? 'w' : '-',
+//                     statInfo.st_mode && S_IXUSR ? 'x' : '-',
+//
+//                     statInfo.st_mode && S_IRGRP ? 'r' : '-', statInfo.st_mode && S_IWGRP ? 'w' : '-',
+//                     statInfo.st_mode && S_IXGRP ? 'x' : '-',
+//
+//                     statInfo.st_mode && S_IROTH ? 'r' : '-', statInfo.st_mode && S_IWOTH ? 'w' : '-',
+//                     statInfo.st_mode && S_IXOTH ? 'x' : '-'
+//                   );
 
-            if (stat(fullPath.c_str(), &statInfo) == -1)
-            {
-               throw(ios_base::failure(errMsg + strerror(errno)));
-            }
-
-            char perms[1 + 3 + 3 + 3];
-            sprintf(perms, "%c%c%c%c%c%c%c%c%c%c",
-
-            S_ISDIR(statInfo.st_mode) ? 'd' : '-',
-
-            statInfo.st_mode && S_IRUSR ? 'r' : '-', statInfo.st_mode && S_IWUSR ? 'w' : '-',
-            statInfo.st_mode && S_IXUSR ? 'x' : '-',
-
-            statInfo.st_mode && S_IRGRP ? 'r' : '-', statInfo.st_mode && S_IWGRP ? 'w' : '-',
-            statInfo.st_mode && S_IXGRP ? 'x' : '-',
-
-            statInfo.st_mode && S_IROTH ? 'r' : '-', statInfo.st_mode && S_IWOTH ? 'w' : '-',
-            statInfo.st_mode && S_IXOTH ? 'x' : '-');
-
-            File file;
-            file.size   = statInfo.st_size;
-            file.mIsDir = (mydirent->d_type == DT_DIR);
+            File file(root + requestPath + mydirent->d_name);
+            ////file.mSize   = statInfo.st_size;
+            file.setDir(mydirent->d_type == DT_DIR);
             file.mName  = mydirent->d_name;
-            file.mRelativeFilePath = relativePath + mydirent->d_name;
-            file.mPermissions = perms;
+            file.mRelativeFilePath = requestPath + mydirent->d_name;
+            ////file.mPermissions = perms;
 
             fileList.push_back(file);
          }
@@ -203,6 +197,7 @@ void Utils::readDir(const std::string& root, const std::string& relativePath, st
 
 //---------------------------------------------------------------------------------------
 std::string Utils::getTextFileContent(const char *filename)
+//---------------------------------------------------------------------------------------
 {
    TRC_DEBUG_FUNC_ENTER(0, "filename='%s'", filename);
 
@@ -240,7 +235,7 @@ bool Utils::readAndCheckIfItIsBinary(const char *filename, std::string& content)
    {
       0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9, 0xB,
       0xC, 0xE, 0xF, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15,
-      0x16, 0x17, 0x18, 0x19, 0x16, 0x16, 0x7F, 0x0
+      0x16, 0x17, 0x18, 0x19, 0x7F, 0x0
    };
 
    std::ifstream in(filename, std::ios::in | std::ios::binary);
@@ -266,7 +261,7 @@ bool Utils::readAndCheckIfItIsBinary(const char *filename, std::string& content)
          in.seekg(readBytes, ios::beg);
          if (!in.read(&buffer[0], bytesToRead))
          {
-            TRC_ERROR(0U, "Failed to read the file '%s': ", filename, strerror(errno));
+            TRC_ERROR(0U, "Failed to read the file '%s': %s", filename, strerror(errno));
             throw(ios_base::failure(std::string("Failed to read the file '") + filename + "': " + strerror(errno)));
          }
 
@@ -309,21 +304,27 @@ std::string Utils::formatString(const std::string fmt_str, ...)
       final_n = vsnprintf(&formatted[0], n, fmt_str.c_str(), ap);
       va_end(ap);
       if (final_n < 0 || final_n >= n)
+      {
          n += abs(final_n - n + 1);
+      }
       else
+      {
          break;
+      }
    }
    return std::string(formatted.get());
 }
 
 //---------------------------------------------------------------------------------------
 bool Utils::endsWith(const std::string &str, const std::string &suffix)
+//---------------------------------------------------------------------------------------
 {
    return str.size() >= suffix.size() && str.compare(str.size() - suffix.size(), suffix.size(), suffix) == 0;
 }
 
 //---------------------------------------------------------------------------------------
 void Utils::replaceAll(std::string &s, const std::string & search, const std::string & replace)
+//---------------------------------------------------------------------------------------
 {
    for (size_t pos = 0;; pos += replace.length())
    {
@@ -339,6 +340,7 @@ void Utils::replaceAll(std::string &s, const std::string & search, const std::st
 
 //---------------------------------------------------------------------------------------
 std::string Utils::to_string(unsigned long int_value)
+//---------------------------------------------------------------------------------------
 {
    char buffer[16];
    sprintf(buffer, "%lu", int_value);
@@ -347,6 +349,7 @@ std::string Utils::to_string(unsigned long int_value)
 
 //---------------------------------------------------------------------------------------
 unsigned long Utils::to_int(std::string str_value)
+//---------------------------------------------------------------------------------------
 {
    return ::atoi(str_value.c_str());
 }
