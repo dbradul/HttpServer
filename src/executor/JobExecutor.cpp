@@ -80,13 +80,13 @@ void JobExecutor::processingLoop()
          std::string result = pJob->execute();
 
          TRC_INFO(0, "The following result is being returned via callback: '%s'", result.c_str());
-         pJob->getOnFinishCallback()(result);
+         pJob->onFinishCallback(result);
       }
 
       catch (const std::exception& e)
       {
          TRC_ERROR(0, "Job execution failed: '%s'", e.what());
-         pJob->getOnErrorCallback()(e.what());
+         pJob->onErrorCallback(e.what());
       }
    }
 

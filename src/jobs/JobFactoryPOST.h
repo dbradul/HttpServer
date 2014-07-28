@@ -10,14 +10,14 @@
 
 #include "jobs/IJobFactory.h"
 
-class JobFactoryPOST : public IJobFactory
+class JobFactoryPOST: public IJobFactory
 {
-    public:
-        JobFactoryPOST();
-        virtual ~JobFactoryPOST();
+   public:
+      JobFactoryPOST();
+      virtual ~JobFactoryPOST();
 
-        virtual IJob* createJob(const Request& request);
-        virtual Callback createJobCallback(const Connector& dispatcher, const int sessionId);
+      virtual IJob* createJob(const Request& request);
+      ////virtual Callback createJobCallback(const Connector& dispatcher, const int sessionId);
 };
 
 #endif /* JOBFACTORYPOST_H_ */

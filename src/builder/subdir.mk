@@ -18,5 +18,3 @@ $(OBJ_DIR_BUILDER)/Templater.o
 # Apply rule
 $(OBJ_DIR_BUILDER)/%.o: $(SRC_DIR_BUILDER)/%.cpp
 	$(CC) $(CFLAGS) -o "$@" "$<"
-
-

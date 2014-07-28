@@ -13,6 +13,7 @@
 #include <vector>
 #include <thread>
 
+//TODO: watchdog thread
 class JobExecutor
 {
     public:

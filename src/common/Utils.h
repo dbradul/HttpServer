@@ -23,37 +23,17 @@ class Utils
         static std::string getTextFileContent(const char *filename);
         static bool readAndCheckIfItIsBinary(const char *filename, std::string& content);
         static bool endsWith(const std::string &str, const std::string &suffix);
+        static bool startsWith(const std::string &str, const std::string &prefix);
         static void replaceAll(std::string &s, const std::string & search, const std::string & replace);
         static std::string to_string(unsigned long int_value);
         static unsigned long to_int(std::string str_value);
         static std::string formatString(const std::string fmt_str, ...);
+        static void readDir(const std::string& requestPath, std::vector<File>& fileList);
 
     private:
         // TODO: utility class, useful functions container. Replace with namespace?
         Utils();
         virtual ~Utils();
-};
-
-
-class Url
-{
-    public:
-        Url(const std::string& url);
-        void parse(const std::string& url);
-
-        const std::string& getProtocol() const;
-        const std::string& getHost() const;
-        const std::string& getPath() const;
-        const std::string& getQuery() const;
-
-    private:
-        std::string mProtocol;
-        std::string mHost;
-        std::string mPath;
-        std::string mQuery;
-
-        Url(const Url& rhs);
-        Url& operator=(const Url& rhs);
 };
 
 #endif /* UTILS_H_ */

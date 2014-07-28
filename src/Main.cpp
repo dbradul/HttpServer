@@ -16,6 +16,8 @@
 #include "common/File.h"
 #include "builder/Templater.h"
 
+#include <TestHarness.h>
+
 //---------------------------------------------------------------------------------------
 // FORWARD DECLARATIONS
 //---------------------------------------------------------------------------------------
@@ -73,7 +75,6 @@ int main(int argc, char *argv[])
    return 0;
 }
 
-
 //---------------------------------------------------------------------------------------
 bool checkEnv(const Configuration& configuration)
 //---------------------------------------------------------------------------------------
@@ -83,8 +84,8 @@ bool checkEnv(const Configuration& configuration)
    std::string workDir = configuration.getValueStr(Configuration::CONFIG_WORKING_DIR);
 
    bResult &= File(workDir + Templater::TEMPLATE_PATH_ROOT_LAYOUT)        .exists();
-   bResult &= File(workDir + Templater::TEMPLATE_PATH_PAGE_TABLE)         .exists();
-   bResult &= File(workDir + Templater::TEMPLATE_PATH_PAGE_TABLE_LINE)    .exists();
+   bResult &= File(workDir + Templater::TEMPLATE_PATH_DIR_CONTENT)         .exists();
+   bResult &= File(workDir + Templater::TEMPLATE_PATH_DIR_CONTENT_LINE)    .exists();
    bResult &= File(workDir + Templater::TEMPLATE_PATH_FILE_CONTENT)       .exists();
    bResult &= File(workDir + Templater::TEMPLATE_PATH_FILE_CONTENT_LINE)  .exists();
 

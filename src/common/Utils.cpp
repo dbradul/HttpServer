@@ -23,6 +23,7 @@
 #include "common/traceout.h"
 #include <exception>
 #include "common/File.h"
+#include "common/Config.h"
 
 #include <stdio.h>
 #include <fstream>
@@ -41,8 +42,6 @@ const std::string Utils::getCurrentDateTime()
    struct tm tstruct;
    char buf[80];
    tstruct = *localtime(&now);
-   // Visit http://en.cppreference.com/w/cpp/chrono/c/strftime
-   // for more information about date/time format
    strftime(buf, sizeof(buf), "%Y-%m-%d.%X", &tstruct);
 
    return buf;
@@ -62,79 +61,29 @@ void Utils::split(std::vector<std::string> &tokens, const std::string &text, con
 }
 
 //---------------------------------------------------------------------------------------
-Url::Url(const string& url_s)
-//---------------------------------------------------------------------------------------
-{
-   parse(url_s);
-}
-
-//---------------------------------------------------------------------------------------
-void Url::parse(const string& url)
-//---------------------------------------------------------------------------------------
-{
-//    const std::string prot_end("://");
-//    std::string::const_iterator protIdx = std::search(url.begin(), url.end(), prot_end.begin(), prot_end.end());
-//    mProtocol.reserve(distance(url.begin(), protIdx));
-//    if (protIdx != url.end())
-//    {
-//        std::transform(url.begin(), protIdx, std::back_inserter(mProtocol), std::ptr_fun<int, int>(tolower)); // protocol is icase
-//        std::advance(protIdx, prot_end.length());
-//    }
-//    else
-//    {
-//        protIdx = url.begin();
-//    }
-//
-//    std::string::const_iterator path_i = std::find(protIdx, url.end(), '/');
-//    mHost.reserve(distance(protIdx, path_i));
-//    std::transform(protIdx, path_i, std::back_inserter(mHost), std::ptr_fun<int, int>(tolower)); // host is icase
-//    std::string::const_iterator query_i = find(path_i, url.end(), '?');
-//    mPath.assign(path_i, query_i);
-//    if (query_i != url.end())
-//    {
-//        ++query_i;
-//    }
-//    mQuery.assign(query_i, url.end());
-}
-
-const std::string& Url::getProtocol() const
-{
-   return mProtocol;
-}
-
-const std::string& Url::getHost() const
-{
-   return mHost;
-}
-
-const std::string& Url::getPath() const
-{
-   return mPath;
-}
-
-const std::string& Url::getQuery() const
-{
-   return mQuery;
-}
-
-//---------------------------------------------------------------------------------------
-// TODO: error handling
 void Utils::readDir(const std::string& root, const std::string& requestPath, std::vector<File>& fileList)
+//---------------------------------------------------------------------------------------
 {
    TRC_DEBUG_FUNC_ENTER(0U, "root='%s', relativePath='%s', fileList.size()=%d", root.c_str(), requestPath.c_str(), fileList.size());
+
+   readDir(root+requestPath, fileList);
+
+   TRC_DEBUG_FUNC_EXIT(0U);
+}
+
+//---------------------------------------------------------------------------------------
+void Utils::readDir(const std::string& requestPath, std::vector<File>& fileList)
+//---------------------------------------------------------------------------------------
+{
+   TRC_DEBUG_FUNC_ENTER(0U, "relativePath='%s', fileList.size()=%d", requestPath.c_str(), fileList.size());
 
    DIR *mydirhandle;
 
    struct dirent *mydirent;
 
-   std::string errMsg = std::string("Failed to read dir '") + (root + requestPath) + "': ";
+   std::string errMsg = std::string("Failed to read dir '") + requestPath + "': ";
 
-   if (root.c_str() == NULL)
-   {
-      throw(ios_base::failure(errMsg + "Root is not defined"));
-   }
-
-   else if ((mydirhandle = opendir((root + requestPath).c_str())) == NULL)
+   if ((mydirhandle = opendir(requestPath.c_str())) == NULL)
    {
       throw(ios_base::failure(errMsg + strerror(errno)));
    }
@@ -150,36 +99,15 @@ void Utils::readDir(const std::string& root, const std::string& requestPath, std
 
          else
          {
-//            struct stat statInfo;
-//            std::string fullPath = root + relativePath + mydirent->d_name;
-//
-//            if (stat(fullPath.c_str(), &statInfo) == -1)
-//            {
-//               throw(ios_base::failure(errMsg + strerror(errno)));
-//            }
-//
-//            char perms[1 + 3 + 3 + 3];
-//            sprintf( perms,
-//                     "%c%c%c%c%c%c%c%c%c%c",
-//
-//                     S_ISDIR(statInfo.st_mode) ? 'd' : '-',
-//
-//                     statInfo.st_mode && S_IRUSR ? 'r' : '-', statInfo.st_mode && S_IWUSR ? 'w' : '-',
-//                     statInfo.st_mode && S_IXUSR ? 'x' : '-',
-//
-//                     statInfo.st_mode && S_IRGRP ? 'r' : '-', statInfo.st_mode && S_IWGRP ? 'w' : '-',
-//                     statInfo.st_mode && S_IXGRP ? 'x' : '-',
-//
-//                     statInfo.st_mode && S_IROTH ? 'r' : '-', statInfo.st_mode && S_IWOTH ? 'w' : '-',
-//                     statInfo.st_mode && S_IXOTH ? 'x' : '-'
-//                   );
+            File file(requestPath + mydirent->d_name);
 
-            File file(root + requestPath + mydirent->d_name);
-            ////file.mSize   = statInfo.st_size;
+            std::string rootDir = Configuration::getInstance().getValueStr(Configuration::CONFIG_ROOT_DIR);
+            std::string requestPathWithoutBase = requestPath;
+            requestPathWithoutBase = requestPathWithoutBase.replace(requestPath.find(rootDir), rootDir.length(), "");
+
+            file.mReferenceFilePath = requestPathWithoutBase + mydirent->d_name;
             file.setDir(mydirent->d_type == DT_DIR);
             file.mName  = mydirent->d_name;
-            file.mRelativeFilePath = requestPath + mydirent->d_name;
-            ////file.mPermissions = perms;
 
             fileList.push_back(file);
          }
@@ -202,8 +130,6 @@ std::string Utils::getTextFileContent(const char *filename)
    TRC_DEBUG_FUNC_ENTER(0, "filename='%s'", filename);
 
    std::string contents;
-//   char workingDir[FILENAME_MAX];
-//   TRC_INFO(0, "working dir='%s'", std::string(getcwd(workingDir, sizeof(workingDir))).c_str());
 
    std::ifstream in(filename, std::ios::in | std::ios::binary);
 
@@ -265,6 +191,9 @@ bool Utils::readAndCheckIfItIsBinary(const char *filename, std::string& content)
             throw(ios_base::failure(std::string("Failed to read the file '") + filename + "': " + strerror(errno)));
          }
 
+
+         //TODO: replace with std::find();
+
          int cntr = 0;
          while (cntr < bytesToRead)
          {
@@ -319,7 +248,16 @@ std::string Utils::formatString(const std::string fmt_str, ...)
 bool Utils::endsWith(const std::string &str, const std::string &suffix)
 //---------------------------------------------------------------------------------------
 {
-   return str.size() >= suffix.size() && str.compare(str.size() - suffix.size(), suffix.size(), suffix) == 0;
+   return ( str.size() >= suffix.size() &&
+            str.compare(str.size() - suffix.size(), suffix.size(), suffix) == 0 );
+}
+
+//---------------------------------------------------------------------------------------
+bool Utils::startsWith(const std::string &str, const std::string &prefix)
+//---------------------------------------------------------------------------------------
+{
+   return ( str.size() >= prefix.size() &&
+            str.compare(0, prefix.size(), prefix) == 0 );
 }
 
 //---------------------------------------------------------------------------------------
@@ -331,7 +269,9 @@ void Utils::replaceAll(std::string &s, const std::string & search, const std::st
       // Locate the substring to replace
       pos = s.find(search, pos);
       if (pos == string::npos)
+      {
          break;
+      }
       // Replace by erasing and inserting
       s.erase(pos, search.length());
       s.insert(pos, replace);

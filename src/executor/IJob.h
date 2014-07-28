@@ -26,9 +26,8 @@ class IJob
         const Callback& getOnFinishCallback() const;
         const Callback& getOnErrorCallback() const;
 
-    private:
-        Callback mCallback;
-        Callback mErrCallback;
+        Callback onFinishCallback;
+        Callback onErrorCallback;
 };
 
 #endif /* IJOB_H_ */

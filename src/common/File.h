@@ -18,7 +18,7 @@ class File
       ~File();
 
       std::string mName;
-      std::string mRelativeFilePath;
+      std::string mReferenceFilePath;
       std::string mFilePath;
 
       bool exists();

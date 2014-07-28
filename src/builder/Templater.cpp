@@ -68,8 +68,8 @@ std::map<std::string, std::string> Templater::mTemplateMap =
 // Template pathes constants
 //---------------------------------------------------------------------------------------
 const std::string Templater::TEMPLATE_PATH_ROOT_LAYOUT         = "/templates/rootlayout.tmpl";
-const std::string Templater::TEMPLATE_PATH_PAGE_TABLE          = "/templates/pagetable.tmpl";
-const std::string Templater::TEMPLATE_PATH_PAGE_TABLE_LINE     = "/templates/pagetableline.tmpl";
+const std::string Templater::TEMPLATE_PATH_DIR_CONTENT          = "/templates/pagetable.tmpl";
+const std::string Templater::TEMPLATE_PATH_DIR_CONTENT_LINE     = "/templates/pagetableline.tmpl";
 const std::string Templater::TEMPLATE_PATH_FILE_CONTENT        = "/templates/filecontent.tmpl";
 const std::string Templater::TEMPLATE_PATH_FILE_CONTENT_LINE   = "/templates/filecontentline.tmpl";
 

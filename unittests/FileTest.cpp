@@ -1,5 +1,5 @@
 #include <TestHarness.h>
-#include <builder/File.h>
+#include <common/File.h>
 
 /////////////////////////////////////////////////////////////////////////////
 TEST(File, simple_test)
@@ -15,9 +15,9 @@ TEST(File, simple_test)
    file_b.mName = "bbb";
 
    dir_a.mName  = "ccc";
-   dir_a.mIsDir = true;
+   dir_a.setDir(true);
    dir_b.mName  = "ddd";
-   dir_b.mIsDir = true;
+   dir_b.setDir(true);
 
    // Act
    // Assert

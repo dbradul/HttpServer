@@ -28,26 +28,26 @@ IJob::~IJob()
 void IJob::setOnFinishCallback(const Callback& callback)
 //---------------------------------------------------------------------------------------
 {
-   mCallback = callback;
+   onFinishCallback = callback;
 }
 
 //---------------------------------------------------------------------------------------
 void IJob::setOnErrorCallback(const Callback& callback)
 //---------------------------------------------------------------------------------------
 {
-   mErrCallback = callback;
+   onErrorCallback = callback;
 }
 
 //---------------------------------------------------------------------------------------
 const Callback& IJob::getOnFinishCallback() const
 //---------------------------------------------------------------------------------------
 {
-   return mCallback;
+   return onFinishCallback;
 }
 
 //---------------------------------------------------------------------------------------
 const Callback& IJob::getOnErrorCallback() const
 //---------------------------------------------------------------------------------------
 {
-   return mErrCallback;
+   return onErrorCallback;
 }

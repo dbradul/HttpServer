@@ -76,3 +76,22 @@ Callback IJobFactory::createJobErrorCallback(const Connector& dispatcher, const 
    };
 }
 
+//---------------------------------------------------------------------------------------
+Callback IJobFactory::createJobCallback(const Connector& dispatcher, const int sessionId)
+//---------------------------------------------------------------------------------------
+{
+   return [&dispatcher, sessionId] (const std::string& result)
+   {
+      Response response;
+      response.setHeader (Response::RESPONSE_OK);
+      response.setBody (result);
+
+      TRC_INFO(0, "Response constructed: %s", response.getHeader().toString().c_str());
+      TRC_INFO(0, "Sending the response back to caller");
+
+      if( !dispatcher.writeResponse(response, sessionId) )
+      {
+         TRC_ERROR(0U, "Failed sending response");
+      }
+   };
+}

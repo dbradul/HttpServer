@@ -1,7 +1,7 @@
 /*******************************************************************
  * JobFactoryGET.cpp
  *
- *  @date: 12 ����. 2014
+ *  @date: 12-7-2014
  *  @author: DB
  ******************************************************************/
 
@@ -9,7 +9,7 @@
 #include "executor/IJob.h"
 #include "common/traceout.h"
 #include "common/Utils.h"
-#include "builder/Templater.h"
+#include "common/Config.h"
 #include "builder/PageBuilder.h"
 #include <algorithm>
 
@@ -33,18 +33,21 @@ JobFactoryGET::~JobFactoryGET()
 IJob* JobFactoryGET::createJob(const Request& request)
 //---------------------------------------------------------------------------------------
 {
-   class JobDirReader: public IJob
+   class JobRequestGET: public IJob
    {
       public:
          std::string execute()
          {
-            TRC_INFO(0, "Building root layout for the path: %s", mPath.c_str());
+            TRC_INFO(0, "GET request for the path: %s", mPath.c_str());
 
             PageBuilder builder;
-            return builder.buildRootLayout(mPath);
+
+            std::string rootDir = Configuration::getInstance().getValueStr(Configuration::CONFIG_ROOT_DIR);
+
+            return builder.build(rootDir + mPath);
          }
 
-         JobDirReader(const std::string& path)
+         JobRequestGET(const std::string& path)
          {
             mPath = path;
          }
@@ -53,25 +56,6 @@ IJob* JobFactoryGET::createJob(const Request& request)
          std::string mPath;
    };
 
-   return new JobDirReader(request.header(Message::PATH));
+   return new JobRequestGET(request.header(Message::PATH));
 }
 
-//---------------------------------------------------------------------------------------
-Callback JobFactoryGET::createJobCallback(const Connector& dispatcher, const int sessionId)
-//---------------------------------------------------------------------------------------
-{
-    return [&dispatcher, sessionId] (const std::string& result)
-    {
-        Response response;
-        response.setHeader  (Response::RESPONSE_OK);
-        response.setBody    (result);
-
-        TRC_INFO(0, "Response constructed: %s", response.getHeader().toString().c_str());
-        TRC_INFO(0, "Sending the response back to caller");
-
-        if( !dispatcher.writeResponse(response, sessionId) )
-        {
-            TRC_ERROR(0U, "Failed sending response");
-        }
-    };
-}

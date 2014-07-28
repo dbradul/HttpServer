@@ -15,16 +15,6 @@
 class Templater
 {
    public:
-
-      Templater();
-      Templater(const std::string& templateFilepath);
-      ~Templater();
-
-      void load(const std::string& templateFilepath);
-      void setMacro(const std::string& macroName, const std::string& macroValue);
-      void setMacro(const std::string& macroName, unsigned long macroValue);
-      std::string generate();
-
       static const std::string TEMPLATE_MACROS_ROOT;
       static const std::string TEMPLATE_MACROS_FILEPATH;
       static const std::string TEMPLATE_MACROS_FILENAME;
@@ -38,19 +28,28 @@ class Templater
       static const std::string TEMPLATE_MACROS_TABLE_BODY;
 
       static const std::string TEMPLATE_PATH_ROOT_LAYOUT;
-      static const std::string TEMPLATE_PATH_PAGE_TABLE;
-      static const std::string TEMPLATE_PATH_PAGE_TABLE_LINE;
+      static const std::string TEMPLATE_PATH_DIR_CONTENT;
+      static const std::string TEMPLATE_PATH_DIR_CONTENT_LINE;
       static const std::string TEMPLATE_PATH_FILE_CONTENT;
       static const std::string TEMPLATE_PATH_FILE_CONTENT_LINE;
 
-   private:
-      std::string trimTags(std::string const &token);
+      Templater();
+      Templater(const std::string& templateFilepath);
+      ~Templater();
 
+      void load(const std::string& templateFilepath);
+      void setMacro(const std::string& macroName, const std::string& macroValue);
+      void setMacro(const std::string& macroName, unsigned long macroValue);
+      std::string generate();
+
+   private:
       static std::map<std::string, std::string> mTemplateMap;
-      std::string lookupTemplate(const std::string& templateName);
       static std::map<std::string, std::string> macroses;
       static const std::string MACRO_TAG;
       std::string mTemplateContent;
+
+      std::string trimTags(std::string const &token);
+      std::string lookupTemplate(const std::string& templateName);
 };
 
 #endif /* TEMPLATER_H_ */

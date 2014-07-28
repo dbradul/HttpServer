@@ -1,30 +1,22 @@
 /*******************************************************************
- * PageBuilder.h
+ * PageBuilder2.h
  *
- *  @date: 4-7-2014
+ *  @date: 28-7-2014
  *  @author: DB
  ******************************************************************/
 
-#ifndef PAGEBUILDER_H_
-#define PAGEBUILDER_H_
+#ifndef PAGEBUILDER2_H_
+#define PAGEBUILDER2_H_
 
 #include <string>
-#include <map>
-#include "common/File.h"
 
 class PageBuilder
 {
-    public:
-        PageBuilder();
-        ~PageBuilder();
+   public:
+      PageBuilder();
+      virtual ~PageBuilder();
 
-        std::string buildRootLayout       (const std::string& path);
-
-    private:
-        std::string buildPageTable        (const std::string& dirPath);
-        std::string buildPageTableLine    (const File& file);
-        std::string buildFileContent      (const std::string& filePath);
-        std::string buildFileContentLine  (const std::string& contentLine, int idx);
+      std::string build(std::string URL);
 };
 
-#endif /* PAGEBUILDER_H_ */
+#endif /* PAGEBUILDER2_H_ */

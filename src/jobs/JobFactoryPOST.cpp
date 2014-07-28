@@ -34,35 +34,10 @@ IJob* JobFactoryPOST::createJob(const Request& request)
       public:
          std::string execute()
          {
-            return "";
+            throw(std::logic_error(std::string("Not implemented")));;
          }
    };
 
    return new JobNOP;
 }
 
-//---------------------------------------------------------------------------------------
-Callback JobFactoryPOST::createJobCallback(const Connector& dispatcher, const int sessionId)
-//---------------------------------------------------------------------------------------
-{
-   return [&] (const std::string& result)
-   {
-      Response response;
-      response.setHeader (Response::RESPONSE_FAIL_BAD_REQUEST);
-
-      //TODO: error template??
-      response.setBody (
-                           "<html>\n\
-                               <body>\n\
-                                  <h1>Bad Request</h1>\n\
-                                  <p>This server did not understand your request.</p>\n\
-                               </body>\n\
-                            </html>\n"
-                       );
-
-      if( !dispatcher.writeResponse(response, sessionId) )
-      {
-         TRC_ERROR(0U, "Failed responding");
-      }
-   };
-}
