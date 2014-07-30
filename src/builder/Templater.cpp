@@ -68,8 +68,8 @@ std::map<std::string, std::string> Templater::mTemplateMap =
 // Template pathes constants
 //---------------------------------------------------------------------------------------
 const std::string Templater::TEMPLATE_PATH_ROOT_LAYOUT         = "/templates/rootlayout.tmpl";
-const std::string Templater::TEMPLATE_PATH_DIR_CONTENT          = "/templates/pagetable.tmpl";
-const std::string Templater::TEMPLATE_PATH_DIR_CONTENT_LINE     = "/templates/pagetableline.tmpl";
+const std::string Templater::TEMPLATE_PATH_DIR_CONTENT         = "/templates/dircontent.tmpl";
+const std::string Templater::TEMPLATE_PATH_DIR_CONTENT_LINE    = "/templates/dircontentline.tmpl";
 const std::string Templater::TEMPLATE_PATH_FILE_CONTENT        = "/templates/filecontent.tmpl";
 const std::string Templater::TEMPLATE_PATH_FILE_CONTENT_LINE   = "/templates/filecontentline.tmpl";
 
@@ -85,10 +85,6 @@ const std::string Templater::TEMPLATE_MACROS_TIME              = "time";
 const std::string Templater::TEMPLATE_MACROS_IDX               = "idx";
 
 const std::string Templater::TEMPLATE_MACROS_CONTENT           = "content";
-const std::string Templater::TEMPLATE_MACROS_FILE_CONTENT      = "file_content";
-const std::string Templater::TEMPLATE_MACROS_LINE_CONTENT      = "line_content";
-const std::string Templater::TEMPLATE_MACROS_TABLE_BODY        = "table_body";
-
 
 //---------------------------------------------------------------------------------------
 const std::string Templater::MACRO_TAG = "##";

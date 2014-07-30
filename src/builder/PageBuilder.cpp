@@ -213,7 +213,7 @@ PageBuilder::~PageBuilder()
 }
 
 //---------------------------------------------------------------------------------------
-std::string PageBuilder::build(std::string URL)
+std::string PageBuilder::build(const std::string& URL)
 //---------------------------------------------------------------------------------------
 {
    ContentReader reader;
