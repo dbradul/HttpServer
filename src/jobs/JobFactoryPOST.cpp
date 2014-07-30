@@ -8,6 +8,7 @@
 #include <jobs/JobFactoryPOST.h>
 #include <common/traceout.h>
 #include <common/Utils.h>
+#include <stdexcept>
 
 //---------------------------------------------------------------------------------------
 JobFactoryPOST::JobFactoryPOST()

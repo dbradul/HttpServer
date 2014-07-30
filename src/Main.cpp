@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
    }
 
    TRC_INFO(0U, "Deamonization");
-   ////daemonize(configuration);
+   daemonize(Configuration::getInstance());
 
    /* Open the log file */
    TRC_INIT(LOG_PID, LOG_DAEMON);
