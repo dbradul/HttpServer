@@ -6,23 +6,25 @@
  ******************************************************************/
 
 #include "protocol/Message.h"
+#include "protocol/Request.h"
+#include "protocol/Response.h"
 #include "common/traceout.h"
 
 #include <vector>
 #include "common/Utils.h"
 
+#include "stdio.h"
+
 //----------------------------------------------------------------------
 // Protocol constants
 //---------------------------------------------------------------------------------------
 const std::string Message::HEADER_BODY_DELIMITER                = "\r\n\r\n";
-const std::string Message::HEADER_FIRST_FIELD_ENTRIES_DELIMITER = " ";
 const std::string Message::HEADER_FIELD_DELIMITER               = "\r\n";
 const std::string Message::HEADER_FIELD_NAME_DELIMITER          = ": ";
 
 const std::string Message::HOST     = "Host";
 const std::string Message::PATH     = "Path";
 const std::string Message::METHOD   = "Method";
-const std::string Message::CLIENT   = "Client";
 
 //---------------------------------------------------------------------------------------
 Message::Message()
@@ -30,6 +32,16 @@ Message::Message()
 //---------------------------------------------------------------------------------------
 {
    TRC_DEBUG_FUNC_ENTER(0U, "");
+   TRC_DEBUG_FUNC_EXIT(0U);
+}
+
+//---------------------------------------------------------------------------------------
+Message::Message(const std::string& preamble)
+   : mbValid(false)
+//---------------------------------------------------------------------------------------
+{
+   TRC_DEBUG_FUNC_ENTER(0U, "");
+   mHeader = Header(preamble);
    TRC_DEBUG_FUNC_EXIT(0U);
 }
 
@@ -63,18 +75,17 @@ const std::string& Message::header(const std::string& headerFieldName) const
 }
 
 //---------------------------------------------------------------------------------------
-std::string Message::toString() const
+std::string& Message::header(const std::string& headerFieldName)
 //---------------------------------------------------------------------------------------
 {
-   if (0 == mRawMessage.size())
-   {
-      mRawMessage = Utils::formatString(  mHeader.toString()+"%s%s",
-                                          mBody.length(),
-                                          HEADER_FIELD_DELIMITER.c_str(),
-                                          mBody.c_str() );
-   }
+   return mHeader[headerFieldName];
+}
 
-   return mRawMessage;
+//---------------------------------------------------------------------------------------
+Message::Header& Message::header()
+//---------------------------------------------------------------------------------------
+{
+   return mHeader;
 }
 
 //---------------------------------------------------------------------------------------
@@ -86,67 +97,69 @@ void Message::setBody(const std::string& body)
 }
 
 //---------------------------------------------------------------------------------------
-void Message::setHeader(const std::string& header)
-//---------------------------------------------------------------------------------------
-{
-    mHeader = Header(header);
-    mRawMessage.resize(0);
-}
-
-//---------------------------------------------------------------------------------------
 const std::string& Message::getBody() const
 //---------------------------------------------------------------------------------------
 {
    return mBody;
 }
 
-//TODO FSM?
+//TODO Regex
 //---------------------------------------------------------------------------------------
-Message Message::parse(const std::string& rawMessage)
+////std::shared_ptr<Message> Message::parse(const std::string& rawMessage)
+Message* Message::parse(const std::string& rawMessage)
 //---------------------------------------------------------------------------------------
 {
-   Message result;
+   char _1st  [256] = {0};
+   char _2nd  [256] = {0};
+   char _3rd  [256] = {0};
+
+   if ( sscanf( rawMessage.c_str(), "%[^ ] %[^ ] %[^ ]", _1st, _2nd, _3rd ) != 3 )
+   {
+      //ERRORLOG
+      //  send_error( 400, "Bad Request", (char*) 0, "Can't parse request." );
+   }
+
+   Message* message = NULL;
+
+   if(Utils::startsWith(_1st, "HTTP/"))
+   {
+////      message = std::shared_ptr<Request>(new Request());
+      message = new Response();
+   }
+   else
+   {
+      message = new Request();
+   }
+
+   message->header(METHOD)=_1st;
+   message->header(PATH)=_2nd;
 
    std::vector<std::string> headerBody;
    std::vector<std::string> headerEntries;
-   std::vector<std::string> header1stFieldEntries;
 
    Utils::split(headerBody, rawMessage, HEADER_BODY_DELIMITER);
 
-   result.setHeader(headerBody[0]);
-
    if (headerBody.size() > 1)
    {
-      result.setBody(headerBody[1]);
+      message->setBody(headerBody[1]);
    }
 
    //error checking (parsing)
-   Utils::split(headerEntries, result.getHeader().toString(), HEADER_FIELD_DELIMITER);
+   Utils::split(headerEntries, headerBody[0], HEADER_FIELD_DELIMITER);
 
-   // 1st field is method name
-   std::string _1stHeaderField = headerEntries[0];
-
-   //error checking (parsing)
-   Utils::split(header1stFieldEntries, _1stHeaderField, HEADER_FIRST_FIELD_ENTRIES_DELIMITER);
-
-   result.mHeader[METHOD]   = header1stFieldEntries[0];
-   result.mHeader[PATH]     = header1stFieldEntries[1];
-
-   // the rest are header fields
-   ////for(std::string entry : headerEntries)
    for (size_t i = 1; i < headerEntries.size(); ++i)
    {
       std::vector<std::string> headerEntryFields;
       Utils::split(headerEntryFields, headerEntries[i], HEADER_FIELD_NAME_DELIMITER);
 
-      result.mHeader[headerEntryFields[0]] = headerEntryFields[1];
+      message->header(headerEntryFields[0]) = headerEntryFields[1];
    }
 
-   result.mbValid = true;
-   result.mRawMessage = rawMessage;
+   message->mbValid = true;
+   message->mRawMessage = rawMessage;
 
    // check out passing the reference
-   return result;
+   return message;
 }
 
 //---------------------------------------------------------------------------------------

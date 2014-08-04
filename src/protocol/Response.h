@@ -18,12 +18,29 @@ class Response : public Message
 {
     public:
         Response();
+        Response(const std::string& preamble);
         virtual ~Response();
 
-        static const std::string RESPONSE_OK;
-        static const std::string RESPONSE_FAIL_BAD_REQUEST;
-        static const std::string RESPONSE_FAIL_NOT_FOUND;
-        static const std::string RESPONSE_FAIL_INTERNAL_SERVER_ERROR;
+        static const std::string RESPONSE_HEADER_TEMPLATE;
+
+        static const std::string RESPONSE_ok;
+        static const std::string RESPONSE_created;
+        static const std::string RESPONSE_accepted;
+        static const std::string RESPONSE_no_content;
+        static const std::string RESPONSE_multiple_choices;
+        static const std::string RESPONSE_moved_permanently;
+        static const std::string RESPONSE_moved_temporarily;
+        static const std::string RESPONSE_not_modified;
+        static const std::string RESPONSE_bad_request;
+        static const std::string RESPONSE_unauthorized;
+        static const std::string RESPONSE_forbidden;
+        static const std::string RESPONSE_not_found;
+        static const std::string RESPONSE_internal_server_error;
+        static const std::string RESPONSE_not_implemented;
+        static const std::string RESPONSE_bad_gateway;
+        static const std::string RESPONSE_service_unavailable;
+
+        std::string toString() const;
 
     private:
 };

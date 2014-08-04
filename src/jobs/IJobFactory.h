@@ -12,18 +12,22 @@
 #include "protocol/Request.h"
 #include "core/Connector.h"
 
+namespace HTTP
+{
+
 class IJobFactory
 {
    public:
       IJobFactory();
       virtual ~IJobFactory();
 
-      static IJobFactory* createInstance(const std::string& request);
+      static IJobFactory* createInstance(const std::string& requestMethod);
 
       //TODO: make it templated
       virtual IJob* createJob(const Request& request)=0;
-      virtual Callback createJobCallback(const Connector& dispatcher, const int sessionId);
-      virtual Callback createJobErrorCallback(const Connector& dispatcher, const int sessionId);
+      virtual Callback createJobOnFinishCallback(const Connection& dispatcher, const int sessionId);
+      virtual Callback createJobOnErrorCallback(const Connection& dispatcher, const int sessionId);
 };
 
+}
 #endif /* JOBFACTORY_H_ */

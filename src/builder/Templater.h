@@ -43,13 +43,13 @@ class Templater
       std::string generate();
 
    private:
-      static std::map<std::string, std::string> mTemplateMap;
-      static std::map<std::string, std::string> macroses;
-      static const std::string MACRO_TAG;
+      std::map<std::string, std::string> mMacroses;
       std::string mTemplateContent;
 
-      std::string trimTags(std::string const &token);
-      std::string lookupTemplate(const std::string& templateName);
+      static std::map<std::string, std::string> mTemplateCache;
+      static const std::string MACRO_TAG;
+      static std::string trimTags(std::string const &token);
+      static std::string lookupTemplate(const std::string& templateName);
 };
 
 #endif /* TEMPLATER_H_ */

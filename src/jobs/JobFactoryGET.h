@@ -10,6 +10,9 @@
 
 #include "jobs/IJobFactory.h"
 
+namespace HTTP
+{
+
 class JobFactoryGET: public IJobFactory
 {
    public:
@@ -19,5 +22,7 @@ class JobFactoryGET: public IJobFactory
       virtual IJob* createJob(const Request& request);
       ////virtual Callback createJobCallback(const Connector& dispatcher, const int sessionId);
 };
+
+}
 
 #endif /* JOBFACTORYGET_H_ */

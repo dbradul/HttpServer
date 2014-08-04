@@ -11,6 +11,8 @@
 #include "protocol/Request.h"
 #include "common/traceout.h"
 
+namespace HTTP
+{
 //---------------------------------------------------------------------------------------
 Dispatcher::Dispatcher()
 //---------------------------------------------------------------------------------------
@@ -28,10 +30,10 @@ Dispatcher::~Dispatcher()
 }
 
 //---------------------------------------------------------------------------------------
-void Dispatcher::setConnector(const Connector& connector)
+void Dispatcher::setConnection(const Connection& connector)
 //---------------------------------------------------------------------------------------
 {
-   mConnector = connector;
+   mConnection = connector;
 }
 
 //---------------------------------------------------------------------------------------
@@ -41,25 +43,27 @@ void Dispatcher::start()
    JobExecutor jobExecutor;
    jobExecutor.start();
 
-   mConnector.connect();
+   mConnection.startListening();
 
-   // read and process requests until connection is closed
-   //TODO: have special signal for the server to restart?
-   while (Request request = mConnector.readRequest())
+   // read and process requests until the connection is closed
+   while (Request request = mConnection.readRequest())
    {
       TRC_INFO(0U, "The new request is received: request='%s'", request.getHeader().toString().c_str());
 
       IJobFactory* jobFactory = IJobFactory::createInstance(request.header(Message::METHOD));
 
-      IJob*    pJob             = jobFactory->createJob             (request);
-      Callback jobCallback      = jobFactory->createJobCallback     (mConnector, request.getSessionId());
-      Callback jobErrorCallback = jobFactory->createJobErrorCallback(mConnector, request.getSessionId());
+      IJob*    pJob              = jobFactory->createJob                   (request);
+      Callback onFinishCallback  = jobFactory->createJobOnFinishCallback   (mConnection, request.getSessionId());
+      Callback onErrorCallback   = jobFactory->createJobOnErrorCallback    (mConnection, request.getSessionId());
 
-      pJob->setOnFinishCallback(jobCallback);
-      pJob->setOnErrorCallback(jobErrorCallback);
+      pJob->setOnFinishCallback  (onFinishCallback);
+      pJob->setOnErrorCallback   (onErrorCallback);
 
       jobExecutor.submitJob(pJob);
 
       TRC_INFO(0U, "The corresponding job is queued: pJob=0x%p, sessionId=%d", pJob, request.getSessionId());
    }
 }
+
+}
+

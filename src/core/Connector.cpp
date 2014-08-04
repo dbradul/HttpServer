@@ -25,16 +25,22 @@
 #include "common/Config.h"
 #include "protocol/Message.h"
 
+namespace HTTP
+{
+
 //---------------------------------------------------------------------------------------
-Connector::Connector()
-      : mbStarted(false), mSocketDesc(-1), mSessionId(-1)
+Connection::Connection()
+      : mbStarted(false)
+      , mSocketDesc(-1)
+      , mSessionId(-1)
+      , mPort(0)
 {
    TRC_DEBUG_FUNC_ENTER(0U, "");
    TRC_DEBUG_FUNC_EXIT(0U);
 }
 
 //---------------------------------------------------------------------------------------
-Connector::~Connector()
+Connection::~Connection()
 {
    TRC_DEBUG_FUNC_ENTER(0U, "");
    disconnect();
@@ -42,7 +48,8 @@ Connector::~Connector()
 }
 
 //---------------------------------------------------------------------------------------
-void Connector::connect()
+void Connection::startListening()
+//---------------------------------------------------------------------------------------
 {
    TRC_DEBUG_FUNC_ENTER(0U, "");
 
@@ -51,8 +58,7 @@ void Connector::connect()
       int sockoptval = 1;
 
       // Two socket address structures - One for the server itself and the other for client
-      struct sockaddr_in serv_addr =
-      { 0 };
+      struct sockaddr_in serv_addr = { 0 };
 
       // Create socket of domain - Internet (IP) address, type - Stream based (TCP) and protocol unspecified
       // since it is only useful when underlying stack allows more than one protocol and we are choosing one.
@@ -73,12 +79,10 @@ void Connector::connect()
 
       else
       {
-         unsigned long portNumber = Configuration::getInstance().getValueInt(Configuration::CONFIG_PORT);
-
          // Fill server's settings
          serv_addr.sin_family = AF_INET;
          serv_addr.sin_addr.s_addr = INADDR_ANY;
-         serv_addr.sin_port = htons(portNumber);
+         serv_addr.sin_port = htons(mPort);
 
          // Attach the server socket to a port.
          // TODO we should fail if the port is busy
@@ -110,16 +114,11 @@ void Connector::connect()
 }
 
 //---------------------------------------------------------------------------------------
-void Connector::disconnect()
+void Connection::disconnect()
+//---------------------------------------------------------------------------------------
 {
-   if (mbStarted)
-   {
-      // Program should always close all sockets (the connected one as well as the listening one)
-      // as soon as it is done processing with it
-      //close(conn_desc);
-      close(mSocketDesc);
-      mbStarted = false;
-   }
+   close(mSocketDesc);
+   mbStarted = false;
 }
 
 //---------------------------------------------------------------------------------------
@@ -127,7 +126,8 @@ void Connector::disconnect()
  * Blocks until message is complete
  */
 //---------------------------------------------------------------------------------------
-Request Connector::readRequest()
+Request Connection::readRequest()
+//---------------------------------------------------------------------------------------
 {
    Request request;
 
@@ -164,7 +164,7 @@ Request Connector::readRequest()
          if (end_idx != std::string::npos)
          {
             message.resize(end_idx + 1);
-            request = Request(Message::parse(message));
+            request = *(static_cast<Request*>(Message::parse(message)));
             request.setValid(true);
             request.setSessionId(connDesc);
             bMessageCompleted = true;
@@ -177,7 +177,8 @@ Request Connector::readRequest()
 }
 
 //---------------------------------------------------------------------------------------
-bool Connector::writeResponse(Response response, int sessionId) const
+bool Connection::writeResponse(Response response, int sessionId) const
+//---------------------------------------------------------------------------------------
 {
    TRC_DEBUG_FUNC_ENTER(0U, "Response='%s', sessionId=%d", response.toString().c_str(), sessionId);
    bool bResult = true;
@@ -196,7 +197,17 @@ bool Connector::writeResponse(Response response, int sessionId) const
 }
 
 //---------------------------------------------------------------------------------------
-int Connector::getSessionId() const
+int Connection::getSessionId() const
+//---------------------------------------------------------------------------------------
 {
    return mSessionId;
+}
+
+//---------------------------------------------------------------------------------------
+void Connection::setPort(unsigned int port)
+//---------------------------------------------------------------------------------------
+{
+   mPort = port;
+}
+
 }

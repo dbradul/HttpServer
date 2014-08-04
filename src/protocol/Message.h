@@ -11,12 +11,14 @@
 #include <string>
 #include <map>
 #include <list>
+#include "common/Utils.h"
+////#include "bits/shared_ptr.h"
+
 
 class Message
 {
    public:
       static const std::string HEADER_BODY_DELIMITER;
-      static const std::string HEADER_FIRST_FIELD_ENTRIES_DELIMITER;
       static const std::string HEADER_FIELD_DELIMITER;
       static const std::string HEADER_FIELD_NAME_DELIMITER;
 
@@ -28,18 +30,27 @@ class Message
             {
             }
 
-            Header(std::string header)
+            Header(const std::string& preamble)
             {
-               mHeaderStr = header;
+               mPreamble = preamble;
             }
 
             const std::string& toString() const
             {
+               if( mHeaderStr.empty() )
+               {
+                  mHeaderStr = mPreamble + HEADER_FIELD_DELIMITER;
+
+                  mHeaderStr += Utils::join( mHeaderFields,
+                                             HEADER_FIELD_NAME_DELIMITER,
+                                             HEADER_FIELD_DELIMITER);
+               }
                return mHeaderStr;
             }
 
             std::string& operator[](const std::string& key)
             {
+               mHeaderStr.resize(0);
                return mHeaderFields[key];
             }
 
@@ -58,16 +69,20 @@ class Message
                return toString().c_str();
             }
 
+            //FIXME!
+            std::string mPreamble;
+
          private:
-            std::string mHeaderStr;
+            mutable std::string mHeaderStr;
             std::map<std::string, std::string> mHeaderFields; //std::list<std::string>
       };
 
    public:
       Message();
+      Message(const std::string& preamble);
       virtual ~Message();
 
-      static Message parse(const std::string& rawMessage);
+      static Message* parse(const std::string& rawMessage);
 
       void setHeader(const std::string& header);
       void setBody(const std::string& body);
@@ -79,12 +94,15 @@ class Message
       const Header&        getHeader() const;
       const std::string&   getBody() const;
       const std::string&   header(const std::string& fieldName) const;
-      std::string toString() const;
+      Header&              header();
+      std::string&         header(const std::string& headerFieldName);
+
+      virtual std::string toString() const = 0;
+      ////std::string generate() const;
 
       static const std::string METHOD;
       static const std::string PATH;
       static const std::string HOST;
-      static const std::string CLIENT;
       //other header fields
 
    protected:

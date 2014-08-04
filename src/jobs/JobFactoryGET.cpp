@@ -13,6 +13,9 @@
 #include "builder/PageBuilder.h"
 #include <algorithm>
 
+namespace HTTP
+{
+
 //---------------------------------------------------------------------------------------
 JobFactoryGET::JobFactoryGET()
 //---------------------------------------------------------------------------------------
@@ -59,3 +62,4 @@ IJob* JobFactoryGET::createJob(const Request& request)
    return new JobRequestGET(request.header(Message::PATH));
 }
 
+}

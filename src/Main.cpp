@@ -45,18 +45,19 @@ int main(int argc, char *argv[])
    }
 
    TRC_INFO(0U, "Deamonization");
-   daemonize(Configuration::getInstance());
+   ////daemonize(Configuration::getInstance());
 
    /* Open the log file */
    TRC_INIT(LOG_PID, LOG_DAEMON);
 
    try
    {
-      Dispatcher dispatcher;
-      Connector connector;
+      HTTP::Dispatcher dispatcher;
+      HTTP::Connection connection;
+      connection.setPort(Configuration::getInstance().getValueInt(Configuration::CONFIG_PORT));
 
       // initialize
-      dispatcher.setConnector(connector);
+      dispatcher.setConnection(connection);
 
       TRC_INFO(0U, "Server is being started...");
 
@@ -84,8 +85,8 @@ bool checkEnv(const Configuration& configuration)
    std::string workDir = configuration.getValueStr(Configuration::CONFIG_WORKING_DIR);
 
    bResult &= File(workDir + Templater::TEMPLATE_PATH_ROOT_LAYOUT)        .exists();
-   bResult &= File(workDir + Templater::TEMPLATE_PATH_DIR_CONTENT)         .exists();
-   bResult &= File(workDir + Templater::TEMPLATE_PATH_DIR_CONTENT_LINE)    .exists();
+   bResult &= File(workDir + Templater::TEMPLATE_PATH_DIR_CONTENT)        .exists();
+   bResult &= File(workDir + Templater::TEMPLATE_PATH_DIR_CONTENT_LINE)   .exists();
    bResult &= File(workDir + Templater::TEMPLATE_PATH_FILE_CONTENT)       .exists();
    bResult &= File(workDir + Templater::TEMPLATE_PATH_FILE_CONTENT_LINE)  .exists();
 

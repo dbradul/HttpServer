@@ -11,18 +11,22 @@
 #include "core/Connector.h"
 #include "common/Config.h"
 
+namespace HTTP
+{
+
 class Dispatcher
 {
    public:
       Dispatcher();
       virtual ~Dispatcher();
 
-      void setConnector(const Connector& connector);
+      void setConnection(const Connection& connector);
 
       void start();
 
    private:
-      Connector mConnector;
+      Connection mConnection;
 };
 
+}
 #endif /* SERVER_H_ */

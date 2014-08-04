@@ -10,24 +10,25 @@
 
 #include <functional>
 #include <string>
-#include "executor/ICallback.h"
+
+typedef std::function<void(const std::string&)> Callback;
 
 class IJob
 {
-    public:
-        IJob();
-        virtual ~IJob();
+   public:
+      IJob();
+      virtual ~IJob();
 
-        //TODO: templatize!
-        virtual std::string execute() = 0;
+      //TODO: templatize!
+      virtual std::string execute() = 0;
 
-        void setOnFinishCallback(const Callback& callback);
-        void setOnErrorCallback(const Callback& callback);
-        const Callback& getOnFinishCallback() const;
-        const Callback& getOnErrorCallback() const;
+      void setOnFinishCallback(const Callback& callback);
+      void setOnErrorCallback(const Callback& callback);
+      const Callback& getOnFinishCallback() const;
+      const Callback& getOnErrorCallback() const;
 
-        Callback onFinishCallback;
-        Callback onErrorCallback;
+      Callback onFinishCallback;
+      Callback onErrorCallback;
 };
 
 #endif /* IJOB_H_ */

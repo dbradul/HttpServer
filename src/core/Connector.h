@@ -11,22 +11,28 @@
 #include "protocol/Request.h"
 #include "protocol/Response.h"
 
-class Connector
+namespace HTTP
 {
-    public:
-        Connector();
-        virtual ~Connector();
 
-        void connect();
-        void disconnect();
-        Request readRequest();
-        bool writeResponse(Response response, int sessionId) const;
-        int getSessionId() const;
+class Connection
+{
+   public:
+      Connection();
+      virtual ~Connection();
 
-    private:
-        bool mbStarted;
-        int mSocketDesc;
-        int mSessionId;
+      void startListening();
+      void disconnect();
+      Request readRequest();
+      bool writeResponse(Response response, int sessionId) const;
+      void setPort(unsigned int port);
+      int getSessionId() const;
+
+   private:
+      bool mbStarted;
+      int mSocketDesc;
+      int mSessionId;
+      unsigned int mPort;
 };
 
+}
 #endif /* DISPATCHER_H_ */

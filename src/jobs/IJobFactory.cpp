@@ -11,6 +11,12 @@
 #include <common/traceout.h>
 #include "common/Utils.h"
 
+namespace HTTP
+{
+
+static const std::string METHOD_GET = "GET";
+static const std::string METHOD_POST = "POST";
+
 //---------------------------------------------------------------------------------------
 IJobFactory::IJobFactory()
 //---------------------------------------------------------------------------------------
@@ -36,12 +42,12 @@ IJobFactory* IJobFactory::createInstance(const std::string& request)
 
    IJobFactory* pJobFactory = NULL;
 
-   if (request == "GET")
+   if (request == METHOD_GET)
    {
       pJobFactory = new JobFactoryGET();
    }
 
-   else if (request == "POST")
+   else if (request == METHOD_POST)
    {
       pJobFactory = new JobFactoryPOST();
    }
@@ -52,13 +58,13 @@ IJobFactory* IJobFactory::createInstance(const std::string& request)
 }
 
 //---------------------------------------------------------------------------------------
-Callback IJobFactory::createJobErrorCallback(const Connector& dispatcher, const int sessionId)
+Callback IJobFactory::createJobOnErrorCallback(const Connection& connection, const int sessionId)
 //---------------------------------------------------------------------------------------
 {
-   return [&dispatcher, sessionId] (const std::string& result)
+   return [&connection, sessionId] (const std::string& result)
    {
-      Response response;
-      response.setHeader (Response::RESPONSE_FAIL_INTERNAL_SERVER_ERROR);
+      Response response(Response::RESPONSE_internal_server_error);
+      ////response.setHeader (Response::RESPONSE_FAIL_INTERNAL_SERVER_ERROR);
       response.setBody (
                         "<html>\n\
                             <body>\n\
@@ -69,29 +75,31 @@ Callback IJobFactory::createJobErrorCallback(const Connector& dispatcher, const 
 
       TRC_INFO(0U, "Response will be sent to a caller: %s", response.getHeader().toString().c_str());
 
-      if( !dispatcher.writeResponse(response, sessionId) )
+      if( !connection.writeResponse(response, sessionId) )
       {
-         TRC_ERROR(0U, "Failed responding", NULL);
+         TRC_ERROR(0U, "Failed responding");
       }
    };
 }
 
 //---------------------------------------------------------------------------------------
-Callback IJobFactory::createJobCallback(const Connector& dispatcher, const int sessionId)
+Callback IJobFactory::createJobOnFinishCallback(const Connection& connection, const int sessionId)
 //---------------------------------------------------------------------------------------
 {
-   return [&dispatcher, sessionId] (const std::string& result)
+   return [&connection, sessionId] (const std::string& result)
    {
-      Response response;
-      response.setHeader (Response::RESPONSE_OK);
+      Response response(Response::RESPONSE_ok);
+      ////response.setHeader (Response::RESPONSE_OK);
       response.setBody (result);
 
       TRC_INFO(0, "Response constructed: %s", response.getHeader().toString().c_str());
       TRC_INFO(0, "Sending the response back to caller");
 
-      if( !dispatcher.writeResponse(response, sessionId) )
+      if( !connection.writeResponse(response, sessionId) )
       {
          TRC_ERROR(0U, "Failed sending response");
       }
    };
+}
+
 }

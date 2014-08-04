@@ -64,7 +64,7 @@ void Utils::split(std::vector<std::string> &tokens, const std::string &text, con
 void Utils::readDir(const std::string& root, const std::string& requestPath, std::vector<File>& fileList)
 //---------------------------------------------------------------------------------------
 {
-   TRC_DEBUG_FUNC_ENTER(0U, "root='%s', relativePath='%s', fileList.size()=%d", root.c_str(), requestPath.c_str(), fileList.size());
+   TRC_DEBUG_FUNC_ENTER(0U, "root='%s', relativePath='%s', fileList.size()=%zu", root.c_str(), requestPath.c_str(), fileList.size());
 
    readDir(root+requestPath, fileList);
 
@@ -75,7 +75,7 @@ void Utils::readDir(const std::string& root, const std::string& requestPath, std
 void Utils::readDir(const std::string& requestPath, std::vector<File>& fileList)
 //---------------------------------------------------------------------------------------
 {
-   TRC_DEBUG_FUNC_ENTER(0U, "relativePath='%s', fileList.size()=%d", requestPath.c_str(), fileList.size());
+   TRC_DEBUG_FUNC_ENTER(0U, "relativePath='%s', fileList.size()=%zu", requestPath.c_str(), fileList.size());
 
    DIR *mydirhandle;
 
@@ -293,3 +293,40 @@ unsigned long Utils::to_int(std::string str_value)
 {
    return ::atoi(str_value.c_str());
 }
+
+//---------------------------------------------------------------------------------------
+std::string Utils::join(const std::vector<std::string>& list, const std::string& delim)
+//---------------------------------------------------------------------------------------
+{
+   stringstream result;
+
+   std::for_each( list.begin(),
+                  list.end()-1,
+                  [&](const std::string& entry){result << entry << delim;});
+
+   result << list.back(); //no trailing delimiter
+
+   return result.str();
+}
+
+//---------------------------------------------------------------------------------------
+std::string Utils::join(const std::map<std::string, std::string>& map,
+                        const std::string& delim1,
+                        const std::string& delim2)
+//---------------------------------------------------------------------------------------
+{
+   stringstream result;
+
+   auto serializer = [&](const pair<std::string, std::string>& entry)
+                     {
+                        result << entry.first << delim1 << entry.second << delim2;
+                     };
+
+   std::for_each( map.begin(),
+                  map.end(),
+                  serializer
+                );
+
+   return result.str();
+}
+

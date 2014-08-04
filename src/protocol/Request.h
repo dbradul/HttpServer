@@ -19,12 +19,14 @@
 class Request : public Message
 {
     public:
+
         Request();
-        Request(const std::string& rawMessage);
-        Request(const Message& message);
+        Request(const std::string& preamble);
         virtual ~Request();
 
         operator bool();
+
+        std::string toString() const;
 
         void setSessionId(int sessionId);
         const int getSessionId() const;

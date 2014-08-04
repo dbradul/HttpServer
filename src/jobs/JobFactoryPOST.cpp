@@ -10,6 +10,9 @@
 #include <common/Utils.h>
 #include <stdexcept>
 
+namespace HTTP
+{
+
 //---------------------------------------------------------------------------------------
 JobFactoryPOST::JobFactoryPOST()
 //---------------------------------------------------------------------------------------
@@ -42,3 +45,4 @@ IJob* JobFactoryPOST::createJob(const Request& request)
    return new JobNOP;
 }
 
+}

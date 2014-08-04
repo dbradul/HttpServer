@@ -43,19 +43,7 @@ Templater::~Templater()
 }
 
 //---------------------------------------------------------------------------------------
-std::map<std::string, std::string> Templater::macroses =
-{
-//   {"root",     "NOT DEFINED"},
-//   {"filepath", "NOT DEFINED"},
-//   {"filename", "NOT DEFINED"},
-//   {"perms",    "NOT DEFINED"},
-//   {"size",     "NOT DEFINED"},
-//   {"time",     "NOT DEFINED"},
-//   {"idx",      "NOT DEFINED"},
-};
-
-//---------------------------------------------------------------------------------------
-std::map<std::string, std::string> Templater::mTemplateMap =
+std::map<std::string, std::string> Templater::mTemplateCache =
 {
 //   {TEMPLATE_ROOT_LAYOUT,       ""},
 //   {TEMPLATE_PAGE_TABLE,        ""},
@@ -83,7 +71,6 @@ const std::string Templater::TEMPLATE_MACROS_PERMS             = "perms";
 const std::string Templater::TEMPLATE_MACROS_SIZE              = "size";
 const std::string Templater::TEMPLATE_MACROS_TIME              = "time";
 const std::string Templater::TEMPLATE_MACROS_IDX               = "idx";
-
 const std::string Templater::TEMPLATE_MACROS_CONTENT           = "content";
 
 //---------------------------------------------------------------------------------------
@@ -93,7 +80,7 @@ const std::string Templater::MACRO_TAG = "##";
 void Templater::setMacro(const std::string& macroName, const std::string& macroValue)
 //---------------------------------------------------------------------------------------
 {
-   macroses[macroName] = macroValue;
+   mMacroses[macroName] = macroValue;
 }
 
 //---------------------------------------------------------------------------------------
@@ -124,8 +111,8 @@ std::string Templater::generate()
          TRC_DEBUG(0U, "token extracted: '%s'", token.c_str());
          std::string trimmedToken = trimTags(token);
 
-         auto iter = macroses.find(trimmedToken);
-         if (iter != macroses.end())
+         auto iter = mMacroses.find(trimmedToken);
+         if (iter != mMacroses.end())
          {
             TRC_DEBUG(0U, "macro recognized: '%s' -> '%s'", trimmedToken.c_str(),
                                                             iter->second.c_str());
@@ -172,20 +159,20 @@ std::string Templater::trimTags(std::string const &token)
 std::string Templater::lookupTemplate(const std::string& templateName)
 //---------------------------------------------------------------------------------------
 {
-   auto iter = mTemplateMap.find(templateName);
+   auto iter = mTemplateCache.find(templateName);
 
-   if (iter == mTemplateMap.end())
+   if (iter == mTemplateCache.end())
    {
       std::string workDir = Configuration::getInstance().getValueStr(Configuration::CONFIG_WORKING_DIR);
 
-      mTemplateMap.insert(
-                           {
-                              templateName,
-                              Utils::getTextFileContent((workDir + templateName).c_str())
-                           }
-                         );
+      mTemplateCache.insert(
+                              {
+                                 templateName,
+                                 Utils::getTextFileContent((workDir + templateName).c_str())
+                              }
+                           );
 
-      iter = mTemplateMap.find(templateName);
+      iter = mTemplateCache.find(templateName);
    }
 
    return iter->second;

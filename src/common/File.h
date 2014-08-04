@@ -45,6 +45,7 @@ class File
       inline bool operator!=(const File& rhs) const{ return !(*this == rhs); }
 
    private:
+
       void loadFileMetadata() const;
 
       mutable bool mIsDir;
