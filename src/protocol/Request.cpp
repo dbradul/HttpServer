@@ -22,12 +22,13 @@ Request::Request()
 }
 
 //---------------------------------------------------------------------------------------
-Request::Request(const std::string& preamble)
-   : Message(preamble)
-   , mSessionId(-1)
+Request::Request(const std::string& header)
+   : /*Message(preamble)
+   , */mSessionId(-1)
 //---------------------------------------------------------------------------------------
 {
    TRC_DEBUG_FUNC_ENTER(0U, "");
+   parseHeader(header);
    TRC_DEBUG_FUNC_EXIT(0U);
 }
 
@@ -60,15 +61,31 @@ const int Request::getSessionId() const
     return mSessionId;
 }
 
-
 //---------------------------------------------------------------------------------------
 std::string Request::toString() const
 //---------------------------------------------------------------------------------------
 {
    if (0 == mRawMessage.size())
    {
-      mRawMessage = mHeader.toString()+mBody;
+      mRawMessage =
+            mHeader.toString(getHeaderPreambleFields()) +
+            HEADER_FIELD_DELIMITER +
+            mBody;
    }
 
    return mRawMessage;
+}
+
+//---------------------------------------------------------------------------------------
+const std::vector<std::string>& Request::getHeaderPreambleFields() const
+//---------------------------------------------------------------------------------------
+{
+   static std::vector<std::string> fields =
+   {
+      METHOD,
+      PATH,
+      PROTOCOL
+   };
+
+   return fields;
 }

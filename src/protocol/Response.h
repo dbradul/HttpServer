@@ -21,8 +21,6 @@ class Response : public Message
         Response(const std::string& preamble);
         virtual ~Response();
 
-        static const std::string RESPONSE_HEADER_TEMPLATE;
-
         static const std::string RESPONSE_ok;
         static const std::string RESPONSE_created;
         static const std::string RESPONSE_accepted;
@@ -39,6 +37,8 @@ class Response : public Message
         static const std::string RESPONSE_not_implemented;
         static const std::string RESPONSE_bad_gateway;
         static const std::string RESPONSE_service_unavailable;
+
+        const std::vector<std::string>& getHeaderPreambleFields() const;
 
         std::string toString() const;
 

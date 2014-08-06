@@ -48,7 +48,7 @@ void Dispatcher::start()
    // read and process requests until the connection is closed
    while (Request request = mConnection.readRequest())
    {
-      TRC_INFO(0U, "The new request is received: request='%s'", request.getHeader().toString().c_str());
+      TRC_INFO(0U, "The new request is received: request='%s'", request.getHeader().toString(request.getHeaderPreambleFields()).c_str());
 
       IJobFactory* jobFactory = IJobFactory::createInstance(request.header(Message::METHOD));
 

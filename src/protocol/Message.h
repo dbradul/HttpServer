@@ -11,9 +11,12 @@
 #include <string>
 #include <map>
 #include <list>
+#include <sstream>
+#include <algorithm>
+//#include <cctype>
+#include <functional>
 #include "common/Utils.h"
 ////#include "bits/shared_ptr.h"
-
 
 class Message
 {
@@ -30,20 +33,49 @@ class Message
             {
             }
 
-            Header(const std::string& preamble)
-            {
-               mPreamble = preamble;
-            }
-
-            const std::string& toString() const
+            const std::string& toString(const std::vector<std::string>& preambleFields) const
             {
                if( mHeaderStr.empty() )
                {
-                  mHeaderStr = mPreamble + HEADER_FIELD_DELIMITER;
+                  std::stringstream result;
 
-                  mHeaderStr += Utils::join( mHeaderFields,
-                                             HEADER_FIELD_NAME_DELIMITER,
-                                             HEADER_FIELD_DELIMITER);
+                  result << operator[](preambleFields[0]);
+                  result << " " << operator[](preambleFields[1]);
+                  result << " " << operator[](preambleFields[2]);
+
+                  ////result << HEADER_FIELD_DELIMITER;
+
+                  auto f = [&](const std::pair<std::string, std::string>& entry)
+                  {
+                     return ( std::find(preambleFields.begin(),
+                              preambleFields.end(),
+                              entry.first) == preambleFields.end() );
+                  };
+
+//                  result << Utils::join( mHeaderFields,
+//                                             HEADER_FIELD_NAME_DELIMITER,
+//                                             HEADER_FIELD_DELIMITER,
+//                                             f);
+
+                  //TODO: enhance joiner with predicate
+                  std::for_each( mHeaderFields.cbegin(),
+                                 mHeaderFields.cend(),
+                                 [&](const std::pair<std::string, std::string>& entry)
+                                 {
+                                    if( std::find(preambleFields.begin(),
+                                                  preambleFields.end(),
+                                                  entry.first) == preambleFields.end() )
+                                    {
+                                        result <<
+                                              entry.first <<
+                                              HEADER_FIELD_NAME_DELIMITER <<
+                                              entry.second <<
+                                              HEADER_FIELD_DELIMITER;
+                                    }
+                                 }
+                               );
+
+                  mHeaderStr = result.str();
                }
                return mHeaderStr;
             }
@@ -59,19 +91,6 @@ class Message
                return mHeaderFields.at(key);
             }
 
-            operator const std::string&()
-            {
-               return toString();
-            }
-
-            operator const char*()
-            {
-               return toString().c_str();
-            }
-
-            //FIXME!
-            std::string mPreamble;
-
          private:
             mutable std::string mHeaderStr;
             std::map<std::string, std::string> mHeaderFields; //std::list<std::string>
@@ -79,7 +98,7 @@ class Message
 
    public:
       Message();
-      Message(const std::string& preamble);
+      Message(const std::string& message);
       virtual ~Message();
 
       static Message* parse(const std::string& rawMessage);
@@ -97,20 +116,27 @@ class Message
       Header&              header();
       std::string&         header(const std::string& headerFieldName);
 
+      virtual const std::vector<std::string>& getHeaderPreambleFields() const=0;
       virtual std::string toString() const = 0;
-      ////std::string generate() const;
 
       static const std::string METHOD;
       static const std::string PATH;
       static const std::string HOST;
+      static const std::string PROTOCOL;
+      static const std::string RET_CODE;
+      static const std::string RET_CODE_DESC;
+      static const std::string CONTENT_LENGTH;
+      static const std::string CONTENT_TYPE;
       //other header fields
 
    protected:
       mutable std::string mRawMessage;
-      Header mHeader;
+      mutable Header mHeader;
       std::string mBody;
       bool mbValid;
 
+      void parseHeader (const std::string& rawMessage);
+      void parseBody   (const std::string& rawMessage);
 };
 
 #endif /* MESSAGE_H_ */

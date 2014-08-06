@@ -73,7 +73,7 @@ Callback IJobFactory::createJobOnErrorCallback(const Connection& connection, con
                             </body>\n\
                          </html>\n");
 
-      TRC_INFO(0U, "Response will be sent to a caller: %s", response.getHeader().toString().c_str());
+      TRC_INFO(0U, "Response will be sent to a caller: %s", response.getHeader().toString(response.getHeaderPreambleFields()).c_str());
 
       if( !connection.writeResponse(response, sessionId) )
       {
@@ -92,7 +92,7 @@ Callback IJobFactory::createJobOnFinishCallback(const Connection& connection, co
       ////response.setHeader (Response::RESPONSE_OK);
       response.setBody (result);
 
-      TRC_INFO(0, "Response constructed: %s", response.getHeader().toString().c_str());
+      TRC_INFO(0, "Response constructed: %s", response.getHeader().toString(response.getHeaderPreambleFields()).c_str());
       TRC_INFO(0, "Sending the response back to caller");
 
       if( !connection.writeResponse(response, sessionId) )

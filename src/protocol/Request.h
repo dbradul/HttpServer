@@ -14,8 +14,6 @@
 #include <list>
 #include "protocol/Message.h"
 
-//typedef std::map<std::string, std::string> tHeader;
-
 class Request : public Message
 {
     public:
@@ -24,15 +22,16 @@ class Request : public Message
         Request(const std::string& preamble);
         virtual ~Request();
 
-        operator bool();
-
-        std::string toString() const;
+        const std::vector<std::string>& getHeaderPreambleFields() const;
 
         void setSessionId(int sessionId);
         const int getSessionId() const;
 
+        operator bool();
+        std::string toString() const;
+
     private:
-        int         mSessionId;
+        int mSessionId;
 };
 
 #endif /* REQUEST_H_ */

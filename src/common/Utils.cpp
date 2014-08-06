@@ -310,16 +310,21 @@ std::string Utils::join(const std::vector<std::string>& list, const std::string&
 }
 
 //---------------------------------------------------------------------------------------
-std::string Utils::join(const std::map<std::string, std::string>& map,
+template<typename K, typename V>
+std::string Utils::join(const std::map<K, V>& map,
                         const std::string& delim1,
-                        const std::string& delim2)
+                        const std::string& delim2,
+                        const std::function<bool(const pair<K, V>&)>& predicate)
 //---------------------------------------------------------------------------------------
 {
    stringstream result;
 
    auto serializer = [&](const pair<std::string, std::string>& entry)
                      {
-                        result << entry.first << delim1 << entry.second << delim2;
+                        if(predicate(entry))
+                        {
+                           result << entry.first << delim1 << entry.second << delim2;
+                        }
                      };
 
    std::for_each( map.begin(),
@@ -329,4 +334,3 @@ std::string Utils::join(const std::map<std::string, std::string>& map,
 
    return result.str();
 }
-
