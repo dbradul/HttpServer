@@ -12,6 +12,10 @@
 #include "common/traceout.h"
 #include "Request.h"
 
+const std::string Request::REQUEST_HOST           = "Host";
+const std::string Request::PATH           = "Path";
+const std::string Request::METHOD         = "Method";
+
 //---------------------------------------------------------------------------------------
 Request::Request()
    : mSessionId(-1)
@@ -69,7 +73,7 @@ std::string Request::toString() const
    {
       mRawMessage =
             mHeader.toString(getHeaderPreambleFields()) +
-            HEADER_FIELD_DELIMITER +
+            HEADER_FIELD_DELIM +
             mBody;
    }
 

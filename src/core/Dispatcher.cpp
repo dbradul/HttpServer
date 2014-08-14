@@ -50,7 +50,7 @@ void Dispatcher::start()
    {
       TRC_INFO(0U, "The new request is received: request='%s'", request.getHeader().toString(request.getHeaderPreambleFields()).c_str());
 
-      IJobFactory* jobFactory = IJobFactory::createInstance(request.header(Message::METHOD));
+      IJobFactory* jobFactory = IJobFactory::createInstance(request.getHeaderField(Request::METHOD));
 
       IJob*    pJob              = jobFactory->createJob                   (request);
       Callback onFinishCallback  = jobFactory->createJobOnFinishCallback   (mConnection, request.getSessionId());

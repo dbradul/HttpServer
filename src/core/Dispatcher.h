@@ -8,7 +8,7 @@
 #ifndef SERVER_H_
 #define SERVER_H_
 
-#include "core/Connector.h"
+#include "core/Connection.h"
 #include "common/Config.h"
 
 namespace HTTP

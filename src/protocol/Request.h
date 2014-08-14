@@ -30,6 +30,10 @@ class Request : public Message
         operator bool();
         std::string toString() const;
 
+        static const std::string METHOD;//TODO: move to request subclass
+        static const std::string PATH;
+        static const std::string REQUEST_HOST;
+
     private:
         int mSessionId;
 };

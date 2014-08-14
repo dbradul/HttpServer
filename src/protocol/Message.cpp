@@ -18,13 +18,10 @@
 //----------------------------------------------------------------------
 // Protocol constants
 //---------------------------------------------------------------------------------------
-const std::string Message::HEADER_BODY_DELIMITER                = "\r\n\r\n";
-const std::string Message::HEADER_FIELD_DELIMITER               = "\r\n";
-const std::string Message::HEADER_FIELD_NAME_DELIMITER          = ": ";
+const std::string Message::HEADER_BODY_DELIM                = "\r\n\r\n";
+const std::string Message::HEADER_FIELD_DELIM               = "\r\n";
+const std::string Message::HEADER_FIELD_NAME_DELIM          = ": ";
 
-const std::string Message::HOST           = "Host";
-const std::string Message::PATH           = "Path";
-const std::string Message::METHOD         = "Method";
 const std::string Message::PROTOCOL       = "Protocol";
 const std::string Message::RET_CODE       = "ReturnCode";
 const std::string Message::RET_CODE_DESC  = "ReturnCodeDescription";
@@ -39,16 +36,6 @@ Message::Message()
    TRC_DEBUG_FUNC_ENTER(0U, "");
    TRC_DEBUG_FUNC_EXIT(0U);
 }
-
-////---------------------------------------------------------------------------------------
-//Message::Message(const std::string& preamble)
-//   : mbValid(false)
-////---------------------------------------------------------------------------------------
-//{
-//   TRC_DEBUG_FUNC_ENTER(0U, "");
-//   mHeader = Header(preamble);
-//   TRC_DEBUG_FUNC_EXIT(0U);
-//}
 
 //---------------------------------------------------------------------------------------
 Message::~Message()
@@ -73,7 +60,7 @@ const Message::Header& Message::getHeader() const
 }
 
 //---------------------------------------------------------------------------------------
-const std::string& Message::header(const std::string& headerFieldName) const
+const std::string& Message::getHeaderField(const std::string& headerFieldName) const
 //---------------------------------------------------------------------------------------
 {
    return mHeader[headerFieldName];
@@ -93,32 +80,32 @@ void Message::parseHeader(const std::string& rawMessage)
       throw(std::range_error("Message is not correct"));
    }
 
-   header(getHeaderPreambleFields()[0])   = _1stField;
-   header(getHeaderPreambleFields()[1])   = _2ndField;
-   header(getHeaderPreambleFields()[2])   = _3rdField;
+   setHeaderField(getHeaderPreambleFields()[0])   = _1stField;
+   setHeaderField(getHeaderPreambleFields()[1])   = _2ndField;
+   setHeaderField(getHeaderPreambleFields()[2])   = _3rdField;
 
-   size_t headerEnd = rawMessage.find(HEADER_BODY_DELIMITER);
-   size_t headerStart = rawMessage.find(HEADER_FIELD_DELIMITER);
+   size_t headerEnd = rawMessage.find(HEADER_BODY_DELIM);
+   size_t headerStart = rawMessage.find(HEADER_FIELD_DELIM);
 
    if (  headerEnd != std::string::npos &&
          headerStart != std::string::npos)
    {
       std::string headerStr = rawMessage.substr(
-                        headerStart + HEADER_FIELD_DELIMITER.size(),
-            headerEnd - headerStart + HEADER_FIELD_DELIMITER.size());
+                        headerStart + HEADER_FIELD_DELIM.size(),
+            headerEnd - headerStart + HEADER_FIELD_DELIM.size());
 
       //error checking (parsing)
       std::vector<std::string> headerEntries;
-      Utils::split(headerEntries, headerStr, HEADER_FIELD_DELIMITER);
+      Utils::split(headerEntries, headerStr, HEADER_FIELD_DELIM);
 
       for (auto entry : headerEntries)
       {
          std::vector<std::string> headerEntryFields;
          Utils::split(  headerEntryFields,
                         entry,
-                        HEADER_FIELD_NAME_DELIMITER);
+                        HEADER_FIELD_NAME_DELIM);
 
-         header(headerEntryFields[0]) = headerEntryFields[1];
+         setHeaderField(headerEntryFields[0]) = headerEntryFields[1];
       }
    }
 
@@ -128,10 +115,10 @@ void Message::parseHeader(const std::string& rawMessage)
 void Message::parseBody(const std::string& rawMessage)
 //---------------------------------------------------------------------------------------
 {
-   size_t headerEnd = rawMessage.find(HEADER_BODY_DELIMITER);
+   size_t headerEnd = rawMessage.find(HEADER_BODY_DELIM);
    if (headerEnd != std::string::npos)
    {
-      setBody(rawMessage.substr(headerEnd + HEADER_BODY_DELIMITER.size()));
+      setBody(rawMessage.substr(headerEnd + HEADER_BODY_DELIM.size()));
    }
 }
 
@@ -144,14 +131,14 @@ void Message::setHeader(const std::string& header)
 }
 
 //---------------------------------------------------------------------------------------
-std::string& Message::header(const std::string& headerFieldName)
+std::string& Message::setHeaderField(const std::string& headerFieldName)
 //---------------------------------------------------------------------------------------
 {
    return mHeader[headerFieldName];
 }
 
 //---------------------------------------------------------------------------------------
-Message::Header& Message::header()
+Message::Header& Message::getHeader()
 //---------------------------------------------------------------------------------------
 {
    return mHeader;

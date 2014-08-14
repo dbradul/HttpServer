@@ -44,7 +44,6 @@ IJob* JobFactoryGET::createJob(const Request& request)
             TRC_INFO(0, "GET request for the path: %s", mPath.c_str());
 
             PageBuilder builder;
-
             std::string rootDir = Configuration::getInstance().getValueStr(Configuration::CONFIG_ROOT_DIR);
 
             return builder.build(rootDir + mPath);
@@ -59,7 +58,7 @@ IJob* JobFactoryGET::createJob(const Request& request)
          std::string mPath;
    };
 
-   return new JobRequestGET(request.header(Message::PATH));
+   return new JobRequestGET(request.getHeaderField(Request::PATH));
 }
 
 }

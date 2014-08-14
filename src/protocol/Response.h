@@ -21,22 +21,22 @@ class Response : public Message
         Response(const std::string& preamble);
         virtual ~Response();
 
-        static const std::string RESPONSE_ok;
-        static const std::string RESPONSE_created;
-        static const std::string RESPONSE_accepted;
-        static const std::string RESPONSE_no_content;
-        static const std::string RESPONSE_multiple_choices;
-        static const std::string RESPONSE_moved_permanently;
-        static const std::string RESPONSE_moved_temporarily;
-        static const std::string RESPONSE_not_modified;
-        static const std::string RESPONSE_bad_request;
-        static const std::string RESPONSE_unauthorized;
-        static const std::string RESPONSE_forbidden;
-        static const std::string RESPONSE_not_found;
-        static const std::string RESPONSE_internal_server_error;
-        static const std::string RESPONSE_not_implemented;
-        static const std::string RESPONSE_bad_gateway;
-        static const std::string RESPONSE_service_unavailable;
+        static const std::string RESULT_OK;
+        static const std::string RESULT_CREATED;
+        static const std::string RESULT_ACCEPTED;
+        static const std::string RESULT_NO_CONTENT;
+        static const std::string RESULT_multiple_choices;
+        static const std::string RESULT_moved_permanently;
+        static const std::string RESULT_moved_temporarily;
+        static const std::string RESULT_not_modified;
+        static const std::string RESULT_bad_request;
+        static const std::string RESULT_unauthorized;
+        static const std::string RESULT_forbidden;
+        static const std::string RESULT_not_found;
+        static const std::string RESULT_internal_server_error;
+        static const std::string RESULT_not_implemented;
+        static const std::string RESULT_bad_gateway;
+        static const std::string RESULT_service_unavailable;
 
         const std::vector<std::string>& getHeaderPreambleFields() const;
 

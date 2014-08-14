@@ -10,7 +10,7 @@
 
 #include "executor/IJob.h"
 #include "protocol/Request.h"
-#include "core/Connector.h"
+#include "core/Connection.h"
 
 namespace HTTP
 {

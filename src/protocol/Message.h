@@ -21,9 +21,9 @@
 class Message
 {
    public:
-      static const std::string HEADER_BODY_DELIMITER;
-      static const std::string HEADER_FIELD_DELIMITER;
-      static const std::string HEADER_FIELD_NAME_DELIMITER;
+      static const std::string HEADER_BODY_DELIM;
+      static const std::string HEADER_FIELD_DELIM;
+      static const std::string HEADER_FIELD_NAME_DELIM;
 
    protected:
       class Header
@@ -68,9 +68,9 @@ class Message
                                     {
                                         result <<
                                               entry.first <<
-                                              HEADER_FIELD_NAME_DELIMITER <<
+                                              HEADER_FIELD_NAME_DELIM <<
                                               entry.second <<
-                                              HEADER_FIELD_DELIMITER;
+                                              HEADER_FIELD_DELIM;
                                     }
                                  }
                                );
@@ -101,27 +101,24 @@ class Message
       Message(const std::string& message);
       virtual ~Message();
 
-      static Message* parse(const std::string& rawMessage);
-
-      void setHeader(const std::string& header);
-      void setBody(const std::string& body);
-
-      bool isValid() const;
-      void setValid(bool valid);
+      void                 setHeader(const std::string& header);
+      void                 setBody(const std::string& body);
+      std::string&         setHeaderField(const std::string& headerFieldName);
 
       const std::string&   getRawMessage() const;
       const Header&        getHeader() const;
+      const std::string&   getHeaderField(const std::string& fieldName) const;
       const std::string&   getBody() const;
-      const std::string&   header(const std::string& fieldName) const;
-      Header&              header();
-      std::string&         header(const std::string& headerFieldName);
-
+      Header&              getHeader();
       virtual const std::vector<std::string>& getHeaderPreambleFields() const=0;
-      virtual std::string toString() const = 0;
 
-      static const std::string METHOD;
-      static const std::string PATH;
-      static const std::string HOST;
+      static Message*      parse(const std::string& rawMessage);
+
+      bool                 isValid() const;
+      void                 setValid(bool valid);
+
+      virtual std::string  toString() const = 0;
+
       static const std::string PROTOCOL;
       static const std::string RET_CODE;
       static const std::string RET_CODE_DESC;
@@ -130,10 +127,10 @@ class Message
       //other header fields
 
    protected:
-      mutable std::string mRawMessage;
-      mutable Header mHeader;
-      std::string mBody;
-      bool mbValid;
+      mutable std::string  mRawMessage;
+      mutable Header       mHeader;
+      std::string          mBody;
+      bool                 mbValid;
 
       void parseHeader (const std::string& rawMessage);
       void parseBody   (const std::string& rawMessage);

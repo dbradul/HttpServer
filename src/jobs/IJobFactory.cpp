@@ -58,12 +58,32 @@ IJobFactory* IJobFactory::createInstance(const std::string& request)
 }
 
 //---------------------------------------------------------------------------------------
+Callback IJobFactory::createJobOnFinishCallback(const Connection& connection, const int sessionId)
+//---------------------------------------------------------------------------------------
+{
+   return [&connection, sessionId] (const std::string& result)
+   {
+      Response response(Response::RESULT_OK);
+      ////response.setHeader (Response::RESPONSE_OK);
+      response.setBody (result);
+
+      TRC_INFO(0, "Response constructed: %s", response.getHeader().toString(response.getHeaderPreambleFields()).c_str());
+      TRC_INFO(0, "Sending the response back to caller");
+
+      if( !connection.writeResponse(response, sessionId) )
+      {
+         TRC_ERROR(0U, "Failed sending response");
+      }
+   };
+}
+
+//---------------------------------------------------------------------------------------
 Callback IJobFactory::createJobOnErrorCallback(const Connection& connection, const int sessionId)
 //---------------------------------------------------------------------------------------
 {
    return [&connection, sessionId] (const std::string& result)
    {
-      Response response(Response::RESPONSE_internal_server_error);
+      Response response(Response::RESULT_internal_server_error);
       ////response.setHeader (Response::RESPONSE_FAIL_INTERNAL_SERVER_ERROR);
       response.setBody (
                         "<html>\n\
@@ -78,26 +98,6 @@ Callback IJobFactory::createJobOnErrorCallback(const Connection& connection, con
       if( !connection.writeResponse(response, sessionId) )
       {
          TRC_ERROR(0U, "Failed responding");
-      }
-   };
-}
-
-//---------------------------------------------------------------------------------------
-Callback IJobFactory::createJobOnFinishCallback(const Connection& connection, const int sessionId)
-//---------------------------------------------------------------------------------------
-{
-   return [&connection, sessionId] (const std::string& result)
-   {
-      Response response(Response::RESPONSE_ok);
-      ////response.setHeader (Response::RESPONSE_OK);
-      response.setBody (result);
-
-      TRC_INFO(0, "Response constructed: %s", response.getHeader().toString(response.getHeaderPreambleFields()).c_str());
-      TRC_INFO(0, "Sending the response back to caller");
-
-      if( !connection.writeResponse(response, sessionId) )
-      {
-         TRC_ERROR(0U, "Failed sending response");
       }
    };
 }

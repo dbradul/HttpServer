@@ -9,7 +9,7 @@
 #include <sys/stat.h>
 
 #include "core/Dispatcher.h"
-#include "core/Connector.h"
+#include "core/Connection.h"
 #include "common/traceout.h"
 #include "common/Utils.h"
 #include "common/Config.h"
