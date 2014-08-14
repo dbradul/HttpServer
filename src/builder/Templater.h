@@ -15,12 +15,12 @@
 class Templater
 {
    public:
-      static const std::string TEMPLATE_MACROS_ROOT;
+      static const std::string TEMPLATE_MACROS_HEADER;
       static const std::string TEMPLATE_MACROS_FILEPATH;
       static const std::string TEMPLATE_MACROS_FILENAME;
       static const std::string TEMPLATE_MACROS_PERMS;
       static const std::string TEMPLATE_MACROS_SIZE;
-      static const std::string TEMPLATE_MACROS_TIME;
+      static const std::string TEMPLATE_MACROS_FOOTER;
       static const std::string TEMPLATE_MACROS_IDX;
       static const std::string TEMPLATE_MACROS_CONTENT;
       static const std::string TEMPLATE_MACROS_FILE_CONTENT;
@@ -30,8 +30,9 @@ class Templater
       static const std::string TEMPLATE_PATH_ROOT_LAYOUT;
       static const std::string TEMPLATE_PATH_DIR_CONTENT;
       static const std::string TEMPLATE_PATH_DIR_CONTENT_LINE;
-      static const std::string TEMPLATE_PATH_FILE_CONTENT;
-      static const std::string TEMPLATE_PATH_FILE_CONTENT_LINE;
+      static const std::string TEMPLATE_PATH_STR_CONTENT;
+      static const std::string TEMPLATE_PATH_STR_CONTENT_LINE;
+      static const std::string TEMPLATE_PATH_ERROR;
 
       Templater();
       Templater(const std::string& templateFilepath);

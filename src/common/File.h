@@ -17,15 +17,17 @@ class File
       File(const std::string& filePath);
       ~File();
 
-      std::string mName;
       std::string mReferenceFilePath;
       std::string mFilePath;
 
       bool exists();
       std::string getPermissions() const;
+      const std::string& getName() const;
+      std::string getReference() const;
       unsigned long getSize() const;
       bool isDir() const;
       void setDir(bool isDir);
+      void setName(const std::string& name);
 
       // define comparison operator to put dirs ahead of files
       //<,>,<=,=>
@@ -48,6 +50,7 @@ class File
 
       void loadFileMetadata() const;
 
+      std::string mName;
       mutable bool mIsDir;
       mutable int mSize;
       mutable std::string mPermissions;

@@ -36,7 +36,7 @@ const std::string Response::RESULT_forbidden =
    "HTTP/1.0 403 Forbidden\r\n";
 const std::string Response::RESULT_not_found =
    "HTTP/1.0 404 Not Found\r\n";
-const std::string Response::RESULT_internal_server_error =
+const std::string Response::RESULT_INTERNAL_SERVER_ERROR =
    "HTTP/1.0 500 Internal Server Error\r\n";
 const std::string Response::RESULT_not_implemented =
    "HTTP/1.0 501 Not Implemented\r\n";

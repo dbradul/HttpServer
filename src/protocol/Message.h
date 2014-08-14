@@ -110,6 +110,7 @@ class Message
       const std::string&   getHeaderField(const std::string& fieldName) const;
       const std::string&   getBody() const;
       Header&              getHeader();
+      std::string          getHeaderStr();
       virtual const std::vector<std::string>& getHeaderPreambleFields() const=0;
 
       static Message*      parse(const std::string& rawMessage);

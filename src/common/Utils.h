@@ -38,7 +38,8 @@ class Utils
         static unsigned long to_int(std::string str_value);
         static std::string formatString(const std::string fmt_str, ...);
         static void readDir(const std::string& requestPath, std::vector<File>& fileList);
-
+        static std::vector<std::string> getFileContent(std::string URL);
+        static std::vector<File> getDirContent(std::string URL);
     private:
         // TODO: utility class, useful functions container. Replace with namespace?
         Utils();

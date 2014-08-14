@@ -107,7 +107,7 @@ void Utils::readDir(const std::string& requestPath, std::vector<File>& fileList)
 
             file.mReferenceFilePath = requestPathWithoutBase + mydirent->d_name;
             file.setDir(mydirent->d_type == DT_DIR);
-            file.mName  = mydirent->d_name;
+            file.setName(mydirent->d_name);
 
             fileList.push_back(file);
          }
@@ -334,3 +334,46 @@ std::string Utils::join(const std::map<K, V>& map,
 
    return result.str();
 }
+
+//---------------------------------------------------------------------------------------
+std::vector<std::string> Utils::getFileContent(std::string URL)
+//---------------------------------------------------------------------------------------
+{
+   TRC_DEBUG_FUNC_ENTER(0U, "URL='%s'", URL.c_str());
+
+   std::string fileContent;
+   std::vector<std::string> entries;
+
+   ////fileContent = Utils::getTextFileContent((workingDir + filePath).c_str());
+   if (Utils::readAndCheckIfItIsBinary(URL.c_str(), fileContent))
+   {
+      entries.push_back("(binary content)");
+   }
+
+   else
+   {
+      Utils::split(entries, fileContent, "\r\n");
+   }
+
+   TRC_DEBUG_FUNC_EXIT(0U);
+
+   return entries;
+}
+
+//---------------------------------------------------------------------------------------
+std::vector<File> Utils::getDirContent(std::string URL)
+//---------------------------------------------------------------------------------------
+{
+   TRC_DEBUG_FUNC_ENTER(0U, "URL='%s'", URL.c_str());
+
+   std::vector<File> flist;
+
+   Utils::readDir(URL, flist);
+
+   std::sort(flist.begin(), flist.end());
+
+   TRC_DEBUG_FUNC_EXIT(0U);
+
+   return flist;
+}
+

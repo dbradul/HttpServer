@@ -44,9 +44,27 @@ IJob* JobFactoryGET::createJob(const Request& request)
             TRC_INFO(0, "GET request for the path: %s", mPath.c_str());
 
             PageBuilder builder;
-            std::string rootDir = Configuration::getInstance().getValueStr(Configuration::CONFIG_ROOT_DIR);
 
-            return builder.build(rootDir + mPath);
+            std::string result;
+            std::string URL = Configuration::getInstance().getValueStr(Configuration::CONFIG_ROOT_DIR) + mPath;
+
+            if (Utils::endsWith(URL, "/"))
+            {
+               std::vector<File> content = Utils::getDirContent(URL);
+               HTMLDecorator<File> decorator;
+
+               result = builder.build(URL, content, decorator);
+            }
+
+            else
+            {
+               std::vector<std::string> content = Utils::getFileContent(URL);
+               HTMLDecorator<std::string> decorator;
+
+               result = builder.build(URL, content, decorator);
+            }
+
+            return result;
          }
 
          JobRequestGET(const std::string& path)

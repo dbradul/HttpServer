@@ -87,8 +87,8 @@ bool checkEnv(const Configuration& configuration)
    bResult &= File(workDir + Templater::TEMPLATE_PATH_ROOT_LAYOUT)        .exists();
    bResult &= File(workDir + Templater::TEMPLATE_PATH_DIR_CONTENT)        .exists();
    bResult &= File(workDir + Templater::TEMPLATE_PATH_DIR_CONTENT_LINE)   .exists();
-   bResult &= File(workDir + Templater::TEMPLATE_PATH_FILE_CONTENT)       .exists();
-   bResult &= File(workDir + Templater::TEMPLATE_PATH_FILE_CONTENT_LINE)  .exists();
+   bResult &= File(workDir + Templater::TEMPLATE_PATH_STR_CONTENT)       .exists();
+   bResult &= File(workDir + Templater::TEMPLATE_PATH_STR_CONTENT_LINE)  .exists();
 
    return bResult;
 }

@@ -8,8 +8,9 @@
 #include <jobs/IJobFactory.h>
 #include <jobs/JobFactoryGET.h>
 #include <jobs/JobFactoryPOST.h>
-#include <common/traceout.h>
+#include "common/traceout.h"
 #include "common/Utils.h"
+#include "builder/Templater.h"
 
 namespace HTTP
 {
@@ -64,11 +65,9 @@ Callback IJobFactory::createJobOnFinishCallback(const Connection& connection, co
    return [&connection, sessionId] (const std::string& result)
    {
       Response response(Response::RESULT_OK);
-      ////response.setHeader (Response::RESPONSE_OK);
       response.setBody (result);
 
-      TRC_INFO(0, "Response constructed: %s", response.getHeader().toString(response.getHeaderPreambleFields()).c_str());
-      TRC_INFO(0, "Sending the response back to caller");
+      TRC_INFO(0, "Response constructed: %s", response.getHeaderStr().c_str());
 
       if( !connection.writeResponse(response, sessionId) )
       {
@@ -83,17 +82,13 @@ Callback IJobFactory::createJobOnErrorCallback(const Connection& connection, con
 {
    return [&connection, sessionId] (const std::string& result)
    {
-      Response response(Response::RESULT_internal_server_error);
-      ////response.setHeader (Response::RESPONSE_FAIL_INTERNAL_SERVER_ERROR);
-      response.setBody (
-                        "<html>\n\
-                            <body>\n\
-                               <h1>Internal error</h1>\n\
-                               <p>" + result + ".</p>\n\
-                            </body>\n\
-                         </html>\n");
+      Templater templater(Templater::TEMPLATE_PATH_ERROR);
+      templater.setMacro(Templater::TEMPLATE_MACROS_CONTENT, result);
 
-      TRC_INFO(0U, "Response will be sent to a caller: %s", response.getHeader().toString(response.getHeaderPreambleFields()).c_str());
+      Response response(Response::RESULT_INTERNAL_SERVER_ERROR);
+      response.setBody (templater.generate());
+
+      TRC_INFO(0U, "Response will be sent to a caller: %s", response.getHeaderStr().c_str());
 
       if( !connection.writeResponse(response, sessionId) )
       {

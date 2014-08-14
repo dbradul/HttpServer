@@ -33,7 +33,7 @@ class Response : public Message
         static const std::string RESULT_unauthorized;
         static const std::string RESULT_forbidden;
         static const std::string RESULT_not_found;
-        static const std::string RESULT_internal_server_error;
+        static const std::string RESULT_INTERNAL_SERVER_ERROR;
         static const std::string RESULT_not_implemented;
         static const std::string RESULT_bad_gateway;
         static const std::string RESULT_service_unavailable;
