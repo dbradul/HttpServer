@@ -5,18 +5,13 @@
 TEST(File, simple_test)
 {
    // Arrange
-   File file_a;
-   File file_b;
+   File file_a("aaa");
+   File file_b("bbb");
 
-   File dir_a;
-   File dir_b;
+   File dir_a("ccc");
+   File dir_b("ddd");
 
-   file_a.mName = "aaa";
-   file_b.mName = "bbb";
-
-   dir_a.mName  = "ccc";
    dir_a.setDir(true);
-   dir_b.mName  = "ddd";
    dir_b.setDir(true);
 
    // Act

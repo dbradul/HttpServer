@@ -11,7 +11,12 @@ TEST(PageBuilder, simple_test)
    PageBuilder pageBuilder;
 
    // Act
-   std::string page = pageBuilder.build("/cygdrive/d/work/projects/HttpServer/templates/");
+   std::string url = "/cygdrive/d/work/projects/HttpServer/templates/";
+
+   Decorator<File> decorator;
+   decorator.setURL(url);
+
+   std::string page = pageBuilder.build(Utils::getDirContent(url), decorator);
 
    std::ofstream fs("C:/temp/1.html");
    fs << page;
