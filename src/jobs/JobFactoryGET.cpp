@@ -46,22 +46,24 @@ IJob* JobFactoryGET::createJob(const Request& request)
             PageBuilder builder;
 
             std::string result;
-            std::string URL = Configuration::getInstance().getValueStr(Configuration::CONFIG_ROOT_DIR) + mPath;
+            std::string URL = Configuration::getInstance().getValueStr(Configuration::ROOT_DIR) + mPath;
 
             if (Utils::endsWith(URL, "/"))
             {
                std::vector<File> content = Utils::getDirContent(URL);
-               HTMLDecorator<File> decorator;
+               Decorator<File> decorator;
+               decorator.setURL(URL);
 
-               result = builder.build(URL, content, decorator);
+               result = builder.build(content, decorator);
             }
 
             else
             {
                std::vector<std::string> content = Utils::getFileContent(URL);
-               HTMLDecorator<std::string> decorator;
+               Decorator<std::string> decorator;
+               decorator.setURL(URL);
 
-               result = builder.build(URL, content, decorator);
+               result = builder.build(content, decorator);
             }
 
             return result;

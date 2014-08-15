@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
    {
       HTTP::Dispatcher dispatcher;
       HTTP::Connection connection;
-      connection.setPort(Configuration::getInstance().getValueInt(Configuration::CONFIG_PORT));
+      connection.setPort(Configuration::getInstance().getValueInt(Configuration::PORT));
 
       // initialize
       dispatcher.setConnection(connection);
@@ -82,13 +82,13 @@ bool checkEnv(const Configuration& configuration)
 {
    bool bResult = true;
 
-   std::string workDir = configuration.getValueStr(Configuration::CONFIG_WORKING_DIR);
+   std::string workDir = configuration.getValueStr(Configuration::WORKING_DIR);
 
-   bResult &= File(workDir + Templater::TEMPLATE_PATH_ROOT_LAYOUT)        .exists();
-   bResult &= File(workDir + Templater::TEMPLATE_PATH_DIR_CONTENT)        .exists();
-   bResult &= File(workDir + Templater::TEMPLATE_PATH_DIR_CONTENT_LINE)   .exists();
-   bResult &= File(workDir + Templater::TEMPLATE_PATH_STR_CONTENT)       .exists();
-   bResult &= File(workDir + Templater::TEMPLATE_PATH_STR_CONTENT_LINE)  .exists();
+   bResult &= File(workDir + Templater::PATH_ROOT_LAYOUT)        .exists();
+   bResult &= File(workDir + Templater::PATH_DIR_CONTENT)        .exists();
+   bResult &= File(workDir + Templater::PATH_DIR_CONTENT_LINE)   .exists();
+   bResult &= File(workDir + Templater::PATH_STR_CONTENT)       .exists();
+   bResult &= File(workDir + Templater::PATH_STR_CONTENT_LINE)  .exists();
 
    return bResult;
 }
@@ -135,7 +135,7 @@ void daemonize(const Configuration& configuration)
 
    /* Change the working directory to the root directory */
    /* or another appropriated directory */
-   std::string workDir = configuration.getValueStr(Configuration::CONFIG_WORKING_DIR);
+   std::string workDir = configuration.getValueStr(Configuration::WORKING_DIR);
    chdir(workDir.c_str());
 
    /* Close all open file descriptors */
@@ -160,19 +160,19 @@ bool parseOptions(int argc, char *argv[], Configuration& configuration)
       switch (c)
       {
       case 'p':
-         configuration.setValue(Configuration::CONFIG_PORT, Utils::to_int(optarg));
+         configuration.setValue(Configuration::PORT, Utils::to_int(optarg));
          break;
 
       case 'd':
-         configuration.setValue(Configuration::CONFIG_WORKING_DIR, std::string(optarg));
+         configuration.setValue(Configuration::WORKING_DIR, std::string(optarg));
          break;
 
       case 'r':
-         configuration.setValue(Configuration::CONFIG_ROOT_DIR, std::string(optarg));
+         configuration.setValue(Configuration::ROOT_DIR, std::string(optarg));
          break;
 
       case 't':
-         configuration.setValue(Configuration::CONFIG_MAX_THREAD_NUMBER, Utils::to_int(optarg));
+         configuration.setValue(Configuration::MAX_THREAD_NUMBER, Utils::to_int(optarg));
          break;
 
       case '?':

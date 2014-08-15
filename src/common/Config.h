@@ -23,10 +23,11 @@ class Configuration
       const std::string getValueStr(const std::string& valueName) const;
       unsigned long getValueInt(const std::string& valueName) const;
 
-      static const std::string CONFIG_MAX_THREAD_NUMBER;
-      static const std::string CONFIG_PORT;
-      static const std::string CONFIG_WORKING_DIR;
-      static const std::string CONFIG_ROOT_DIR;
+      static const std::string MAX_THREAD_NUMBER;
+      static const std::string PORT;
+      static const std::string WORKING_DIR;
+      static const std::string ROOT_DIR;
+      static const std::string PAGE_TITLE;
 
    private:
       Configuration();

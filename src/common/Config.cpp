@@ -17,19 +17,21 @@
 //---------------------------------------------------------------------------------------
 // Protocol constants
 //---------------------------------------------------------------------------------------
-const std::string Configuration::CONFIG_MAX_THREAD_NUMBER  = "PUTIN_HUYLO";
-const std::string Configuration::CONFIG_PORT               = "SLAVA_UKRAYNI";
-const std::string Configuration::CONFIG_WORKING_DIR        = "HEROYAM_SLAVA";
-const std::string Configuration::CONFIG_ROOT_DIR           = "LALALALALALA";
+const std::string Configuration::MAX_THREAD_NUMBER  = "PUTIN_HUYLO";
+const std::string Configuration::PORT               = "SLAVA_UKRAYNI";
+const std::string Configuration::WORKING_DIR        = "HEROYAM_SLAVA";
+const std::string Configuration::ROOT_DIR           = "LALALALALALA";
+const std::string Configuration::PAGE_TITLE         = "PAGE_TITLE";
 
 //---------------------------------------------------------------------------------------
 char workingDir[FILENAME_MAX]={0};
 std::map<std::string, std::string> Configuration::settings =
 {
-   {CONFIG_MAX_THREAD_NUMBER,   "4"},
-   {CONFIG_PORT,                "8080"},
-   {CONFIG_WORKING_DIR,         std::string(getcwd(workingDir, sizeof(workingDir)))},
-   {CONFIG_ROOT_DIR,            std::string(getcwd(workingDir, sizeof(workingDir)))},
+   {MAX_THREAD_NUMBER,   "4"},
+   {PORT,                "8080"},
+   {WORKING_DIR,         std::string(getcwd(workingDir, sizeof(workingDir)))},
+   {ROOT_DIR,            std::string(getcwd(workingDir, sizeof(workingDir)))},
+   {PAGE_TITLE,          "HttpServer"},
 };
 
 Configuration* Configuration::mpInstance = NULL;

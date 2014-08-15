@@ -29,7 +29,7 @@ Templater::Templater(const std::string& templateFilepath)
 {
    TRC_DEBUG_FUNC_ENTER(0U, "templateFilepath='%s'", templateFilepath.c_str());
 
-   mTemplateContent = lookupTemplate(templateFilepath);
+   mContent = lookupTemplate(templateFilepath);
 
    TRC_DEBUG_FUNC_EXIT (0U);
 }
@@ -55,24 +55,24 @@ std::map<std::string, std::string> Templater::mTemplateCache =
 //---------------------------------------------------------------------------------------
 // Template pathes constants
 //---------------------------------------------------------------------------------------
-const std::string Templater::TEMPLATE_PATH_ROOT_LAYOUT         = "/templates/rootlayout.tmpl";
-const std::string Templater::TEMPLATE_PATH_DIR_CONTENT         = "/templates/dircontent.tmpl";
-const std::string Templater::TEMPLATE_PATH_DIR_CONTENT_LINE    = "/templates/dircontentline.tmpl";
-const std::string Templater::TEMPLATE_PATH_STR_CONTENT         = "/templates/filecontent.tmpl";
-const std::string Templater::TEMPLATE_PATH_STR_CONTENT_LINE    = "/templates/filecontentline.tmpl";
-const std::string Templater::TEMPLATE_PATH_ERROR               = "/templates/error.tmpl";
+const std::string Templater::PATH_ROOT_LAYOUT         = "/templates/rootlayout.tmpl";
+const std::string Templater::PATH_DIR_CONTENT         = "/templates/dircontent.tmpl";
+const std::string Templater::PATH_DIR_CONTENT_LINE    = "/templates/dircontentline.tmpl";
+const std::string Templater::PATH_STR_CONTENT         = "/templates/filecontent.tmpl";
+const std::string Templater::PATH_STR_CONTENT_LINE    = "/templates/filecontentline.tmpl";
+const std::string Templater::PATH_ERROR               = "/templates/error.tmpl";
 
 //---------------------------------------------------------------------------------------
 // Macros constants
 //---------------------------------------------------------------------------------------
-const std::string Templater::TEMPLATE_MACROS_HEADER            = "header";
-const std::string Templater::TEMPLATE_MACROS_FILEPATH          = "filepath";
-const std::string Templater::TEMPLATE_MACROS_FILENAME          = "filename";
-const std::string Templater::TEMPLATE_MACROS_PERMS             = "perms";
-const std::string Templater::TEMPLATE_MACROS_SIZE              = "size";
-const std::string Templater::TEMPLATE_MACROS_FOOTER            = "footer";
-const std::string Templater::TEMPLATE_MACROS_IDX               = "idx";
-const std::string Templater::TEMPLATE_MACROS_CONTENT           = "content";
+const std::string Templater::MACROS_ROOT              = "root";
+const std::string Templater::MACROS_HEADER            = "header";
+const std::string Templater::MACROS_FILEPATH          = "filepath";
+const std::string Templater::MACROS_FILENAME          = "filename";
+const std::string Templater::MACROS_PERMS             = "perms";
+const std::string Templater::MACROS_SIZE              = "size";
+const std::string Templater::MACROS_FOOTER            = "footer";
+const std::string Templater::MACROS_CONTENT           = "content";
 
 //---------------------------------------------------------------------------------------
 const std::string Templater::MACRO_TAG = "##";
@@ -85,20 +85,13 @@ void Templater::setMacro(const std::string& macroName, const std::string& macroV
 }
 
 //---------------------------------------------------------------------------------------
-void Templater::setMacro(const std::string& macroName, unsigned long macroValue)
-//---------------------------------------------------------------------------------------
-{
-   setMacro(macroName, Utils::to_string(macroValue));
-}
-
-//---------------------------------------------------------------------------------------
 std::string Templater::generate()
 //---------------------------------------------------------------------------------------
 {
    TRC_DEBUG_FUNC_ENTER(0U, "");
 
    std::string result;
-   std::stringstream sstream(mTemplateContent);
+   std::stringstream sstream(mContent);
 
    if (sstream)
    {
@@ -164,7 +157,7 @@ std::string Templater::lookupTemplate(const std::string& templateName)
 
    if (iter == mTemplateCache.end())
    {
-      std::string workDir = Configuration::getInstance().getValueStr(Configuration::CONFIG_WORKING_DIR);
+      std::string workDir = Configuration::getInstance().getValueStr(Configuration::WORKING_DIR);
 
       mTemplateCache.insert(
                               {
@@ -177,15 +170,4 @@ std::string Templater::lookupTemplate(const std::string& templateName)
    }
 
    return iter->second;
-}
-
-//---------------------------------------------------------------------------------------
-void Templater::load(const std::string& templateFilepath)
-//---------------------------------------------------------------------------------------
-{
-   TRC_DEBUG_FUNC_ENTER(0U, "templateFilepath='%s'", templateFilepath.c_str());
-
-   mTemplateContent = lookupTemplate(templateFilepath);
-
-   TRC_DEBUG_FUNC_EXIT (0U);
 }

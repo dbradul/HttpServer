@@ -82,8 +82,8 @@ Callback IJobFactory::createJobOnErrorCallback(const Connection& connection, con
 {
    return [&connection, sessionId] (const std::string& result)
    {
-      Templater templater(Templater::TEMPLATE_PATH_ERROR);
-      templater.setMacro(Templater::TEMPLATE_MACROS_CONTENT, result);
+      Templater templater(Templater::PATH_ERROR);
+      templater.setMacro(Templater::MACROS_CONTENT, result);
 
       Response response(Response::RESULT_INTERNAL_SERVER_ERROR);
       response.setBody (templater.generate());

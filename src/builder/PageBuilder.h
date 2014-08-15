@@ -9,7 +9,8 @@
 #define PAGEBUILDER_H_
 
 #include <string>
-#include "builder/HTMLDecorator.h"
+#include "builder/Decorator.h"
+#include "common/Config.h"
 
 //---------------------------------------------------------------------------------------
 // Page builder
@@ -21,25 +22,24 @@ class PageBuilder
       virtual ~PageBuilder();
 
       template<typename T>
-      std::string build(   const std::string& title,
-                           const std::vector<T>& content,
-                           HTMLDecorator<T> decorator);
+      std::string build(   const std::vector<T>& content,
+                           Decorator<T> decorator);
 };
 
 //---------------------------------------------------------------------------------------
 template<typename T>
-std::string PageBuilder::build(  const std::string& title,
-                                 const std::vector<T>& content,
-                                 HTMLDecorator<T> decorator)
+std::string PageBuilder::build(  const std::vector<T>& content,
+                                 Decorator<T> decorator)
 //---------------------------------------------------------------------------------------
 {
    std::string body;
    for(T line : content)
    {
       std::string decoratedLine = decorator.decorateLine(line);
-      body += decoratedLine + "\n";
+      body += (decoratedLine + "\n");
    }
 
+   std::string title = Configuration::getInstance().getValueStr(Configuration::PAGE_TITLE);
    std::string decoratedHeader  = decorator.decorateHeader(title);
    std::string decoratedBody    = decorator.decorateBody  (body);
    std::string decoratedFooter  = decorator.decorateFooter(Utils::getCurrentDateTime());

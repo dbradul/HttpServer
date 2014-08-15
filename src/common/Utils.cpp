@@ -101,7 +101,7 @@ void Utils::readDir(const std::string& requestPath, std::vector<File>& fileList)
          {
             File file(requestPath + mydirent->d_name);
 
-            std::string rootDir = Configuration::getInstance().getValueStr(Configuration::CONFIG_ROOT_DIR);
+            std::string rootDir = Configuration::getInstance().getValueStr(Configuration::ROOT_DIR);
             std::string requestPathWithoutBase = requestPath;
             requestPathWithoutBase = requestPathWithoutBase.replace(requestPath.find(rootDir), rootDir.length(), "");
 

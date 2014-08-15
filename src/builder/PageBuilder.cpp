@@ -1,19 +1,12 @@
 /*******************************************************************
- * PageBuilder2.cpp
+ * PageBuilder.cpp
  *
- *  @date: 28 лип. 2014
+ *  @date: 28-7-2014
  *  @author: DB
  ******************************************************************/
 
-#include <builder/PageBuilder.h>
-#include <jobs/JobFactoryGET.h>
-#include "executor/IJob.h"
 #include "common/traceout.h"
-#include "common/Utils.h"
-#include "common/Config.h"
-#include "builder/Templater.h"
-#include <algorithm>
-
+#include "builder/PageBuilder.h"
 
 //---------------------------------------------------------------------------------------
 PageBuilder::PageBuilder()
