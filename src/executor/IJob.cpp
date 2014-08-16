@@ -38,16 +38,3 @@ void IJob::setOnErrorCallback(const Callback& callback)
    onErrorCallback = callback;
 }
 
-//---------------------------------------------------------------------------------------
-const Callback& IJob::getOnFinishCallback() const
-//---------------------------------------------------------------------------------------
-{
-   return onFinishCallback;
-}
-
-//---------------------------------------------------------------------------------------
-const Callback& IJob::getOnErrorCallback() const
-//---------------------------------------------------------------------------------------
-{
-   return onErrorCallback;
-}

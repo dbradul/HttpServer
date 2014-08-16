@@ -1,7 +1,7 @@
 /*******************************************************************
  * JobExecutor.h
  *
- *  @date: 28 ���. 2014
+ *  @date: 28-7-2014
  *  @author: DB
  ******************************************************************/
 
@@ -16,21 +16,21 @@
 //TODO: watchdog thread
 class JobExecutor
 {
-    public:
-        JobExecutor();
-        virtual ~JobExecutor();
+   public:
+      JobExecutor();
+      virtual ~JobExecutor();
 
-        void start();
-        void submitJob( IJob* job );
-        void setMaxThreadNum(int maxThreadNum);
-        BlockingQueue<IJob*> mJobQueue;
-        static const int THREAD_NUM_UPPER_BOUND;
+      void start();
+      void submitJob(IJobPtr job);
+      void setMaxThreadNum(int maxThreadNum);
+      BlockingQueue<IJobPtr> mJobQueue;
+      static const int THREAD_NUM_UPPER_BOUND;
 
-    private:
-        void processingLoop();
-        std::vector<std::thread*> mThreadPool;
-        bool mbStarted;
-        int mMaxThreadNum;
+   private:
+      void processingLoop();
+      std::vector<std::thread> mThreadPool;
+      bool mbStarted;
+      int mMaxThreadNum;
 
 };
 

@@ -1,7 +1,7 @@
 /*******************************************************************
- * IJob.h
+ *  IJob.h
  *
- *  @date: 28 ���. 2014
+ *  @date: 28-7-2014
  *  @author: DB
  ******************************************************************/
 
@@ -10,6 +10,7 @@
 
 #include <functional>
 #include <string>
+#include <bits/unique_ptr.h>
 
 typedef std::function<void(const std::string&)> Callback;
 
@@ -24,11 +25,11 @@ class IJob
 
       void setOnFinishCallback(const Callback& callback);
       void setOnErrorCallback(const Callback& callback);
-      const Callback& getOnFinishCallback() const;
-      const Callback& getOnErrorCallback() const;
 
       Callback onFinishCallback;
       Callback onErrorCallback;
 };
+
+typedef std::unique_ptr<IJob> IJobPtr;
 
 #endif /* IJOB_H_ */

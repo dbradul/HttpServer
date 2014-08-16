@@ -6,7 +6,7 @@
  ******************************************************************/
 
 #include <core/Dispatcher.h>
-#include "jobs/IJobFactory.h"
+#include "executor/JobFactory.h"
 #include "executor/JobExecutor.h"
 #include "protocol/Request.h"
 #include "common/traceout.h"
@@ -48,20 +48,22 @@ void Dispatcher::start()
    // read and process requests until the connection is closed
    while (Request request = mConnection.readRequest())
    {
-      TRC_INFO(0U, "The new request is received: request='%s'", request.getHeader().toString(request.getHeaderPreambleFields()).c_str());
+      TRC_INFO(0U, "The new request is received: request='%s'", request.getHeaderStr().c_str());
 
-      IJobFactory* jobFactory = IJobFactory::createInstance(request.getHeaderField(Request::METHOD));
+//      IJobFactory* jobFactory = IJobFactory::createInstance(request.getHeaderField(Request::METHOD));
+//
+//      IJobPtr pJob(jobFactory->createJob(request));
 
-      IJob*    pJob              = jobFactory->createJob                   (request);
-      Callback onFinishCallback  = jobFactory->createJobOnFinishCallback   (mConnection, request.getSessionId());
-      Callback onErrorCallback   = jobFactory->createJobOnErrorCallback    (mConnection, request.getSessionId());
+      IJobPtr pJob(JobFactory::createJob(request));
+      Callback onFinishCallback  = JobFactory::createJobOnFinishCallback   (mConnection, request.getSessionId());
+      Callback onErrorCallback   = JobFactory::createJobOnErrorCallback    (mConnection, request.getSessionId());
 
       pJob->setOnFinishCallback  (onFinishCallback);
       pJob->setOnErrorCallback   (onErrorCallback);
 
-      jobExecutor.submitJob(pJob);
+      jobExecutor.submitJob(std::move(pJob));
 
-      TRC_INFO(0U, "The corresponding job is queued: pJob=0x%p, sessionId=%d", pJob, request.getSessionId());
+      TRC_INFO(0U, "The corresponding job is queued: pJob=0x%p, sessionId=%d", pJob.get(), request.getSessionId());
    }
 }
 

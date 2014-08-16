@@ -43,7 +43,7 @@ void JobExecutor::start()
 
       for (int i = 0; i < maxNumThread; ++i)
       {
-         mThreadPool.push_back(new std::thread(&JobExecutor::processingLoop, this));
+         mThreadPool.push_back(std::thread(&JobExecutor::processingLoop, this));
       }
 
       mbStarted = true;
@@ -53,12 +53,12 @@ void JobExecutor::start()
 }
 
 //---------------------------------------------------------------------------------------
-void JobExecutor::submitJob(IJob* job)
+void JobExecutor::submitJob(IJobPtr job)
 //---------------------------------------------------------------------------------------
 {
    TRC_DEBUG_FUNC_ENTER(0U, "");
 
-   mJobQueue.push(job);
+   mJobQueue.push(std::move(job));
 
    TRC_DEBUG_FUNC_EXIT(0U);
 }
@@ -70,9 +70,9 @@ void JobExecutor::processingLoop()
 {
    TRC_DEBUG_FUNC_ENTER(0U, "");
 
-   while (IJob* pJob = mJobQueue.pop())
+   while (IJobPtr pJob = mJobQueue.pop())
    {
-      TRC_INFO(0U, "New job started: pJob=0x%p", (pJob));
+      TRC_INFO(0U, "New job started: pJob=0x%p", (pJob.get()));
 
       try
       {
@@ -85,8 +85,15 @@ void JobExecutor::processingLoop()
 
       catch (const std::exception& e)
       {
-         TRC_ERROR(0, "Job execution failed: '%s'", e.what());
-         pJob->onErrorCallback(e.what());
+         try
+         {
+            TRC_ERROR(0, "Job execution failed: '%s'", e.what());
+            pJob->onErrorCallback(e.what());
+         }
+         catch(...)
+         {
+            TRC_ERROR(0, "Calling error callback failed!!");
+         }
       }
    }
 
