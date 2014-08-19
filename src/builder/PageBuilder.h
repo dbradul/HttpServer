@@ -39,7 +39,7 @@ std::string PageBuilder::build(  const std::vector<T>& content,
       body += (decoratedLine + "\n");
    }
 
-   std::string title = Configuration::getInstance().getValueStr(Configuration::PAGE_TITLE);
+   std::string title = Config::getValueStr(Config::PAGE_TITLE);
    std::string decoratedHeader  = decorator.decorateHeader(title);
    std::string decoratedBody    = decorator.decorateBody  (body);
    std::string decoratedFooter  = decorator.decorateFooter(Utils::getCurrentDateTime());

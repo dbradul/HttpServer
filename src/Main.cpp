@@ -21,10 +21,10 @@
 //---------------------------------------------------------------------------------------
 // FORWARD DECLARATIONS
 //---------------------------------------------------------------------------------------
-bool parseOptions(int argc, char *argv[], Configuration& configuration);
+bool parseOptions(int argc, char *argv[]);
 void printUsage();
-void daemonize(const Configuration& configuration);
-bool checkEnv(const Configuration& configuration);
+void daemonize();
+bool checkEnv();
 
 //---------------------------------------------------------------------------------------
 int main(int argc, char *argv[])
@@ -34,13 +34,13 @@ int main(int argc, char *argv[])
 
    test::unit::Runner::run(true);
 
-   if (!parseOptions(argc, argv, Configuration::getInstance()))
+   if (!parseOptions(argc, argv))
    {
       printUsage();
       exit(EXIT_FAILURE);
    }
 
-   if (!checkEnv(Configuration::getInstance()))
+   if (!checkEnv())
    {
       printUsage();
       exit(EXIT_FAILURE);
@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
    {
       HTTP::Dispatcher dispatcher;
       HTTP::Connection connection;
-      connection.setPort(Configuration::getInstance().getValueInt(Configuration::PORT));
+      connection.setPort(Config::getValueInt(Config::PORT));
 
       // initialize
       dispatcher.setConnection(connection);
@@ -79,12 +79,12 @@ int main(int argc, char *argv[])
 }
 
 //---------------------------------------------------------------------------------------
-bool checkEnv(const Configuration& configuration)
+bool checkEnv()
 //---------------------------------------------------------------------------------------
 {
    bool bResult = true;
 
-   std::string workDir = configuration.getValueStr(Configuration::WORKING_DIR);
+   std::string workDir = Config::getValueStr(Config::WORKING_DIR);
 
    bResult &= File(workDir + Templater::PATH_ROOT_LAYOUT)        .exists();
    bResult &= File(workDir + Templater::PATH_DIR_CONTENT)        .exists();
@@ -96,7 +96,7 @@ bool checkEnv(const Configuration& configuration)
 }
 
 //---------------------------------------------------------------------------------------
-void daemonize(const Configuration& configuration)
+void daemonize()
 //---------------------------------------------------------------------------------------
 {
    pid_t pid;
@@ -137,7 +137,7 @@ void daemonize(const Configuration& configuration)
 
    /* Change the working directory to the root directory */
    /* or another appropriated directory */
-   std::string workDir = configuration.getValueStr(Configuration::WORKING_DIR);
+   std::string workDir = Config::getValueStr(Config::WORKING_DIR);
    chdir(workDir.c_str());
 
    /* Close all open file descriptors */
@@ -149,7 +149,7 @@ void daemonize(const Configuration& configuration)
 }
 
 //---------------------------------------------------------------------------------------
-bool parseOptions(int argc, char *argv[], Configuration& configuration)
+bool parseOptions(int argc, char *argv[])
 //---------------------------------------------------------------------------------------
 {
    bool bResult = true;
@@ -162,19 +162,19 @@ bool parseOptions(int argc, char *argv[], Configuration& configuration)
       switch (c)
       {
       case 'p':
-         configuration.setValue(Configuration::PORT, Utils::to_int(optarg));
+         Config::setValue(Config::PORT, Utils::to_int(optarg));
          break;
 
       case 'd':
-         configuration.setValue(Configuration::WORKING_DIR, std::string(optarg));
+         Config::setValue(Config::WORKING_DIR, std::string(optarg));
          break;
 
       case 'r':
-         configuration.setValue(Configuration::ROOT_DIR, std::string(optarg));
+         Config::setValue(Config::ROOT_DIR, std::string(optarg));
          break;
 
       case 't':
-         configuration.setValue(Configuration::MAX_THREAD_NUMBER, Utils::to_int(optarg));
+         Config::setValue(Config::MAX_THREAD_NUMBER, Utils::to_int(optarg));
          break;
 
       case '?':

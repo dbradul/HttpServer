@@ -14,7 +14,7 @@ const int JobExecutor::THREAD_NUM_UPPER_BOUND = 1024;
 //---------------------------------------------------------------------------------------
 JobExecutor::JobExecutor() :
       mbStarted(false),
-      mMaxThreadNum(Configuration::getInstance().getValueInt(Configuration::MAX_THREAD_NUMBER))
+      mMaxThreadNum(Config::getValueInt(Config::MAX_THREAD_NUMBER))
 //---------------------------------------------------------------------------------------
 {
 }

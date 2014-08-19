@@ -53,7 +53,7 @@ IJobPtr JobFactory::createJob(const Request& request)
                PageBuilder builder;
 
                std::string result;
-               std::string URL = Configuration::getInstance().getValueStr(Configuration::ROOT_DIR) + mPath;
+               std::string URL = Config::getValueStr(Config::ROOT_DIR) + mPath;
 
                if (Utils::endsWith(URL, "/"))
                {

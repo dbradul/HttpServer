@@ -17,15 +17,15 @@
 //---------------------------------------------------------------------------------------
 // Protocol constants
 //---------------------------------------------------------------------------------------
-const std::string Configuration::MAX_THREAD_NUMBER  = "PUTIN_HUYLO";
-const std::string Configuration::PORT               = "SLAVA_UKRAYNI";
-const std::string Configuration::WORKING_DIR        = "HEROYAM_SLAVA";
-const std::string Configuration::ROOT_DIR           = "LALALALALALA";
-const std::string Configuration::PAGE_TITLE         = "PAGE_TITLE";
+const std::string Config::MAX_THREAD_NUMBER  = "PUTIN_HUYLO";
+const std::string Config::PORT               = "SLAVA_UKRAYNI";
+const std::string Config::WORKING_DIR        = "HEROYAM_SLAVA";
+const std::string Config::ROOT_DIR           = "LALALALALALA";
+const std::string Config::PAGE_TITLE         = "PAGE_TITLE";
 
 //---------------------------------------------------------------------------------------
 char workingDir[FILENAME_MAX]={0};
-std::map<std::string, std::string> Configuration::settings =
+std::map<std::string, std::string> Config::settings =
 {
    {MAX_THREAD_NUMBER,   "4"},
    {PORT,                "8080"},
@@ -34,10 +34,10 @@ std::map<std::string, std::string> Configuration::settings =
    {PAGE_TITLE,          "HttpServer"},
 };
 
-Configuration* Configuration::mpInstance = NULL;
+Config* Config::mpInstance = NULL;
 
 //---------------------------------------------------------------------------------------
-Configuration::Configuration()
+Config::Config()
 //---------------------------------------------------------------------------------------
 {
    TRC_DEBUG_FUNC_ENTER(0U, "");
@@ -45,7 +45,7 @@ Configuration::Configuration()
 }
 
 //---------------------------------------------------------------------------------------
-Configuration::~Configuration()
+Config::~Config()
 //---------------------------------------------------------------------------------------
 {
    TRC_DEBUG_FUNC_ENTER(0U, "");
@@ -53,21 +53,21 @@ Configuration::~Configuration()
 }
 
 //---------------------------------------------------------------------------------------
-void Configuration::setValue(std::string valueName, std::string value)
+void Config::setValue(std::string valueName, std::string value)
 //---------------------------------------------------------------------------------------
 {
    settings[valueName] = value;
 }
 
 //---------------------------------------------------------------------------------------
-void Configuration::setValue(std::string valueName, unsigned long value)
+void Config::setValue(std::string valueName, unsigned long value)
 //---------------------------------------------------------------------------------------
 {
    setValue(valueName, Utils::to_string(value));
 }
 
 //---------------------------------------------------------------------------------------
-const std::string Configuration::getValueStr(const std::string& valueName) const
+const std::string Config::getValueStr(const std::string& valueName)
 //---------------------------------------------------------------------------------------
 {
    std::string result = "UNKNOWN";
@@ -83,22 +83,22 @@ const std::string Configuration::getValueStr(const std::string& valueName) const
 }
 
 //---------------------------------------------------------------------------------------
-unsigned long Configuration::getValueInt(const std::string& valueName) const
+unsigned long Config::getValueInt(const std::string& valueName)
 //---------------------------------------------------------------------------------------
 {
    std::string valueStr = getValueStr(valueName);
    return Utils::to_int(valueStr.c_str());
 }
 
-//TODO: lets forget about thread-safety for awhile
-//---------------------------------------------------------------------------------------
-Configuration& Configuration::getInstance()
-//---------------------------------------------------------------------------------------
-{
-   if(!mpInstance)
-   {
-      mpInstance = new Configuration();
-   }
-
-   return *mpInstance;
-}
+////TODO: lets forget about thread-safety for awhile
+////---------------------------------------------------------------------------------------
+//Config& Config::getInstance()
+////---------------------------------------------------------------------------------------
+//{
+//   if(!mpInstance)
+//   {
+//      mpInstance = new Config();
+//   }
+//
+//   return *mpInstance;
+//}
