@@ -1,7 +1,7 @@
 /*******************************************************************
  * Templater.h
  *
- *  @date: 16 ����. 2014
+ *  @date: 16-8-2014
  *  @author: DB
  ******************************************************************/
 
@@ -36,15 +36,16 @@ class Templater
       ~Templater();
 
       void setMacro(const std::string& macroName, const std::string& macroValue);
+
       std::string generate();
+
+      static void purgeCache();
 
    private:
       std::map<std::string, std::string> mMacroses;
       std::string mContent;
-
       static std::map<std::string, std::string> mTemplateCache;
       static const std::string MACRO_TAG;
-      static std::string trimTags(std::string const &token);
       static std::string lookupTemplate(const std::string& templateName);
 };
 

@@ -44,13 +44,7 @@ Templater::~Templater()
 
 //---------------------------------------------------------------------------------------
 std::map<std::string, std::string> Templater::mTemplateCache =
-{
-//   {TEMPLATE_ROOT_LAYOUT,       ""},
-//   {TEMPLATE_PAGE_TABLE,        ""},
-//   {TEMPLATE_PAGE_TABLE_LINE,   ""},
-//   {TEMPLATE_FILE_CONTENT,      ""},
-//   {TEMPLATE_FILE_CONTENT_LINE, ""},
-};
+{};
 
 //---------------------------------------------------------------------------------------
 // Template pathes constants
@@ -124,29 +118,6 @@ std::string Templater::generate()
 }
 
 //---------------------------------------------------------------------------------------
-std::string Templater::trimTags(std::string const &token)
-//---------------------------------------------------------------------------------------
-{
-   std::string trimmed = token;
-   const std::string tag = Templater::MACRO_TAG;
-   size_t lengthOf2Tags = 2 * tag.length();
-
-   if (token.length() >= lengthOf2Tags)
-   {
-      bool isTagged = false;
-      isTagged = (0 == token.compare(0, tag.length(), tag));
-      isTagged &= (0 == token.compare(token.length() - tag.length(), tag.length(), tag));
-
-      if (isTagged)
-      {
-         trimmed = token.substr(tag.length(), token.length() - lengthOf2Tags);
-      }
-   }
-
-   return trimmed;
-}
-
-//---------------------------------------------------------------------------------------
 std::string Templater::lookupTemplate(const std::string& templateName)
 //---------------------------------------------------------------------------------------
 {
@@ -156,15 +127,20 @@ std::string Templater::lookupTemplate(const std::string& templateName)
    {
       std::string workDir = Config::getValueStr(Config::WORKING_DIR);
 
-      mTemplateCache.insert(
-                              {
-                                 templateName,
-                                 Utils::getTextFileContent((workDir + templateName).c_str())
-                              }
-                           );
+      mTemplateCache.insert({
+                              templateName,
+                              Utils::getTextFileContent((workDir + templateName).c_str())
+                           });
 
       iter = mTemplateCache.find(templateName);
    }
 
    return iter->second;
+}
+
+//---------------------------------------------------------------------------------------
+void Templater::purgeCache()
+//---------------------------------------------------------------------------------------
+{
+   mTemplateCache.clear();
 }

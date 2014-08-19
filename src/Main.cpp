@@ -17,6 +17,7 @@
 #include "builder/Templater.h"
 
 #include <TestHarness.h>
+#include <thread>
 
 //---------------------------------------------------------------------------------------
 // FORWARD DECLARATIONS
@@ -32,7 +33,7 @@ int main(int argc, char *argv[])
 {
    TRC_DEBUG_FUNC_ENTER(0U, "Application started");
 
-   test::unit::Runner::run(true);
+   ////test::unit::Runner::run(true);
 
    if (!parseOptions(argc, argv))
    {
@@ -47,7 +48,7 @@ int main(int argc, char *argv[])
    }
 
    TRC_INFO(0U, "Deamonization");
-   ////daemonize(Configuration::getInstance());
+   daemonize();
 
    /* Open the log file */
    TRC_INIT(LOG_PID, LOG_DAEMON);
@@ -89,10 +90,93 @@ bool checkEnv()
    bResult &= File(workDir + Templater::PATH_ROOT_LAYOUT)        .exists();
    bResult &= File(workDir + Templater::PATH_DIR_CONTENT)        .exists();
    bResult &= File(workDir + Templater::PATH_DIR_CONTENT_LINE)   .exists();
-   bResult &= File(workDir + Templater::PATH_STR_CONTENT)       .exists();
-   bResult &= File(workDir + Templater::PATH_STR_CONTENT_LINE)  .exists();
+   bResult &= File(workDir + Templater::PATH_STR_CONTENT)        .exists();
+   bResult &= File(workDir + Templater::PATH_STR_CONTENT_LINE)   .exists();
 
    return bResult;
+}
+
+//---------------------------------------------------------------------------------------
+void reloadTemplates()
+//---------------------------------------------------------------------------------------
+{
+   Templater::purgeCache();
+
+   return;
+}
+
+//---------------------------------------------------------------------------------------
+void signalWaitProc()
+//---------------------------------------------------------------------------------------
+{
+   struct sigaction sigact;
+   sigset_t         sigset;
+   int             signo;
+   int             status;
+
+   // сигналы об ошибках в программе будут обрататывать более тщательно
+   // указываем что хотим получать расширенную информацию об ошибках
+   sigact.sa_flags = SA_SIGINFO;
+
+//   // задаем функцию обработчик сигналов
+//   sigact.sa_sigaction = signal_error;
+
+   sigemptyset(&sigact.sa_mask);
+
+   // установим наш обработчик на сигналы
+
+   sigaction(SIGFPE, &sigact, 0); // ошибка FPU
+   sigaction(SIGILL, &sigact, 0); // ошибочная инструкция
+   sigaction(SIGSEGV, &sigact, 0); // ошибка доступа к памяти
+   sigaction(SIGBUS, &sigact, 0); // ошибка шины, при обращении к физической памяти
+
+   sigemptyset(&sigset);
+
+   // блокируем сигналы которые будем ожидать
+   // сигнал остановки процесса пользователем
+   sigaddset(&sigset, SIGQUIT);
+
+   // сигнал для остановки процесса пользователем с терминала
+   sigaddset(&sigset, SIGINT);
+
+   // сигнал запроса завершения процесса
+   sigaddset(&sigset, SIGTERM);
+
+   // пользовательский сигнал который мы будем использовать для обновления конфига
+   sigaddset(&sigset, SIGUSR1);
+   sigprocmask(SIG_BLOCK, &sigset, NULL);
+
+   if (!status)
+   {
+       // цикл ожижания сообщений
+       for (;;)
+       {
+           // ждем указанных сообщений
+           sigwait(&sigset, &signo);
+
+           // если то сообщение обновления конфига
+           if (signo == SIGUSR1)
+           {
+               // обновим конфиг
+               ////status = ReloadConfig();
+               reloadTemplates();
+               if (status == 0)
+               {
+                   ///WriteLog("[DAEMON] Reload config failed\n");
+               }
+               else
+               {
+                   ///WriteLog("[DAEMON] Reload config OK\n");
+               }
+           }
+           else // если какой-либо другой сигнал, то выйдим из цикла
+           {
+               break;
+           }
+       }
+   }
+
+   return;
 }
 
 //---------------------------------------------------------------------------------------
@@ -135,6 +219,9 @@ void daemonize()
    /* Set new file permissions */
    umask(0);
 
+   /* Set new session to stay independent from parent */
+   setsid();
+
    /* Change the working directory to the root directory */
    /* or another appropriated directory */
    std::string workDir = Config::getValueStr(Config::WORKING_DIR);
@@ -146,6 +233,8 @@ void daemonize()
    {
       close(fileDescrs);
    }
+
+   std::thread(signalWaitProc);
 }
 
 //---------------------------------------------------------------------------------------
