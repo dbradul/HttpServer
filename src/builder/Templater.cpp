@@ -90,40 +90,37 @@ std::string Templater::generate()
 {
    TRC_DEBUG_FUNC_ENTER(0U, "");
 
-   std::string result;
-   std::stringstream sstream(mContent);
+   std::size_t tagOpenBracket  = mContent.find(Templater::MACRO_TAG);
+   std::size_t tagCloseBracket = mContent.find(Templater::MACRO_TAG, tagOpenBracket+1);
 
-   if (sstream)
+   while(   std::string::npos != tagOpenBracket
+         && std::string::npos != tagCloseBracket)
    {
-//        sstream.seekg(0, std::ios::end);
-//        result.resize(sstream.tellg());
-//        sstream.seekg(0, std::ios::beg);
+      std::string token = mContent.substr(   tagOpenBracket + Templater::MACRO_TAG.length(),
+                           tagCloseBracket - tagOpenBracket - Templater::MACRO_TAG.length() );
 
-      std::string token;
-      while (sstream >> token)
+      std::size_t lastModifiedSymbol = tagCloseBracket + 1;
+
+      auto iter = mMacroses.find(token);
+      if (iter != mMacroses.end())
       {
-         TRC_DEBUG(0U, "token extracted: '%s'", token.c_str());
-         std::string trimmedToken = trimTags(token);
+         TRC_DEBUG(0U, "macro recognized: '%s' -> '%s'", token.c_str(),
+                                                         iter->second.c_str());
 
-         auto iter = mMacroses.find(trimmedToken);
-         if (iter != mMacroses.end())
-         {
-            TRC_DEBUG(0U, "macro recognized: '%s' -> '%s'", trimmedToken.c_str(),
-                                                            iter->second.c_str());
+         mContent.replace( mContent.begin() + tagOpenBracket,
+                           mContent.begin() + tagCloseBracket + Templater::MACRO_TAG.length(),
+                           iter->second);
 
-            result += (iter->second + " ");
-         }
-
-         else
-         {
-            result += (token + " ");
-         }
+         lastModifiedSymbol = tagOpenBracket + iter->second.length();
       }
+
+      tagOpenBracket  = mContent.find(Templater::MACRO_TAG, lastModifiedSymbol + 1);
+      tagCloseBracket = mContent.find(Templater::MACRO_TAG, tagOpenBracket + 1);
    }
 
    TRC_DEBUG_FUNC_EXIT(0U);
 
-   return result;
+   return mContent;
 }
 
 //---------------------------------------------------------------------------------------

@@ -32,6 +32,8 @@ int main(int argc, char *argv[])
 {
    TRC_DEBUG_FUNC_ENTER(0U, "Application started");
 
+   test::unit::Runner::run(true);
+
    if (!parseOptions(argc, argv, Configuration::getInstance()))
    {
       printUsage();
