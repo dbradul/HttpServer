@@ -10,6 +10,7 @@
 
 #include "core/Connection.h"
 #include "common/Config.h"
+#include "executor/JobExecutor.h"
 
 namespace HTTP
 {
@@ -23,9 +24,11 @@ class Dispatcher
       void setConnection(const Connection& connector);
 
       void start();
+      void stop();
 
    private:
       Connection mConnection;
+      JobExecutor mJobExecutor;
 };
 
 }

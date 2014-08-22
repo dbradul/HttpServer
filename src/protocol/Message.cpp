@@ -22,11 +22,8 @@ const std::string Message::HEADER_BODY_DELIM                = "\r\n\r\n";
 const std::string Message::HEADER_FIELD_DELIM               = "\r\n";
 const std::string Message::HEADER_FIELD_NAME_DELIM          = ": ";
 
-const std::string Message::PROTOCOL       = "Protocol";
-const std::string Message::RET_CODE       = "ReturnCode";
-const std::string Message::RET_CODE_DESC  = "ReturnCodeDescription";
-const std::string Message::CONTENT_LENGTH = "Content-Length";
-const std::string Message::CONTENT_TYPE   = "Content-type";
+const std::string Message::PROTOCOL_VERSION  = "Protocol";
+
 
 //---------------------------------------------------------------------------------------
 Message::Message()
@@ -53,13 +50,6 @@ const std::string& Message::getRawMessage() const
 }
 
 //---------------------------------------------------------------------------------------
-const Message::Header& Message::getHeader() const
-//---------------------------------------------------------------------------------------
-{
-    return mHeader;
-}
-
-//---------------------------------------------------------------------------------------
 const std::string& Message::getHeaderField(const std::string& headerFieldName) const
 //---------------------------------------------------------------------------------------
 {
@@ -80,15 +70,15 @@ void Message::parseHeader(const std::string& rawMessage)
       throw(std::range_error("Message is not correct"));
    }
 
-   setHeaderField(getHeaderPreambleFields()[0])   = _1stField;
-   setHeaderField(getHeaderPreambleFields()[1])   = _2ndField;
-   setHeaderField(getHeaderPreambleFields()[2])   = _3rdField;
+   setHeaderField(getHeaderPreambleFields()[0], _1stField);
+   setHeaderField(getHeaderPreambleFields()[1], _2ndField);
+   setHeaderField(getHeaderPreambleFields()[2], _3rdField);
 
-   size_t headerEnd = rawMessage.find(HEADER_BODY_DELIM);
-   size_t headerStart = rawMessage.find(HEADER_FIELD_DELIM);
+   size_t headerEnd     = rawMessage.find(HEADER_BODY_DELIM);
+   size_t headerStart   = rawMessage.find(HEADER_FIELD_DELIM);
 
-   if (  headerEnd != std::string::npos &&
-         headerStart != std::string::npos)
+   if (   headerEnd   != std::string::npos
+       && headerStart != std::string::npos)
    {
       std::string headerStr = rawMessage.substr(
                         headerStart + HEADER_FIELD_DELIM.size(),
@@ -105,7 +95,7 @@ void Message::parseHeader(const std::string& rawMessage)
                         entry,
                         HEADER_FIELD_NAME_DELIM);
 
-         setHeaderField(headerEntryFields[0]) = headerEntryFields[1];
+         setHeaderField(headerEntryFields[0], headerEntryFields[1]);
       }
    }
 
@@ -123,25 +113,10 @@ void Message::parseBody(const std::string& rawMessage)
 }
 
 //---------------------------------------------------------------------------------------
-void Message::setHeader(const std::string& header)
+void Message::setHeaderField(const std::string& fieldName, const std::string& fieldValue)
 //---------------------------------------------------------------------------------------
 {
-   parseHeader(header);
-   mRawMessage.resize(0);
-}
-
-//---------------------------------------------------------------------------------------
-std::string& Message::setHeaderField(const std::string& headerFieldName)
-//---------------------------------------------------------------------------------------
-{
-   return mHeader[headerFieldName];
-}
-
-//---------------------------------------------------------------------------------------
-Message::Header& Message::getHeader()
-//---------------------------------------------------------------------------------------
-{
-   return mHeader;
+   mHeader[fieldName] = fieldValue;
 }
 
 //---------------------------------------------------------------------------------------
@@ -167,35 +142,25 @@ const std::string& Message::getBody() const
 }
 
 //---------------------------------------------------------------------------------------
-////std::shared_ptr<Message> Message::parse(const std::string& rawMessage)
-Message* Message::parse(const std::string& rawMessage)
+void Message::parse(const std::string& rawMessage)
 //---------------------------------------------------------------------------------------
 {
-////      message = std::shared_ptr<Request>(new Request());
-   Message* message = Utils::startsWith(rawMessage, "HTTP/") ?
-                        static_cast<Message *>(new Response()) :
-                        static_cast<Message *>(new Request());
-
-   message->parseHeader (rawMessage);
-   message->parseBody   (rawMessage);
-
-   message->mbValid = true;
-   message->mRawMessage = rawMessage;
-
-   return message;
+   parseHeader (rawMessage);
+   parseBody   (rawMessage);
+   mbValid     = true;
+   mRawMessage = rawMessage;
 }
 
 //---------------------------------------------------------------------------------------
 bool Message::isValid() const
 //---------------------------------------------------------------------------------------
 {
-    return mbValid;
+   return mbValid;
 }
 
 //---------------------------------------------------------------------------------------
 void Message::setValid(bool valid)
 //---------------------------------------------------------------------------------------
 {
-    mbValid = valid;
+   mbValid = valid;
 }
-

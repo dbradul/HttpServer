@@ -17,17 +17,29 @@ typedef std::function<void(const std::string&)> Callback;
 class IJob
 {
    public:
+      enum Type
+      {
+         REGULAR,
+         DUMMY_TERMINATE
+      };
+
       IJob();
+      IJob(Type type);
       virtual ~IJob();
 
       //TODO: templatize!
       virtual std::string execute() = 0;
+
+      Type getType() const;
 
       void setOnFinishCallback(const Callback& callback);
       void setOnErrorCallback(const Callback& callback);
 
       Callback onFinishCallback;
       Callback onErrorCallback;
+
+   private:
+      Type mType;
 };
 
 typedef std::unique_ptr<IJob> IJobPtr;

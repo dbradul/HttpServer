@@ -1,7 +1,7 @@
 /*******************************************************************
  * Response.h
  *
- *  @date: 28 ���. 2014
+ *  @date: 28-7-2014
  *  @author: DB
  ******************************************************************/
 
@@ -12,37 +12,40 @@
 #include <string>
 #include <map>
 #include <list>
+
 #include "Message.h"
 
-class Response : public Message
+class Response: public Message
 {
-    public:
-        Response();
-        Response(const std::string& preamble);
-        virtual ~Response();
+   public:
+      enum ResultCode
+      {
+         OK = 200, CREATED = 201,
+         //...
+         INTERNAL_SERVER_ERROR = 500,
+         //...
+      };
 
-        static const std::string RESULT_OK;
-        static const std::string RESULT_CREATED;
-        static const std::string RESULT_ACCEPTED;
-        static const std::string RESULT_NO_CONTENT;
-        static const std::string RESULT_multiple_choices;
-        static const std::string RESULT_moved_permanently;
-        static const std::string RESULT_moved_temporarily;
-        static const std::string RESULT_not_modified;
-        static const std::string RESULT_bad_request;
-        static const std::string RESULT_unauthorized;
-        static const std::string RESULT_forbidden;
-        static const std::string RESULT_not_found;
-        static const std::string RESULT_INTERNAL_SERVER_ERROR;
-        static const std::string RESULT_not_implemented;
-        static const std::string RESULT_bad_gateway;
-        static const std::string RESULT_service_unavailable;
+      Response();
+      Response(const std::string& rawMessage);
+      virtual ~Response();
 
-        const std::vector<std::string>& getHeaderPreambleFields() const;
+      static const std::string VERSION;
+      static const std::string RET_CODE;
+      static const std::string RET_CODE_DESC;
+      static const std::string HEADER_CONTENT_LENGTH;
+      static const std::string HEADER_CONTENT_TYPE;
 
-        std::string toString() const;
+      const std::vector<std::string>& getHeaderPreambleFields() const;
 
-    private:
+      void setResultCode(ResultCode resultCode);
+      void setVersion(const std::string& version);
+
+      std::string toString() const;
+
+   private:
+      static const std::map<ResultCode, std::string> mResultCodeDescriptions;
+      static const std::vector<std::string> mHeaderPreambleFields;
 };
 
 #endif /* RESPONSE_H_ */

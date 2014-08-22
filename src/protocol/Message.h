@@ -101,26 +101,21 @@ class Message
       Message(const std::string& message);
       virtual ~Message();
 
-      void                 setHeader(const std::string& header);
       void                 setBody(const std::string& body);
-      std::string&         setHeaderField(const std::string& headerFieldName);
+      void                 setHeaderField(const std::string& fieldName, const std::string& fieldValue);
 
       const std::string&   getRawMessage() const;
-      const Header&        getHeader() const;
       const std::string&   getHeaderField(const std::string& fieldName) const;
       const std::string&   getBody() const;
-      Header&              getHeader();
       std::string          getHeaderStr();
       virtual const std::vector<std::string>& getHeaderPreambleFields() const=0;
-
-      static Message*      parse(const std::string& rawMessage);
 
       bool                 isValid() const;
       void                 setValid(bool valid);
 
       virtual std::string  toString() const = 0;
 
-      static const std::string PROTOCOL;
+      static const std::string PROTOCOL_VERSION;
       static const std::string RET_CODE;
       static const std::string RET_CODE_DESC;
       static const std::string CONTENT_LENGTH;
@@ -128,6 +123,8 @@ class Message
       //other header fields
 
    protected:
+      void                 parse(const std::string& rawMessage);
+
       mutable std::string  mRawMessage;
       mutable Header       mHeader;
       std::string          mBody;

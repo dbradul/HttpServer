@@ -21,6 +21,8 @@ class JobExecutor
       virtual ~JobExecutor();
 
       void start();
+      void stop();
+
       void submitJob(IJobPtr job);
       void setMaxThreadNum(int maxThreadNum);
       BlockingQueue<IJobPtr> mJobQueue;

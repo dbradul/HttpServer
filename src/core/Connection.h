@@ -20,7 +20,7 @@ class Connection
       Connection();
       virtual ~Connection();
 
-      void startListening();
+      void connect();
       void disconnect();
       Request readRequest();
       bool writeResponse(Response response, int sessionId) const;

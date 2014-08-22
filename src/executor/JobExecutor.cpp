@@ -74,6 +74,12 @@ void JobExecutor::processingLoop()
    {
       TRC_INFO(0U, "New job started: pJob=0x%p", (pJob.get()));
 
+      if(IJob::DUMMY_TERMINATE == pJob->getType())
+      {
+         // stop message loop to terminate the corresponding thread
+         break;
+      }
+
       try
       {
          TRC_INFO(0, "Starting job execution");
@@ -105,4 +111,27 @@ void JobExecutor::setMaxThreadNum(int maxThreadNum)
 //---------------------------------------------------------------------------------------
 {
    mMaxThreadNum = maxThreadNum;
+}
+
+//---------------------------------------------------------------------------------------
+void JobExecutor::stop()
+//---------------------------------------------------------------------------------------
+{
+   for(int i=0; i < mMaxThreadNum; ++i)
+   {
+      class JobStop: public IJob
+      {
+         public:
+            using IJob::IJob;
+
+            std::string execute()
+            {return "";}
+      };
+
+      IJobPtr pJob(new JobStop(IJob::DUMMY_TERMINATE));
+
+      mJobQueue.push(std::move(pJob));
+   }
+
+   mbStarted = false;
 }

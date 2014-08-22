@@ -17,9 +17,8 @@
 class Request : public Message
 {
     public:
-
         Request();
-        Request(const std::string& preamble);
+        Request(const std::string& rawMessage);
         virtual ~Request();
 
         const std::vector<std::string>& getHeaderPreambleFields() const;
@@ -36,6 +35,7 @@ class Request : public Message
 
     private:
         int mSessionId;
+        static const std::vector<std::string> mHeaderPreambleFields;
 };
 
 #endif /* REQUEST_H_ */

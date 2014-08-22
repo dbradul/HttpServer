@@ -48,7 +48,7 @@ Connection::~Connection()
 }
 
 //---------------------------------------------------------------------------------------
-void Connection::startListening()
+void Connection::connect()
 //---------------------------------------------------------------------------------------
 {
    TRC_DEBUG_FUNC_ENTER(0U, "");
@@ -164,7 +164,7 @@ Request Connection::readRequest()
          if (end_idx != std::string::npos)
          {
             message.resize(end_idx + 1);
-            request = *(static_cast<Request*>(Message::parse(message)));
+            request = Request(message);
             request.setValid(true);
             request.setSessionId(connDesc);
             bMessageCompleted = true;

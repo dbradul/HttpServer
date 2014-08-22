@@ -8,13 +8,24 @@
 #include <vector>
 #include <stdexcept>
 #include <algorithm>
+
 #include "common/Utils.h"
 #include "common/traceout.h"
 #include "Request.h"
 
-const std::string Request::REQUEST_HOST           = "Host";
+//---------------------------------------------------------------------------------------
+const std::string Request::REQUEST_HOST   = "Host";
 const std::string Request::PATH           = "Path";
 const std::string Request::METHOD         = "Method";
+
+//---------------------------------------------------------------------------------------
+const std::vector<std::string>  Request::mHeaderPreambleFields =
+//---------------------------------------------------------------------------------------
+{
+   Request::METHOD,
+   Request::PATH,
+   "Protocol",//Request::PROTOCOL_VERSION
+};
 
 //---------------------------------------------------------------------------------------
 Request::Request()
@@ -26,13 +37,12 @@ Request::Request()
 }
 
 //---------------------------------------------------------------------------------------
-Request::Request(const std::string& header)
-   : /*Message(preamble)
-   , */mSessionId(-1)
+Request::Request(const std::string& rawMessage)
+   : mSessionId(-1)
 //---------------------------------------------------------------------------------------
 {
    TRC_DEBUG_FUNC_ENTER(0U, "");
-   parseHeader(header);
+   parse(rawMessage);
    TRC_DEBUG_FUNC_EXIT(0U);
 }
 
@@ -84,12 +94,5 @@ std::string Request::toString() const
 const std::vector<std::string>& Request::getHeaderPreambleFields() const
 //---------------------------------------------------------------------------------------
 {
-   static std::vector<std::string> fields =
-   {
-      METHOD,
-      PATH,
-      PROTOCOL
-   };
-
-   return fields;
+   return mHeaderPreambleFields;
 }

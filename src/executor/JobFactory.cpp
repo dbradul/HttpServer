@@ -113,8 +113,9 @@ Callback JobFactory::createJobOnFinishCallback(const Connection& connection, con
 {
    return [&connection, sessionId] (const std::string& result)
    {
-      Response response(Response::RESULT_OK);
-      response.setBody (result);
+      Response response;
+      response.setResultCode  (Response::OK);
+      response.setBody        (result);
 
       TRC_INFO(0, "Response constructed: %s", response.getHeaderStr().c_str());
 
@@ -131,11 +132,12 @@ Callback JobFactory::createJobOnErrorCallback(const Connection& connection, cons
 {
    return [&connection, sessionId] (const std::string& result)
    {
-      Templater templater(Templater::PATH_ERROR);
-      templater.setMacro(Templater::MACROS_CONTENT, result);
+      Templater templater     (Templater::PATH_ERROR);
+      templater.setMacro      (Templater::MACROS_CONTENT, result);
 
-      Response response(Response::RESULT_INTERNAL_SERVER_ERROR);
-      response.setBody (templater.generate());
+      Response response;
+      response.setResultCode  (Response::INTERNAL_SERVER_ERROR);
+      response.setBody        (templater.generate());
 
       TRC_INFO(0U, "Response will be sent to a caller: %s", response.getHeaderStr().c_str());
 

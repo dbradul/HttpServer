@@ -40,19 +40,13 @@ void Dispatcher::setConnection(const Connection& connector)
 void Dispatcher::start()
 //---------------------------------------------------------------------------------------
 {
-   JobExecutor jobExecutor;
-   jobExecutor.start();
-
-   mConnection.startListening();
+   mJobExecutor.start();
+   mConnection.connect();
 
    // read and process requests until the connection is closed
    while (Request request = mConnection.readRequest())
    {
       TRC_INFO(0U, "The new request is received: request='%s'", request.getHeaderStr().c_str());
-
-//      IJobFactory* jobFactory = IJobFactory::createInstance(request.getHeaderField(Request::METHOD));
-//
-//      IJobPtr pJob(jobFactory->createJob(request));
 
       IJobPtr pJob(JobFactory::createJob(request));
       Callback onFinishCallback  = JobFactory::createJobOnFinishCallback   (mConnection, request.getSessionId());
@@ -61,10 +55,18 @@ void Dispatcher::start()
       pJob->setOnFinishCallback  (onFinishCallback);
       pJob->setOnErrorCallback   (onErrorCallback);
 
-      jobExecutor.submitJob(std::move(pJob));
+      mJobExecutor.submitJob(std::move(pJob));
 
       TRC_INFO(0U, "The corresponding job is queued: pJob=0x%p, sessionId=%d", pJob.get(), request.getSessionId());
    }
+}
+
+//---------------------------------------------------------------------------------------
+void Dispatcher::stop()
+//---------------------------------------------------------------------------------------
+{
+   mConnection.disconnect();
+   mJobExecutor.stop();
 }
 
 }
