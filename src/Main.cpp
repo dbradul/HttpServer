@@ -48,7 +48,7 @@ int main(int argc, char *argv[])
    }
 
    TRC_INFO(0U, "Deamonization");
-   daemonize();
+   ////daemonize();
 
    /* Open the log file */
    TRC_INIT(LOG_PID, LOG_DAEMON);
@@ -267,13 +267,10 @@ bool parseOptions(int argc, char *argv[])
          break;
 
       case '?':
-         fprintf(stdout, "Unknown/invalid arguments.\n\n");
-         bResult = false;
-         break;
-
       default:
          fprintf(stdout, "Unknown/invalid arguments.\n\n");
          bResult = false;
+         break;
       }
    }
 

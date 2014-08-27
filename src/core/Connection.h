@@ -22,8 +22,8 @@ class Connection
 
       void connect();
       void disconnect();
-      Request readRequest();
-      bool writeResponse(Response response, int sessionId) const;
+      void readRequest(Request& request);
+      bool writeResponse(const Response& response, int sessionId) const;
       void setPort(unsigned int port);
       int getSessionId() const;
 

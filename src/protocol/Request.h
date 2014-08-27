@@ -18,7 +18,7 @@ class Request : public Message
 {
     public:
         Request();
-        Request(const std::string& rawMessage);
+        explicit Request(const std::string& rawMessage);
         virtual ~Request();
 
         const std::vector<std::string>& getHeaderPreambleFields() const;
@@ -29,13 +29,14 @@ class Request : public Message
         operator bool();
         std::string toString() const;
 
-        static const std::string METHOD;//TODO: move to request subclass
+        static const std::string METHOD;
         static const std::string PATH;
         static const std::string REQUEST_HOST;
 
     private:
         int mSessionId;
         static const std::vector<std::string> mHeaderPreambleFields;
+        DISALLOW_COPY_AND_ASSIGN(Request);
 };
 
 #endif /* REQUEST_H_ */

@@ -121,16 +121,13 @@ void Connection::disconnect()
    mbStarted = false;
 }
 
-//---------------------------------------------------------------------------------------
-/**
+/*
  * Blocks until message is complete
  */
 //---------------------------------------------------------------------------------------
-Request Connection::readRequest()
+void Connection::readRequest(Request& request)
 //---------------------------------------------------------------------------------------
 {
-   Request request;
-
    struct sockaddr client_addr = { 0 };
    socklen_t size = sizeof(client_addr);
    int connDesc = -1;
@@ -164,7 +161,7 @@ Request Connection::readRequest()
          if (end_idx != std::string::npos)
          {
             message.resize(end_idx + 1);
-            request = Request(message);
+            request.parse(message);
             request.setValid(true);
             request.setSessionId(connDesc);
             bMessageCompleted = true;
@@ -173,11 +170,11 @@ Request Connection::readRequest()
       }
    }
 
-   return request;
+   return;
 }
 
 //---------------------------------------------------------------------------------------
-bool Connection::writeResponse(Response response, int sessionId) const
+bool Connection::writeResponse(const Response& response, int sessionId) const
 //---------------------------------------------------------------------------------------
 {
    TRC_DEBUG_FUNC_ENTER(0U, "Response='%s', sessionId=%d", response.toString().c_str(), sessionId);

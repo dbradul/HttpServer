@@ -17,17 +17,21 @@
 #include <functional>
 #include <bits/stl_pair.h>
 
+
+#define DISALLOW_COPY_AND_ASSIGN(TypeName) \
+  TypeName(const TypeName&);               \
+  void operator=(const TypeName&)
+
 class Utils
 {
     public:
         static const std::string getCurrentDateTime();
         static void split(std::vector<std::string> &tokens, const std::string &text, const std::string & delim);
         static std::string join(const std::vector<std::string> &list, const std::string & delim);
-        template<typename K, typename V>
-        static std::string join(const std::map<K, V>& map,
+        static std::string join(const std::map<std::string, std::string>& map,
                                 const std::string& delim1,
                                 const std::string& delim2,
-                                const std::function<bool(const std::pair<K, V>&)>& predicate);
+                                const std::function<bool(const std::pair<std::string, std::string>&)>& predicate);
         static void readDir(const std::string& root, const std::string& relativePath, std::vector<File>& fileList);
         static std::string getTextFileContent(const char *filename);
         static bool readAndCheckIfItIsBinary(const char *filename, std::string& content);

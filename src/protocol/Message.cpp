@@ -164,3 +164,53 @@ void Message::setValid(bool valid)
 {
    mbValid = valid;
 }
+
+//---------------------------------------------------------------------------------------
+Message::Header::Header()
+//---------------------------------------------------------------------------------------
+{
+}
+
+//---------------------------------------------------------------------------------------
+const std::string& Message::Header::toString(const std::vector<std::string>& preambleFields) const
+//---------------------------------------------------------------------------------------
+{
+   if( mHeaderStr.empty() )
+   {
+      std::stringstream result;
+
+      result << mHeaderFields.at(preambleFields[0]) << " ";
+      result << mHeaderFields.at(preambleFields[1]) << " ";
+      result << mHeaderFields.at(preambleFields[2]) << HEADER_FIELD_DELIM;
+
+      auto skipPreambleFields = [&](const std::pair<std::string, std::string>& entry)
+      {
+         return ( std::find(preambleFields.begin(),
+                            preambleFields.end(),
+                            entry.first) == preambleFields.end() );
+      };
+
+      result << Utils::join( mHeaderFields,
+                             Message::HEADER_FIELD_NAME_DELIM,
+                             Message::HEADER_FIELD_DELIM,
+                             skipPreambleFields );
+
+      mHeaderStr = result.str();
+   }
+   return mHeaderStr;
+}
+
+//---------------------------------------------------------------------------------------
+std::string& Message::Header::operator[](const std::string& key)
+//---------------------------------------------------------------------------------------
+{
+   mHeaderStr.resize(0);
+   return mHeaderFields[key];
+}
+
+//---------------------------------------------------------------------------------------
+const std::string& Message::Header::operator[](const std::string& key) const
+//---------------------------------------------------------------------------------------
+{
+   return mHeaderFields.at(key);
+}

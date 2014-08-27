@@ -9,7 +9,7 @@
 #include "common/Config.h"
 #include "common/traceout.h"
 
-const int JobExecutor::THREAD_NUM_UPPER_BOUND = 1024;
+const int JobExecutor::THREAD_NUM_UPPER_BOUND = 512;
 
 //---------------------------------------------------------------------------------------
 JobExecutor::JobExecutor() :
@@ -117,17 +117,17 @@ void JobExecutor::setMaxThreadNum(int maxThreadNum)
 void JobExecutor::stop()
 //---------------------------------------------------------------------------------------
 {
+   class JobStop: public IJob
+   {
+      public:
+         using IJob::IJob;
+
+         std::string execute()
+         {return "";}
+   };
+
    for(int i=0; i < mMaxThreadNum; ++i)
    {
-      class JobStop: public IJob
-      {
-         public:
-            using IJob::IJob;
-
-            std::string execute()
-            {return "";}
-      };
-
       IJobPtr pJob(new JobStop(IJob::DUMMY_TERMINATE));
 
       mJobQueue.push(std::move(pJob));

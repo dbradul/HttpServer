@@ -20,18 +20,18 @@
 #include <string.h>
 #include <regex>
 #include "bits/unique_ptr.h"
-#include "common/traceout.h"
 #include <exception>
-#include "common/File.h"
-#include "common/Config.h"
-
 #include <stdio.h>
 #include <fstream>
 #include <stdarg.h>
 #include <memory>
 
-using namespace std;
+#include "common/traceout.h"
+#include "common/File.h"
+#include "common/Config.h"
 
+
+//using namespace std;
 
 //---------------------------------------------------------------------------------------
 const std::string Utils::getCurrentDateTime()
@@ -85,7 +85,7 @@ void Utils::readDir(const std::string& requestPath, std::vector<File>& fileList)
 
    if ((mydirhandle = opendir(requestPath.c_str())) == NULL)
    {
-      throw(ios_base::failure(errMsg + strerror(errno)));
+      throw(std::ios_base::failure(errMsg + strerror(errno)));
    }
 
    else
@@ -135,7 +135,7 @@ std::string Utils::getTextFileContent(const char *filename)
 
    if (!in)
    {
-      throw(ios_base::failure(std::string("Reading file '") + filename + "' failed: " + strerror(errno)));
+      throw(std::ios_base::failure(std::string("Reading file '") + filename + "' failed: " + strerror(errno)));
    }
 
    else
@@ -168,7 +168,7 @@ bool Utils::readAndCheckIfItIsBinary(const char *filename, std::string& content)
 
    if (!in)
    {
-      throw(ios_base::failure(std::string("Failed to read the file '") + filename + "': " + strerror(errno)));
+      throw(std::ios_base::failure(std::string("Failed to read the file '") + filename + "': " + strerror(errno)));
    }
 
    else
@@ -176,7 +176,7 @@ bool Utils::readAndCheckIfItIsBinary(const char *filename, std::string& content)
       const int BUFF_SIZE = 2048;
       char buffer[BUFF_SIZE+1] = { 0 };
 
-      ifstream::pos_type fileSize;
+      std::ifstream::pos_type fileSize;
       in.seekg(0, std::ios::end);
       fileSize = in.tellg();
       int readBytes = 0;
@@ -184,11 +184,11 @@ bool Utils::readAndCheckIfItIsBinary(const char *filename, std::string& content)
 
       while (bytesToRead > 0 && !bBinary)
       {
-         in.seekg(readBytes, ios::beg);
+         in.seekg(readBytes, std::ios::beg);
          if (!in.read(&buffer[0], bytesToRead))
          {
             TRC_ERROR(0U, "Failed to read the file '%s': %s", filename, strerror(errno));
-            throw(ios_base::failure(std::string("Failed to read the file '") + filename + "': " + strerror(errno)));
+            throw(std::ios_base::failure(std::string("Failed to read the file '") + filename + "': " + strerror(errno)));
          }
 
 
@@ -268,7 +268,7 @@ void Utils::replaceAll(std::string &s, const std::string & search, const std::st
    {
       // Locate the substring to replace
       pos = s.find(search, pos);
-      if (pos == string::npos)
+      if (pos == std::string::npos)
       {
          break;
       }
@@ -298,7 +298,7 @@ unsigned long Utils::to_int(std::string str_value)
 std::string Utils::join(const std::vector<std::string>& list, const std::string& delim)
 //---------------------------------------------------------------------------------------
 {
-   stringstream result;
+   std::stringstream result;
 
    std::for_each( list.begin(),
                   list.end()-1,
@@ -309,27 +309,25 @@ std::string Utils::join(const std::vector<std::string>& list, const std::string&
    return result.str();
 }
 
+
 //---------------------------------------------------------------------------------------
-template<typename K, typename V>
-std::string Utils::join(const std::map<K, V>& map,
-                        const std::string& delim1,
-                        const std::string& delim2,
-                        const std::function<bool(const pair<K, V>&)>& predicate)
+std::string Utils::join(  const std::map<std::string, std::string>& map,
+                          const std::string& delim1,
+                          const std::string& delim2,
+                          const std::function<bool(const std::pair<std::string, std::string>&)>& predicate)
 //---------------------------------------------------------------------------------------
 {
-   stringstream result;
+   std::stringstream result;
 
-   auto serializer = [&](const pair<std::string, std::string>& entry)
+   std::for_each( map.begin(),
+                  map.end(),
+                  [&](const std::pair<std::string, std::string>& entry)
                      {
                         if(predicate(entry))
                         {
                            result << entry.first << delim1 << entry.second << delim2;
                         }
-                     };
-
-   std::for_each( map.begin(),
-                  map.end(),
-                  serializer
+                     }
                 );
 
    return result.str();

@@ -20,14 +20,15 @@ class Response: public Message
    public:
       enum ResultCode
       {
-         OK = 200, CREATED = 201,
+         OK = 200,
+         CREATED = 201,
          //...
          INTERNAL_SERVER_ERROR = 500,
          //...
       };
 
       Response();
-      Response(const std::string& rawMessage);
+      explicit Response(const std::string& rawMessage);
       virtual ~Response();
 
       static const std::string VERSION;
@@ -46,6 +47,7 @@ class Response: public Message
    private:
       static const std::map<ResultCode, std::string> mResultCodeDescriptions;
       static const std::vector<std::string> mHeaderPreambleFields;
+      DISALLOW_COPY_AND_ASSIGN(Response);
 };
 
 #endif /* RESPONSE_H_ */

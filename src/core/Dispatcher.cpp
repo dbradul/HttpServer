@@ -44,8 +44,13 @@ void Dispatcher::start()
    mConnection.connect();
 
    // read and process requests until the connection is closed
-   while (Request request = mConnection.readRequest())
+   while (true)
    {
+      Request request;
+      mConnection.readRequest(request);
+
+      //TODO: exception if failed?
+
       TRC_INFO(0U, "The new request is received: request='%s'", request.getHeaderStr().c_str());
 
       IJobPtr pJob(JobFactory::createJob(request));
