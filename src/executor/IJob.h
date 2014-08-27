@@ -24,7 +24,7 @@ class IJob
       };
 
       IJob();
-      IJob(Type type);
+      explicit IJob(Type type);
       virtual ~IJob();
 
       //TODO: templatize!

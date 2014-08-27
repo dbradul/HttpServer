@@ -17,21 +17,19 @@
 class Request : public Message
 {
     public:
+        static const std::string METHOD;
+        static const std::string PATH;
+        static const std::string REQUEST_HOST;
+
         Request();
         explicit Request(const std::string& rawMessage);
         virtual ~Request();
 
-        const std::vector<std::string>& getHeaderPreambleFields() const;
-
         void setSessionId(int sessionId);
         const int getSessionId() const;
 
-        operator bool();
-        std::string toString() const;
-
-        static const std::string METHOD;
-        static const std::string PATH;
-        static const std::string REQUEST_HOST;
+    protected:
+        const std::vector<std::string>& getHeaderPreambleFields() const;
 
     private:
         int mSessionId;

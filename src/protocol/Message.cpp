@@ -1,19 +1,19 @@
 /*******************************************************************
  * Message.cpp
  *
- *  @date: 30 квіт. 2014
+ *  @date: 30-7-2014
  *  @author: DB
  ******************************************************************/
+
+#include <vector>
+#include <exception>
+#include <stdio.h>
 
 #include "protocol/Message.h"
 #include "protocol/Request.h"
 #include "protocol/Response.h"
 #include "common/traceout.h"
 #include "common/Utils.h"
-
-#include <vector>
-#include <exception>
-#include <stdio.h>
 
 //----------------------------------------------------------------------
 // Protocol constants
@@ -22,12 +22,10 @@ const std::string Message::HEADER_BODY_DELIM                = "\r\n\r\n";
 const std::string Message::HEADER_FIELD_DELIM               = "\r\n";
 const std::string Message::HEADER_FIELD_NAME_DELIM          = ": ";
 
-const std::string Message::PROTOCOL_VERSION  = "Protocol";
-
+const std::string Message::HEADER_PROTOCOL_VERSION          = "Protocol";
 
 //---------------------------------------------------------------------------------------
 Message::Message()
-   : mbValid(false)
 //---------------------------------------------------------------------------------------
 {
    TRC_DEBUG_FUNC_ENTER(0U, "");
@@ -43,17 +41,12 @@ Message::~Message()
 }
 
 //---------------------------------------------------------------------------------------
-const std::string& Message::getRawMessage() const
+void Message::parse(const std::string& rawMessage)
 //---------------------------------------------------------------------------------------
 {
-    return mRawMessage;
-}
-
-//---------------------------------------------------------------------------------------
-const std::string& Message::getHeaderField(const std::string& headerFieldName) const
-//---------------------------------------------------------------------------------------
-{
-   return mHeader[headerFieldName];
+   parseHeader (rawMessage);
+   parseBody   (rawMessage);
+   mRawMessage = rawMessage;
 }
 
 //---------------------------------------------------------------------------------------
@@ -66,7 +59,6 @@ void Message::parseHeader(const std::string& rawMessage)
 
    if ( sscanf( rawMessage.c_str(), "%[^ ] %[^ ] %[^ ]", _1stField, _2ndField, _3rdField ) != 3 )
    {
-      //  send_error( 400, "Bad Request", (char*) 0, "Can't parse request." );
       throw(std::range_error("Message is not correct"));
    }
 
@@ -98,7 +90,6 @@ void Message::parseHeader(const std::string& rawMessage)
          setHeaderField(headerEntryFields[0], headerEntryFields[1]);
       }
    }
-
 }
 
 //---------------------------------------------------------------------------------------
@@ -106,10 +97,18 @@ void Message::parseBody(const std::string& rawMessage)
 //---------------------------------------------------------------------------------------
 {
    size_t headerEnd = rawMessage.find(HEADER_BODY_DELIM);
+
    if (headerEnd != std::string::npos)
    {
       setBody(rawMessage.substr(headerEnd + HEADER_BODY_DELIM.size()));
    }
+}
+
+//---------------------------------------------------------------------------------------
+const std::string& Message::getHeaderField(const std::string& headerFieldName) const
+//---------------------------------------------------------------------------------------
+{
+   return mHeader[headerFieldName];
 }
 
 //---------------------------------------------------------------------------------------
@@ -142,33 +141,22 @@ const std::string& Message::getBody() const
 }
 
 //---------------------------------------------------------------------------------------
-void Message::parse(const std::string& rawMessage)
+const std::string& Message::toString() const
 //---------------------------------------------------------------------------------------
 {
-   parseHeader (rawMessage);
-   parseBody   (rawMessage);
-   mbValid     = true;
-   mRawMessage = rawMessage;
-}
+   TRC_DEBUG_FUNC_ENTER(0U, "");
 
-//---------------------------------------------------------------------------------------
-bool Message::isValid() const
-//---------------------------------------------------------------------------------------
-{
-   return mbValid;
-}
+   if (0 == mRawMessage.size())
+   {
+      mRawMessage =
+            mHeader.toString(getHeaderPreambleFields()) +
+            HEADER_FIELD_DELIM +
+            mBody;
+   }
 
-//---------------------------------------------------------------------------------------
-void Message::setValid(bool valid)
-//---------------------------------------------------------------------------------------
-{
-   mbValid = valid;
-}
+   TRC_DEBUG_FUNC_EXIT(0U);
 
-//---------------------------------------------------------------------------------------
-Message::Header::Header()
-//---------------------------------------------------------------------------------------
-{
+   return mRawMessage;
 }
 
 //---------------------------------------------------------------------------------------

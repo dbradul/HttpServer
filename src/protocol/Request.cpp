@@ -41,8 +41,10 @@ Request::Request(const std::string& rawMessage)
    : mSessionId(-1)
 //---------------------------------------------------------------------------------------
 {
-   TRC_DEBUG_FUNC_ENTER(0U, "");
+   TRC_DEBUG_FUNC_ENTER(0U, "rawMessage='%s'", rawMessage.c_str());
+
    parse(rawMessage);
+
    TRC_DEBUG_FUNC_EXIT(0U);
 }
 
@@ -52,13 +54,6 @@ Request::~Request()
 {
    TRC_DEBUG_FUNC_ENTER(0U, "");
    TRC_DEBUG_FUNC_EXIT(0U);
-}
-
-//---------------------------------------------------------------------------------------
-Request::operator bool()
-//---------------------------------------------------------------------------------------
-{
-    return isValid();
 }
 
 //---------------------------------------------------------------------------------------
@@ -73,21 +68,6 @@ const int Request::getSessionId() const
 //---------------------------------------------------------------------------------------
 {
     return mSessionId;
-}
-
-//---------------------------------------------------------------------------------------
-std::string Request::toString() const
-//---------------------------------------------------------------------------------------
-{
-   if (0 == mRawMessage.size())
-   {
-      mRawMessage =
-            mHeader.toString(getHeaderPreambleFields()) +
-            HEADER_FIELD_DELIM +
-            mBody;
-   }
-
-   return mRawMessage;
 }
 
 //---------------------------------------------------------------------------------------

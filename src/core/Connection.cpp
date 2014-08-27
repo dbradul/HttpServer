@@ -162,7 +162,6 @@ void Connection::readRequest(Request& request)
          {
             message.resize(end_idx + 1);
             request.parse(message);
-            request.setValid(true);
             request.setSessionId(connDesc);
             bMessageCompleted = true;
             mSessionId = connDesc;

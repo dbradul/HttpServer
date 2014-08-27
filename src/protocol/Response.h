@@ -27,26 +27,28 @@ class Response: public Message
          //...
       };
 
+      static const std::string VERSION;
+      static const std::string HEADER_RET_CODE;
+      static const std::string HEADER_RET_CODE_DESC;
+      static const std::string HEADER_CONTENT_LENGTH;
+      static const std::string HEADER_CONTENT_TYPE;
+      static const std::string TEXT_HTML;
+
       Response();
       explicit Response(const std::string& rawMessage);
       virtual ~Response();
 
-      static const std::string VERSION;
-      static const std::string RET_CODE;
-      static const std::string RET_CODE_DESC;
-      static const std::string HEADER_CONTENT_LENGTH;
-      static const std::string HEADER_CONTENT_TYPE;
-
-      const std::vector<std::string>& getHeaderPreambleFields() const;
-
       void setResultCode(ResultCode resultCode);
       void setVersion(const std::string& version);
+      void setBody(const std::string& body);
 
-      std::string toString() const;
+   protected:
+      const std::vector<std::string>& getHeaderPreambleFields() const;
 
    private:
       static const std::map<ResultCode, std::string> mResultCodeDescriptions;
       static const std::vector<std::string> mHeaderPreambleFields;
+
       DISALLOW_COPY_AND_ASSIGN(Response);
 };
 

@@ -32,7 +32,7 @@ class Templater
       static const std::string PATH_ERROR;
 
       Templater();
-      Templater(const std::string& templateFilepath);
+      explicit Templater(const std::string& templateFilepath);
       ~Templater();
 
       void setMacro(const std::string& macroName, const std::string& macroValue);

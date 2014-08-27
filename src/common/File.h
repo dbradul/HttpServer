@@ -14,7 +14,7 @@ class File
 {
    public:
       File();
-      File(const std::string& filePath);
+      explicit File(const std::string& filePath);
       ~File();
 
       std::string mReferenceFilePath;
