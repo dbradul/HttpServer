@@ -41,7 +41,7 @@ IJobPtr JobFactory::createJob(const Request& request)
 {
    TRC_DEBUG_FUNC_ENTER (0U, "");
 
-   if (request.getHeaderField(Request::METHOD) == METHOD_GET)
+   if (request.getHeaderField(Request::HEADER_METHOD) == METHOD_GET)
    {
       class JobRequestGET: public IJob
       {
@@ -85,10 +85,10 @@ IJobPtr JobFactory::createJob(const Request& request)
             std::string mPath;
       };
 
-      return IJobPtr(new JobRequestGET(request.getHeaderField(Request::PATH)));
+      return IJobPtr(new JobRequestGET(request.getHeaderField(Request::HEADER_PATH)));
    }
 
-   else if (request.getHeaderField(Request::METHOD) == METHOD_POST)
+   else if (request.getHeaderField(Request::HEADER_METHOD) == METHOD_POST)
    {
       class JobNOP: public IJob
       {

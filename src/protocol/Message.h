@@ -33,13 +33,12 @@ class Message
 
       void parse(const std::string& rawMessage);
 
-      virtual void setBody(const std::string& body);
-      void setHeaderField(const std::string& fieldName, const std::string& fieldValue);
-      void setValid(bool valid);
+      virtual void       setBody(const std::string& body);
+      void               setHeaderField(const std::string& fieldName, const std::string& fieldValue);
 
       const std::string& getHeaderField(const std::string& fieldName) const;
       const std::string& getBody() const;
-      std::string getHeaderStr();
+      const std::string& getHeaderStr();
 
       const std::string& toString() const;
 

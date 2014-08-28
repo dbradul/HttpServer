@@ -15,15 +15,6 @@
 #include "common/traceout.h"
 #include "common/Utils.h"
 
-//----------------------------------------------------------------------
-// Protocol constants
-//---------------------------------------------------------------------------------------
-const std::string Message::HEADER_BODY_DELIM                = "\r\n\r\n";
-const std::string Message::HEADER_FIELD_DELIM               = "\r\n";
-const std::string Message::HEADER_FIELD_NAME_DELIM          = ": ";
-
-const std::string Message::HEADER_PROTOCOL_VERSION          = "Protocol";
-
 //---------------------------------------------------------------------------------------
 Message::Message()
 //---------------------------------------------------------------------------------------
@@ -119,7 +110,7 @@ void Message::setHeaderField(const std::string& fieldName, const std::string& fi
 }
 
 //---------------------------------------------------------------------------------------
-std::string Message::getHeaderStr()
+const std::string& Message::getHeaderStr()
 //---------------------------------------------------------------------------------------
 {
    return mHeader.toString(getHeaderPreambleFields());

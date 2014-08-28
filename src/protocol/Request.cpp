@@ -1,7 +1,7 @@
 /*******************************************************************
  * Request.cpp
  *
- *  @date: 28 квіт. 2014
+ *  @date: 28-7-2014
  *  @author: DB
  ******************************************************************/
 
@@ -12,20 +12,6 @@
 #include "common/Utils.h"
 #include "common/traceout.h"
 #include "Request.h"
-
-//---------------------------------------------------------------------------------------
-const std::string Request::REQUEST_HOST   = "Host";
-const std::string Request::PATH           = "Path";
-const std::string Request::METHOD         = "Method";
-
-//---------------------------------------------------------------------------------------
-const std::vector<std::string>  Request::mHeaderPreambleFields =
-//---------------------------------------------------------------------------------------
-{
-   Request::METHOD,
-   Request::PATH,
-   "Protocol",//Request::PROTOCOL_VERSION
-};
 
 //---------------------------------------------------------------------------------------
 Request::Request()

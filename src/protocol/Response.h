@@ -27,7 +27,7 @@ class Response: public Message
          //...
       };
 
-      static const std::string VERSION;
+      static const std::string SUPPORTED_VERSION;
       static const std::string HEADER_RET_CODE;
       static const std::string HEADER_RET_CODE_DESC;
       static const std::string HEADER_CONTENT_LENGTH;
