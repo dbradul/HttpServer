@@ -19,6 +19,10 @@
 #include <TestHarness.h>
 #include <thread>
 
+#include <bits/unique_ptr.h>
+#include <bits/shared_ptr.h>
+
+
 //---------------------------------------------------------------------------------------
 // FORWARD DECLARATIONS
 //---------------------------------------------------------------------------------------
@@ -27,13 +31,12 @@ void printUsage();
 void daemonize();
 bool checkEnv();
 
+
 //---------------------------------------------------------------------------------------
 int main(int argc, char *argv[])
 //---------------------------------------------------------------------------------------
 {
    TRC_DEBUG_FUNC_ENTER(0U, "Application started");
-
-   ////test::unit::Runner::run(true);
 
    if (!parseOptions(argc, argv))
    {

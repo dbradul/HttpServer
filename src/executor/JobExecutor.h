@@ -13,6 +13,7 @@
 #include <vector>
 #include <thread>
 
+
 //TODO: watchdog thread
 class JobExecutor
 {
@@ -25,7 +26,7 @@ class JobExecutor
 
       void submitJob(IJobPtr job);
       void setMaxThreadNum(int maxThreadNum);
-      BlockingQueue<IJobPtr> mJobQueue;
+      BlockingQueuePtr<IJob> mJobQueue;
       static const int THREAD_NUM_UPPER_BOUND;
 
    private:

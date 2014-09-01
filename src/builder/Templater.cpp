@@ -1,19 +1,47 @@
 /*******************************************************************
  * Templater.cpp
  *
- *  @date: 16 Jul 2014
+ *  @date: 16-8-2014
  *  @author: DB
  ******************************************************************/
 
-#include <fstream>
-#include <sstream>
-#include "errno.h"
-#include "stdlib.h"
+#include <cstddef>
+#include <cstdio>
+#include <iterator>
+#include <utility>
 
 #include <builder/Templater.h>
-#include "common/Utils.h"
-#include "common/traceout.h"
-#include "common/Config.h"
+#include <common/Config.h>
+#include <common/traceout.h>
+#include <common/Utils.h>
+
+//---------------------------------------------------------------------------------------
+// Template pathes constants
+//---------------------------------------------------------------------------------------
+const std::string Templater::PATH_ROOT_LAYOUT         = "/templates/rootlayout.tmpl";
+const std::string Templater::PATH_DIR_CONTENT         = "/templates/dircontent.tmpl";
+const std::string Templater::PATH_DIR_CONTENT_LINE    = "/templates/dircontentline.tmpl";
+const std::string Templater::PATH_STR_CONTENT         = "/templates/filecontent.tmpl";
+const std::string Templater::PATH_STR_CONTENT_LINE    = "/templates/filecontentline.tmpl";
+const std::string Templater::PATH_ERROR               = "/templates/error.tmpl";
+
+//---------------------------------------------------------------------------------------
+// Macros constants
+//---------------------------------------------------------------------------------------
+const std::string Templater::MACROS_ROOT              = "root";
+const std::string Templater::MACROS_HEADER            = "header";
+const std::string Templater::MACROS_FILEPATH          = "filepath";
+const std::string Templater::MACROS_FILENAME          = "filename";
+const std::string Templater::MACROS_PERMS             = "perms";
+const std::string Templater::MACROS_SIZE              = "size";
+const std::string Templater::MACROS_FOOTER            = "footer";
+const std::string Templater::MACROS_CONTENT           = "content";
+
+//---------------------------------------------------------------------------------------
+std::map<std::string, std::string> Templater::mTemplateCache = {};
+
+//---------------------------------------------------------------------------------------
+const std::string Templater::MACRO_TAG = "##";
 
 //---------------------------------------------------------------------------------------
 Templater::Templater()
@@ -43,35 +71,6 @@ Templater::~Templater()
 }
 
 //---------------------------------------------------------------------------------------
-std::map<std::string, std::string> Templater::mTemplateCache =
-{};
-
-//---------------------------------------------------------------------------------------
-// Template pathes constants
-//---------------------------------------------------------------------------------------
-const std::string Templater::PATH_ROOT_LAYOUT         = "/templates/rootlayout.tmpl";
-const std::string Templater::PATH_DIR_CONTENT         = "/templates/dircontent.tmpl";
-const std::string Templater::PATH_DIR_CONTENT_LINE    = "/templates/dircontentline.tmpl";
-const std::string Templater::PATH_STR_CONTENT         = "/templates/filecontent.tmpl";
-const std::string Templater::PATH_STR_CONTENT_LINE    = "/templates/filecontentline.tmpl";
-const std::string Templater::PATH_ERROR               = "/templates/error.tmpl";
-
-//---------------------------------------------------------------------------------------
-// Macros constants
-//---------------------------------------------------------------------------------------
-const std::string Templater::MACROS_ROOT              = "root";
-const std::string Templater::MACROS_HEADER            = "header";
-const std::string Templater::MACROS_FILEPATH          = "filepath";
-const std::string Templater::MACROS_FILENAME          = "filename";
-const std::string Templater::MACROS_PERMS             = "perms";
-const std::string Templater::MACROS_SIZE              = "size";
-const std::string Templater::MACROS_FOOTER            = "footer";
-const std::string Templater::MACROS_CONTENT           = "content";
-
-//---------------------------------------------------------------------------------------
-const std::string Templater::MACRO_TAG = "##";
-
-//---------------------------------------------------------------------------------------
 void Templater::setMacro(const std::string& macroName, const std::string& macroValue)
 //---------------------------------------------------------------------------------------
 {
@@ -98,8 +97,7 @@ std::string Templater::generate()
       auto iter = mMacroses.find(token);
       if (iter != mMacroses.end())
       {
-         TRC_DEBUG(0U, "macro recognized: '%s' -> '%s'", token.c_str(),
-                                                         iter->second.c_str());
+         TRC_DEBUG(0U, "macro recognized: '%s' -> '%s'", token.c_str(), iter->second.c_str());
 
          mContent.replace( mContent.begin() + tagOpenBracket,
                            mContent.begin() + tagCloseBracket + Templater::MACRO_TAG.length(),

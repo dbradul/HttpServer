@@ -9,7 +9,7 @@
 #define PAGEBUILDER_H_
 
 #include <string>
-#include "builder/Decorator.h"
+#include "builder/HTMLDecorator.h"
 #include "common/Config.h"
 
 //---------------------------------------------------------------------------------------
@@ -23,13 +23,13 @@ class PageBuilder
 
       template<typename T>
       std::string build(   const std::vector<T>& content,
-                           Decorator<T> decorator);
+                           HTMLDecorator<T> decorator);
 };
 
 //---------------------------------------------------------------------------------------
 template<typename T>
 std::string PageBuilder::build(  const std::vector<T>& content,
-                                 Decorator<T> decorator)
+                                 HTMLDecorator<T> decorator)
 //---------------------------------------------------------------------------------------
 {
    std::string body;

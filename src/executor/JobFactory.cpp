@@ -1,16 +1,16 @@
 /*******************************************************************
  * JobFactory.cpp
  *
- *  @date: 2 ����. 2014
+ *  @date: 2-8-2014
  *  @author: DB
  ******************************************************************/
 
-#include <executor/JobFactory.h>
 #include "common/traceout.h"
 #include "common/Utils.h"
+#include "common/Config.h"
+#include "executor/JobFactory.h"
 #include "builder/Templater.h"
 #include "builder/PageBuilder.h"
-#include "common/Config.h"
 
 
 namespace HTTP
@@ -58,7 +58,7 @@ IJobPtr JobFactory::createJob(const Request& request)
                if (Utils::endsWith(URL, "/"))
                {
                   std::vector<File> content = Utils::getDirContent(URL);
-                  Decorator<File> decorator;
+                  HTMLDecorator<File> decorator;
                   decorator.setURL(URL);
 
                   result = builder.build(content, decorator);
@@ -67,7 +67,7 @@ IJobPtr JobFactory::createJob(const Request& request)
                else
                {
                   std::vector<std::string> content = Utils::getFileContent(URL);
-                  Decorator<std::string> decorator;
+                  HTMLDecorator<std::string> decorator;
                   decorator.setURL(URL);
 
                   result = builder.build(content, decorator);

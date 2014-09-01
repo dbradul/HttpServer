@@ -13,43 +13,43 @@
 #include <queue>
 #include <condition_variable>
 
+#include <bits/unique_ptr.h>
+
 //---------------------------------------------------------------------------------------
 template<class T>
-class BlockingQueue
+class BlockingQueuePtr
 //---------------------------------------------------------------------------------------
 {
    public:
-      BlockingQueue();
-      virtual ~BlockingQueue();
+      BlockingQueuePtr();
+      virtual ~BlockingQueuePtr();
 
-      void push(T elem);
-      T pop();
-      //T& peek();
-      ////const T& peek();
+      void push(std::unique_ptr<T> elem);
+      std::unique_ptr<T> pop();
 
    private:
       std::mutex mMutex;
       std::condition_variable mCondVar;
-      std::queue<T> mQueue;
+      std::queue<std::unique_ptr<T>> mQueue;
 };
 
 //---------------------------------------------------------------------------------------
 template<class T>
-BlockingQueue<T>::BlockingQueue()
+BlockingQueuePtr<T>::BlockingQueuePtr()
 //---------------------------------------------------------------------------------------
 {
 }
 
 //---------------------------------------------------------------------------------------
 template<class T>
-BlockingQueue<T>::~BlockingQueue()
+BlockingQueuePtr<T>::~BlockingQueuePtr()
 //---------------------------------------------------------------------------------------
 {
 }
 
 //---------------------------------------------------------------------------------------
 template<class T>
-void BlockingQueue<T>::push(T elem)
+void BlockingQueuePtr<T>::push(std::unique_ptr<T> elem)
 //---------------------------------------------------------------------------------------
 {
    std::unique_lock<std::mutex> lock(mMutex);
@@ -59,7 +59,7 @@ void BlockingQueue<T>::push(T elem)
 
 //---------------------------------------------------------------------------------------
 template<class T>
-T BlockingQueue<T>::pop()
+std::unique_ptr<T> BlockingQueuePtr<T>::pop()
 //---------------------------------------------------------------------------------------
 {
    std::unique_lock<std::mutex> lock(mMutex);
@@ -67,9 +67,20 @@ T BlockingQueue<T>::pop()
    {
       mCondVar.wait(lock);
    }
-   T elem = std::move(mQueue.front());
+
+   std::unique_ptr<T> elem = std::move(mQueue.front());
    mQueue.pop();
    return elem;
 }
+
+////---------------------------------------------------------------------------------------
+//template<class T>
+//std::shared_ptr<T> BlockingQueue<T>::peek()
+////---------------------------------------------------------------------------------------
+//{
+//   std::unique_lock<std::mutex> lock(mMutex);
+//
+//   return std::shared_ptr<T>(mQueue.front().get());
+//}
 
 #endif /* BLOCKINGQUEUE_H_ */

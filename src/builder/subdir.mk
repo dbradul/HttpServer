@@ -10,12 +10,12 @@ OBJ_DIR_BUILDER = ./$(BIN_DIR)/$(SRC_DIR_BUILDER)
 CPP_SRCS += \
 $(SRC_DIR_BUILDER)/PageBuilder.cpp \
 $(SRC_DIR_BUILDER)/Templater.cpp \
-$(SRC_DIR_BUILDER)/Decorator.cpp
+$(SRC_DIR_BUILDER)/HTMLDecorator.cpp
 
 OBJS += \
 $(OBJ_DIR_BUILDER)/PageBuilder.o \
 $(OBJ_DIR_BUILDER)/Templater.o \
-$(OBJ_DIR_BUILDER)/Decorator.o
+$(OBJ_DIR_BUILDER)/HTMLDecorator.o
 
 # Apply rule
 $(OBJ_DIR_BUILDER)/%.o: $(SRC_DIR_BUILDER)/%.cpp

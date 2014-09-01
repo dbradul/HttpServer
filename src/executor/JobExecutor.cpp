@@ -53,17 +53,16 @@ void JobExecutor::start()
 }
 
 //---------------------------------------------------------------------------------------
-void JobExecutor::submitJob(IJobPtr job)
+void JobExecutor::submitJob(IJobPtr pJob)
 //---------------------------------------------------------------------------------------
 {
    TRC_DEBUG_FUNC_ENTER(0U, "");
 
-   mJobQueue.push(std::move(job));
+   mJobQueue.push(std::move(pJob));
 
    TRC_DEBUG_FUNC_EXIT(0U);
 }
 
-//TODO: watchdog thread
 //---------------------------------------------------------------------------------------
 void JobExecutor::processingLoop()
 //---------------------------------------------------------------------------------------
@@ -128,9 +127,7 @@ void JobExecutor::stop()
 
    for(int i=0; i < mMaxThreadNum; ++i)
    {
-      IJobPtr pJob(new JobStop(IJob::DUMMY_TERMINATE));
-
-      mJobQueue.push(std::move(pJob));
+      mJobQueue.push(IJobPtr(new JobStop(IJob::DUMMY_TERMINATE)));
    }
 
    mbStarted = false;

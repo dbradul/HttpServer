@@ -6,7 +6,6 @@
 include ./src/builder/subdir.mk
 include ./src/common/subdir.mk
 include ./src/executor/subdir.mk
-include ./src/jobs/subdir.mk
 include ./src/protocol/subdir.mk
 include ./src/core/subdir.mk
 
