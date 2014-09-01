@@ -13,7 +13,7 @@ TEST(PageBuilder, simple_test)
    // Act
    std::string url = "/cygdrive/d/work/projects/HttpServer/templates/";
 
-   Decorator<File> decorator;
+   HTMLDecorator<File> decorator;
    decorator.setURL(url);
 
    std::string page = pageBuilder.build(Utils::getDirContent(url), decorator);
