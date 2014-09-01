@@ -20,8 +20,6 @@ OBJ_MAIN = \
 $(OBJ_DIR)/Main.o
 
 # Apply rules
-#$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
-#	$(CC) $(CFLAGS) -o "$@" "$<"
-
 $(OBJ_DIR)/Main.o: $(SRC_DIR)/Main.cpp
+	$(dir_guard)
 	$(CC) $(CFLAGS) -o "$@" "$<"

@@ -17,4 +17,5 @@ $(OBJ_DIR_CORE)/Connection.o
 
 # Apply rules
 $(OBJ_DIR_CORE)/%.o: $(SRC_DIR_CORE)/%.cpp
+	$(dir_guard)
 	$(CC) $(CFLAGS) -o "$@" "$<"

@@ -19,4 +19,5 @@ $(OBJ_DIR_EXECUTOR)/JobFactory.o
 
 # Apply rules
 $(OBJ_DIR_EXECUTOR)/%.o: $(SRC_DIR_EXECUTOR)/%.cpp
+	$(dir_guard)
 	$(CC) $(CFLAGS) -o "$@" "$<"

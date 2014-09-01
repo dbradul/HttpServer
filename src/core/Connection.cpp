@@ -139,7 +139,7 @@ void Connection::readRequest(Request& request)
    // Server blocks on this call until a client tries to establish connection.
    // When a connection is established, it returns a 'connected socket descriptor' different
    // from the one created earlier.
-   while (!bMessageCompleted && -1 != (connDesc = accept(mSocketDesc, (struct sockaddr *) &client_addr, &size)))
+   if ((connDesc = accept(mSocketDesc, (struct sockaddr *) &client_addr, &size)) != -1)
    {
       TRC_INFO(0U, "Connected: desc=%d", connDesc);
 

@@ -21,4 +21,5 @@ $(OBJ_DIR_PROTOCOL)/Response.o
 
 # Apply rules
 $(OBJ_DIR_PROTOCOL)/%.o: $(SRC_DIR_PROTOCOL)/%.cpp
+	$(dir_guard)
 	$(CC) $(CFLAGS) -o "$@" "$<"

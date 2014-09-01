@@ -7,6 +7,7 @@ LFLAGS = -Wall $(DEBUG)
 BIN_DIR = Debug
 BIN_OUT = $(BIN_DIR)/HttpServer.exe
 BIN_OUT_UNITTESTS = $(BIN_DIR)/HttpServer_unittests.exe
+dir_guard=@mkdir -p $(@D)
 
 All : HttpServer HttpServer_unittests
 

@@ -19,6 +19,7 @@ $(OBJ_DIR_COMMON)/Utils.o
 
 # Apply rules
 $(OBJ_DIR_COMMON)/%.o: $(SRC_DIR_COMMON)/%.cpp
+	$(dir_guard)
 	$(CC) $(CFLAGS) -o "$@" "$<"
 
 

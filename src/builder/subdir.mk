@@ -19,4 +19,5 @@ $(OBJ_DIR_BUILDER)/HTMLDecorator.o
 
 # Apply rule
 $(OBJ_DIR_BUILDER)/%.o: $(SRC_DIR_BUILDER)/%.cpp
+	$(dir_guard)
 	$(CC) $(CFLAGS) -o "$@" "$<"
