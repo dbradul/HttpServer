@@ -1,6 +1,6 @@
 OBJS = 
 OBJS_UNITTESTS =
-CC = g++
+CC = g++-4.8
 DEBUG = -g
 CFLAGS = -Wall -c -std=c++0x -I$(CURDIR)/src -I$(CURDIR)/unittests $(DEBUG)
 LFLAGS = -Wall $(DEBUG)
