@@ -26,18 +26,20 @@ class HTMLDecorator
 
       void setURL(const std::string& URL);
 
-      std::string decorateLine  (T line);
-      std::string decorateBody  (const std::string& body);
-      std::string decorateHeader(const std::string& title);
-      std::string decorateFooter(const std::string& footer);
+      std::string decorateLine  (T line) const;
+      std::string decorateBody  (const std::string& body) const;
+      std::string decorateHeader(const std::string& title) const;
+      std::string decorateFooter(const std::string& footer) const;
       std::string decoratePage  (const std::string& header,
                                  const std::string& body,
-                                 const std::string& footer);
+                                 const std::string& footer) const;
 
    private:
-      void escapeSpecialEntities(std::string& text);
+      void escapeSpecialEntities(std::string& text) const;
 
       std::string mURL;
+
+      DISALLOW_COPY_AND_ASSIGN(HTMLDecorator);
 };
 
 //---------------------------------------------------------------------------------------
@@ -58,7 +60,7 @@ void HTMLDecorator<T>::setURL(const std::string& URL)
 
 //---------------------------------------------------------------------------------------
 template<typename T>
-void HTMLDecorator<T>::escapeSpecialEntities(std::string& text)
+void HTMLDecorator<T>::escapeSpecialEntities(std::string& text) const
 //---------------------------------------------------------------------------------------
 {
    Utils::replaceAll(text, "<", "&lt;");
@@ -71,7 +73,7 @@ void HTMLDecorator<T>::escapeSpecialEntities(std::string& text)
 template<typename T>
 std::string HTMLDecorator<T>::decoratePage(  const std::string& header,
                                              const std::string& body,
-                                             const std::string& footer)
+                                             const std::string& footer) const
 //---------------------------------------------------------------------------------------
 {
    TRC_DEBUG_FUNC_ENTER(0U, "header='%s'", header.c_str());
@@ -94,7 +96,7 @@ std::string HTMLDecorator<T>::decoratePage(  const std::string& header,
 //---------------------------------------------------------------------------------------
 template<typename T>
 //---------------------------------------------------------------------------------------
-std::string HTMLDecorator<T>::decorateHeader(const std::string& title)
+std::string HTMLDecorator<T>::decorateHeader(const std::string& title) const
 {
    return "<title>"+title+": "+ mURL +" </title>";
 }
@@ -102,7 +104,7 @@ std::string HTMLDecorator<T>::decorateHeader(const std::string& title)
 //---------------------------------------------------------------------------------------
 template<typename T>
 //---------------------------------------------------------------------------------------
-std::string HTMLDecorator<T>::decorateFooter(const std::string& footer)
+std::string HTMLDecorator<T>::decorateFooter(const std::string& footer) const
 {
    return "<span class=\"tag\"> " + footer + " </span>";
 }

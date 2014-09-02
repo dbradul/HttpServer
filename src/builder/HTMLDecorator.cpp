@@ -8,7 +8,7 @@
 #include "builder/HTMLDecorator.h"
 
 template<>
-std::string HTMLDecorator<std::string>::decorateLine(std::string line)
+std::string HTMLDecorator<std::string>::decorateLine(std::string line) const
 {
    TRC_DEBUG_FUNC_ENTER(0U, "line='%s'", line.c_str());
 
@@ -24,7 +24,7 @@ std::string HTMLDecorator<std::string>::decorateLine(std::string line)
 }
 
 template<>
-std::string HTMLDecorator<File>::decorateLine(File file)
+std::string HTMLDecorator<File>::decorateLine(File file) const
 {
    TRC_DEBUG_FUNC_ENTER(0U, "line='%s'", file.getName().c_str());
 
@@ -41,7 +41,7 @@ std::string HTMLDecorator<File>::decorateLine(File file)
 }
 
 template<>
-std::string HTMLDecorator<File>::decorateBody(const std::string& body)
+std::string HTMLDecorator<File>::decorateBody(const std::string& body) const
 {
    TRC_DEBUG_FUNC_ENTER(0U, "body='%s'", body.c_str());
 
@@ -55,7 +55,7 @@ std::string HTMLDecorator<File>::decorateBody(const std::string& body)
 }
 
 template<>
-std::string HTMLDecorator<std::string>::decorateBody(const std::string& body)
+std::string HTMLDecorator<std::string>::decorateBody(const std::string& body) const
 {
    TRC_DEBUG_FUNC_ENTER(0U, "body='%s'", body.c_str());
 

@@ -6,17 +6,15 @@
  */
 
 #include <asm/byteorder.h>
-#include <cygwin/in.h>
-#include <cygwin/socket.h>
+#include <common/traceout.h>
+#include <core/Connection.h>
+#include <netinet/in.h>
 #include <sys/socket.h>
 #include <sys/unistd.h>
 #include <cstddef>
 #include <cstdio>
 #include <exception>
 #include <string>
-
-#include <common/traceout.h>
-#include <core/Connection.h>
 
 namespace HTTP
 {

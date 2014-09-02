@@ -23,13 +23,13 @@ class PageBuilder
 
       template<typename T>
       std::string build(   const std::vector<T>& content,
-                           HTMLDecorator<T> decorator);
+                           const HTMLDecorator<T>& decorator);
 };
 
 //---------------------------------------------------------------------------------------
 template<typename T>
 std::string PageBuilder::build(  const std::vector<T>& content,
-                                 HTMLDecorator<T> decorator)
+                                 const HTMLDecorator<T>& decorator)
 //---------------------------------------------------------------------------------------
 {
    std::string body;
