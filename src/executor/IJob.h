@@ -10,7 +10,7 @@
 
 #include <functional>
 #include <string>
-#include <bits/unique_ptr.h>
+#include <memory>
 
 typedef std::function<void(const std::string&)> Callback;
 
@@ -27,7 +27,6 @@ class IJob
       explicit IJob(Type type);
       virtual ~IJob();
 
-      //TODO: templatize!
       virtual std::string execute() = 0;
 
       Type getType() const;

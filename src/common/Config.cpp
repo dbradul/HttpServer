@@ -53,14 +53,14 @@ Config::~Config()
 }
 
 //---------------------------------------------------------------------------------------
-void Config::setValue(std::string valueName, std::string value)
+void Config::setValue(const std::string& valueName, const std::string& value)
 //---------------------------------------------------------------------------------------
 {
    settings[valueName] = value;
 }
 
 //---------------------------------------------------------------------------------------
-void Config::setValue(std::string valueName, unsigned long value)
+void Config::setValue(const std::string& valueName, unsigned long value)
 //---------------------------------------------------------------------------------------
 {
    setValue(valueName, Utils::to_string(value));

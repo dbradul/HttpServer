@@ -1,16 +1,19 @@
 /*******************************************************************
  * Utils.cpp
  *
- *  @date: 28 ���. 2014
+ *  @date: 28-7-2014
  *  @author: DB
  ******************************************************************/
 
-#include "Utils.h"
 
 #include <string>
 #include <algorithm>
 #include <cctype>
 #include <functional>
+#include <exception>
+#include <sstream>
+#include <fstream>
+#include <memory>
 
 #include <fcntl.h>
 #include <sys/stat.h>
@@ -18,20 +21,14 @@
 #include <dirent.h>
 #include <errno.h>
 #include <string.h>
-#include <regex>
-#include "bits/unique_ptr.h"
-#include <exception>
 #include <stdio.h>
-#include <fstream>
 #include <stdarg.h>
-#include <memory>
 
+#include "common/Utils.h"
 #include "common/traceout.h"
 #include "common/File.h"
 #include "common/Config.h"
 
-
-//using namespace std;
 
 //---------------------------------------------------------------------------------------
 const std::string Utils::getCurrentDateTime()
@@ -342,7 +339,6 @@ std::vector<std::string> Utils::getFileContent(std::string URL)
    std::string fileContent;
    std::vector<std::string> entries;
 
-   ////fileContent = Utils::getTextFileContent((workingDir + filePath).c_str());
    if (Utils::readAndCheckIfItIsBinary(URL.c_str(), fileContent))
    {
       entries.push_back("(binary content)");

@@ -17,8 +17,8 @@ class Config
       ////static Config& getInstance();
       virtual ~Config();
 
-      static void setValue(std::string valueName, std::string value);
-      static void setValue(std::string valueName, unsigned long value);
+      static void setValue(const std::string& valueName, const std::string& value);
+      static void setValue(const std::string& valueName, unsigned long value);
 
       static const std::string getValueStr(const std::string& valueName);
       static unsigned long getValueInt(const std::string& valueName);

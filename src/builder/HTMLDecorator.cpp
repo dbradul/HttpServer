@@ -67,9 +67,3 @@ std::string HTMLDecorator<std::string>::decorateBody(const std::string& body)
 
    return templater.generate();
 }
-
-
-namespace HTTP
-{
-
-}

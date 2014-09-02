@@ -12,8 +12,7 @@
 #include <thread>
 #include <queue>
 #include <condition_variable>
-
-#include <bits/unique_ptr.h>
+#include <memory>
 
 //---------------------------------------------------------------------------------------
 template<class T>

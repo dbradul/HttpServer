@@ -1,15 +1,21 @@
 /*******************************************************************
  * File.cpp
  *
- *  @date: 5 ����. 2014
+ *  @date: 5-8-2014
  *  @author: DB
  ******************************************************************/
 
-#include <common/File.h>
-#include "common/traceout.h"
-#include "common/Config.h"
 #include <unistd.h>
 #include <sys/stat.h>
+#include <errno.h>
+#include <string.h>
+#include <exception>
+#include <stdio.h>
+#include <fstream>
+
+#include "common/File.h"
+#include "common/traceout.h"
+#include "common/Config.h"
 
 
 //---------------------------------------------------------------------------------------
@@ -100,8 +106,7 @@ void File::loadFileMetadata() const
 
    if (stat(mFilePath.c_str(), &statInfo) == -1)
    {
-      ////throw(ios_base::failure(strerror(errno)));
-      return;//FIXME
+      throw(std::ios_base::failure(std::string("Failed to load metadata for the file '") + mFilePath + ": " + strerror(errno)));
    }
 
    char perms[1 + 3 + 3 + 3];

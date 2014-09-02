@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <signal.h>
 #include <string>
+#include <memory>
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -16,13 +17,6 @@
 #include "common/File.h"
 #include "builder/Templater.h"
 
-#include <TestHarness.h>
-#include <thread>
-
-#include <bits/unique_ptr.h>
-#include <bits/shared_ptr.h>
-
-
 //---------------------------------------------------------------------------------------
 // FORWARD DECLARATIONS
 //---------------------------------------------------------------------------------------
@@ -30,7 +24,6 @@ bool parseOptions(int argc, char *argv[]);
 void printUsage();
 void daemonize();
 bool checkEnv();
-
 
 //---------------------------------------------------------------------------------------
 int main(int argc, char *argv[])

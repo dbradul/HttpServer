@@ -5,25 +5,18 @@
  *      Author: DB
  */
 
-#include "pthread.h"
-#include "stdio.h"
-#include "assert.h"
-#include <iostream>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
-
-#include <unistd.h>
-#include <exception>
-
+#include <asm/byteorder.h>
+#include <cygwin/in.h>
+#include <cygwin/socket.h>
 #include <sys/socket.h>
-#include <sys/types.h>
-#include <netinet/in.h>
+#include <sys/unistd.h>
+#include <cstddef>
+#include <cstdio>
+#include <exception>
+#include <string>
 
-#include "core/Connection.h"
-#include "common/traceout.h"
-#include "common/Config.h"
-#include "protocol/Message.h"
+#include <common/traceout.h>
+#include <core/Connection.h>
 
 namespace HTTP
 {

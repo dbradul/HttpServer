@@ -15,7 +15,7 @@
 #include "common/File.h"
 #include <algorithm>
 #include <functional>
-#include <bits/stl_pair.h>
+#include <memory>
 
 
 #define DISALLOW_COPY_AND_ASSIGN(TypeName) \
