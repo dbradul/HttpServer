@@ -5,8 +5,15 @@ DEBUG = -g
 CFLAGS = -Wall -c -std=c++0x -I$(CURDIR)/src -I$(CURDIR)/unittests $(DEBUG)
 LFLAGS = -Wall $(DEBUG)
 BIN_DIR = Debug
-BIN_OUT = $(BIN_DIR)/HttpServer.exe
-BIN_OUT_UNITTESTS = $(BIN_DIR)/HttpServer_unittests.exe
+
+ifeq ($(OS),Windows_NT)
+	BIN_OUT = $(BIN_DIR)/HttpServer.exe
+	BIN_OUT_UNITTESTS = $(BIN_DIR)/HttpServer_unittests.exe
+else
+	BIN_OUT = $(BIN_DIR)/HttpServer
+	BIN_OUT_UNITTESTS = $(BIN_DIR)/HttpServer_unittests
+endif
+
 dir_guard=@mkdir -p $(@D)
 
 All : HttpServer HttpServer_unittests
@@ -21,5 +28,4 @@ HttpServer_unittests : $(OBJS) $(OBJS_UNITTESTS)
 	$(CC) $(LFLAGS) $(OBJS) $(OBJS_UNITTESTS) -o $(BIN_OUT_UNITTESTS)
 
 clean:
-	c:/cygwin64/bin/find Debug/ -name "*.o" -print0 | xargs -0 rm -rf
-	rm -rf $(BIN_OUT) $(BIN_OUT_UNITTESTS)
+	rm -rf $(BIN_DIR)
