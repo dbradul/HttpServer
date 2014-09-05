@@ -25,7 +25,7 @@ const std::string Message::HEADER_PROTOCOL_VERSION = "Protocol";
 // Request
 //
 //---------------------------------------------------------------------------------------
-const std::string Request::REQUEST_HOST            = "Host";
+const std::string Request::HEADER_HOST             = "Host";
 const std::string Request::HEADER_PATH             = "Path";
 const std::string Request::HEADER_METHOD           = "Method";
 
@@ -44,11 +44,11 @@ const std::vector<std::string>  Request::mHeaderPreambleFields =
 //
 //---------------------------------------------------------------------------------------
 const std::string Response::SUPPORTED_VERSION      = "HTTP/1.0";
+const std::string Response::TEXT_HTML              = "text/html";
 const std::string Response::HEADER_RET_CODE        = "ReturnCode";
 const std::string Response::HEADER_RET_CODE_DESC   = "ReturnCodeDescription";
 const std::string Response::HEADER_CONTENT_LENGTH  = "Content-Length";
 const std::string Response::HEADER_CONTENT_TYPE    = "Content-type";
-const std::string Response::TEXT_HTML              = "text/html";
 
 //---------------------------------------------------------------------------------------
 const std::vector<std::string>  Response::mHeaderPreambleFields =

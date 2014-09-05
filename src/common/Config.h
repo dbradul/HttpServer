@@ -1,7 +1,7 @@
 /*******************************************************************
  * Config.h
  *
- *  @date: 5 черв. 2014
+ *  @date: 5-8-2014
  *  @author: DB
  ******************************************************************/
 
@@ -14,9 +14,6 @@
 class Config
 {
    public:
-      ////static Config& getInstance();
-      virtual ~Config();
-
       static void setValue(const std::string& valueName, const std::string& value);
       static void setValue(const std::string& valueName, unsigned long value);
 
@@ -33,7 +30,6 @@ class Config
       Config();
       Config(const Config& rhs);
       static std::map<std::string, std::string> settings;
-      static Config* mpInstance;
 };
 
 #endif /* CONFIG_H_ */

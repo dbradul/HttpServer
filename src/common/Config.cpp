@@ -17,10 +17,10 @@
 //---------------------------------------------------------------------------------------
 // Protocol constants
 //---------------------------------------------------------------------------------------
-const std::string Config::MAX_THREAD_NUMBER  = "PUTIN_HUYLO";
-const std::string Config::PORT               = "SLAVA_UKRAYNI";
-const std::string Config::WORKING_DIR        = "HEROYAM_SLAVA";
-const std::string Config::ROOT_DIR           = "LALALALALALA";
+const std::string Config::MAX_THREAD_NUMBER  = "MAX_THREAD_NUMBER";
+const std::string Config::PORT               = "PORT";
+const std::string Config::WORKING_DIR        = "WORKING_DIR";
+const std::string Config::ROOT_DIR           = "ROOT_DIR";
 const std::string Config::PAGE_TITLE         = "PAGE_TITLE";
 
 //---------------------------------------------------------------------------------------
@@ -33,24 +33,6 @@ std::map<std::string, std::string> Config::settings =
    {WORKING_DIR,                             std::string(getcwd(workingDir, sizeof(workingDir)))},
    {ROOT_DIR,                                std::string(getcwd(workingDir, sizeof(workingDir)))},
 };
-
-Config* Config::mpInstance = NULL;
-
-//---------------------------------------------------------------------------------------
-Config::Config()
-//---------------------------------------------------------------------------------------
-{
-   TRC_DEBUG_FUNC_ENTER(0U, "");
-   TRC_DEBUG_FUNC_EXIT (0U);
-}
-
-//---------------------------------------------------------------------------------------
-Config::~Config()
-//---------------------------------------------------------------------------------------
-{
-   TRC_DEBUG_FUNC_ENTER(0U, "");
-   TRC_DEBUG_FUNC_EXIT (0U);
-}
 
 //---------------------------------------------------------------------------------------
 void Config::setValue(const std::string& valueName, const std::string& value)

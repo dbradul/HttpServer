@@ -1,10 +1,10 @@
-OBJS = 
-OBJS_UNITTESTS =
-CC = g++-4.8
-DEBUG = -g
-CFLAGS = -Wall -c -std=c++0x -I$(CURDIR)/src -I$(CURDIR)/unittests $(DEBUG)
-LFLAGS = -Wall $(DEBUG)
-BIN_DIR = Debug
+OBJS		= 
+OBJS_UNITTESTS	=
+CC		= g++
+DEBUG		= -g
+CFLAGS		= -Wall -c -pthread -std=c++0x -I$(CURDIR)/src -I$(CURDIR)/unittests $(DEBUG)
+LFLAGS		= -Wall -pthread $(DEBUG)
+BIN_DIR 	= bin
 
 ifeq ($(OS),Windows_NT)
 	BIN_OUT = $(BIN_DIR)/HttpServer.exe

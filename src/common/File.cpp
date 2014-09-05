@@ -125,7 +125,6 @@ void File::loadFileMetadata() const
             statInfo.st_mode && S_IXOTH ? 'x' : '-'
           );
 
-   ////mIsDir         = S_ISDIR(statInfo.st_mode);
    mSize          = statInfo.st_size;
    mPermissions   = perms;
 }

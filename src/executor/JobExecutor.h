@@ -10,6 +10,7 @@
 
 #include "executor/IJob.h"
 #include "common/BlockingQueue.h"
+#include "common/Utils.h"
 #include <vector>
 #include <thread>
 
@@ -18,6 +19,8 @@
 class JobExecutor
 {
    public:
+      static const int THREAD_NUM_UPPER_BOUND;
+
       JobExecutor();
       virtual ~JobExecutor();
 
@@ -27,7 +30,6 @@ class JobExecutor
       void submitJob(IJobPtr job);
       void setMaxThreadNum(int maxThreadNum);
       BlockingQueuePtr<IJob> mJobQueue;
-      static const int THREAD_NUM_UPPER_BOUND;
 
    private:
       void processingLoop();
@@ -35,6 +37,7 @@ class JobExecutor
       bool mbStarted;
       int mMaxThreadNum;
 
+      DISALLOW_COPY_AND_ASSIGN(JobExecutor);
 };
 
 #endif /* JOBEXECUTOR_H_ */
