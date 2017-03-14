@@ -22,6 +22,7 @@ extern "C" {
 #define TRC_GROUP "HttpServer"
 
 #define __ENABLE_DEV_DEBUG_OUT__
+
 ////#define __ENABLE_DEV_DEBUG_SLOG__
 #ifdef __ENABLE_DEV_DEBUG_OUT__
    #ifdef TRC_DEBUG

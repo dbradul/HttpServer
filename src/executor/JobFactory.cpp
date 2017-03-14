@@ -16,9 +16,6 @@
 namespace HTTP
 {
 
-static const std::string METHOD_GET = "GET";
-static const std::string METHOD_POST = "POST";
-
 //---------------------------------------------------------------------------------------
 JobFactory::JobFactory()
 //---------------------------------------------------------------------------------------
@@ -41,7 +38,7 @@ IJobPtr JobFactory::createJob(const Request& request)
 {
    TRC_DEBUG_FUNC_ENTER (0U, "");
 
-   if (request.getHeaderField(Request::HEADER_METHOD) == METHOD_GET)
+   if (request.getHeaderField(Request::HEADER_METHOD) == Message::METHOD_GET)
    {
       class JobRequestGET: public IJob
       {
@@ -88,7 +85,7 @@ IJobPtr JobFactory::createJob(const Request& request)
       return IJobPtr(new JobRequestGET(request.getHeaderField(Request::HEADER_PATH)));
    }
 
-   else if (request.getHeaderField(Request::HEADER_METHOD) == METHOD_POST)
+   else if (request.getHeaderField(Request::HEADER_METHOD) == Message::METHOD_POST)
    {
       class JobNOP: public IJob
       {

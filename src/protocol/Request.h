@@ -16,7 +16,6 @@
 class Request: public Message
 {
    public:
-      static const std::string HEADER_HOST;
       static const std::string HEADER_METHOD;
       static const std::string HEADER_PATH;
 

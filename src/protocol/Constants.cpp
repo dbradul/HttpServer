@@ -20,12 +20,15 @@ const std::string Message::HEADER_FIELD_DELIM      = "\r\n";
 const std::string Message::HEADER_FIELD_NAME_DELIM = ": ";
 const std::string Message::HEADER_PROTOCOL_VERSION = "Protocol";
 
+
+const std::string Message::METHOD_GET = "GET";
+const std::string Message::METHOD_POST = "POST";
+
 //---------------------------------------------------------------------------------------
 //
 // Request
 //
 //---------------------------------------------------------------------------------------
-const std::string Request::HEADER_HOST             = "Host";
 const std::string Request::HEADER_PATH             = "Path";
 const std::string Request::HEADER_METHOD           = "Method";
 

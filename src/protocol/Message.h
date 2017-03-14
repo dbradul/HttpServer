@@ -1,7 +1,7 @@
 /*******************************************************************
  * Message.h
  *
- *  @date: 30 квіт. 2014
+ *  @date: 07/2014
  *  @author: DB
  ******************************************************************/
 
@@ -26,7 +26,9 @@ class Message
       static const std::string HEADER_PROTOCOL_VERSION;
       static const std::string HEADER_CONTENT_LENGTH;
       static const std::string HEADER_CONTENT_TYPE;
-      //other header fields
+
+      static const std::string METHOD_GET;
+      static const std::string METHOD_POST;
 
       Message();
       virtual ~Message();
