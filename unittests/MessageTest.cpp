@@ -4,24 +4,29 @@
 
 using namespace std;
 
-/////////////////////////////////////////////////////////////////
-TEST(TestMessage, RequestTest)
+//---------------------------------------------------------------
+TEST(TestMessage, RequestParseTest)
+//---------------------------------------------------------------
 {
    // Arrange
    Request msg;
-   
+   string origin = "GET http://www.server.com/page.html HTTP/1.0";
+
    // Act
-   msg.parse("GET http://www.server.com/page.html HTTP/1.0");
+   msg.parse(origin);
 
    // Assert
-   ASSERT_EQ(msg.getHeaderField(Request::HEADER_METHOD),            Message::METHOD_GET);
-   ASSERT_EQ(msg.getHeaderField(Request::HEADER_PATH),              "http://www.server.com/page.html");
-   ASSERT_EQ(msg.getHeaderField(Request::HEADER_PROTOCOL_VERSION),  "HTTP/1.0");
+   ASSERT_EQ(msg.getType(),     Request::Type::GET);
+   ASSERT_EQ(msg.getUrl(),      "http://www.server.com/page.html");
+   ASSERT_EQ(msg.getProtoVer(), "HTTP/1.0");
+
+   ASSERT_EQ(origin, msg.getRawMessage());
 }
 
 
-/////////////////////////////////////////////////////////////////
+//---------------------------------------------------------------
 TEST(TestMessage, RequestSessionIdTest)
+//---------------------------------------------------------------
 {
    // Arrange
    Request msg;
@@ -31,5 +36,18 @@ TEST(TestMessage, RequestSessionIdTest)
 
    // Assert
    ASSERT_EQ(msg.getSessionId(), 42);
+}
+
+
+//---------------------------------------------------------------
+TEST(TestMessage, RequestParseExceptionTest)
+//---------------------------------------------------------------
+{
+   // Arrange
+   Request msg;
+
+   // Act
+   // Assert
+   EXPECT_THROW({msg.parse("Badly_formatted_message");}, ParseException);
 }
 

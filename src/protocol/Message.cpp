@@ -7,7 +7,6 @@
 
 #include <vector>
 #include <exception>
-#include <stdio.h>
 
 #include "protocol/Message.h"
 #include "protocol/Request.h"
@@ -35,28 +34,17 @@ Message::~Message()
 void Message::parse(const std::string& rawMessage)
 //---------------------------------------------------------------------------------------
 {
-   parseHeader (rawMessage);
-   parseBody   (rawMessage);
    mRawMessage = rawMessage;
+
+   parseStartLine   (rawMessage);
+   parseHeader      (rawMessage);
+   parseBody        (rawMessage);
 }
 
 //---------------------------------------------------------------------------------------
 void Message::parseHeader(const std::string& rawMessage)
 //---------------------------------------------------------------------------------------
 {
-   char _1stField  [256] = {0};
-   char _2ndField  [256] = {0};
-   char _3rdField  [256] = {0};
-
-   if ( sscanf( rawMessage.c_str(), "%[^ ] %[^ ] %[^ ]", _1stField, _2ndField, _3rdField ) != 3 )
-   {
-      throw(std::range_error("Message is not correct"));
-   }
-
-   setHeaderField(getHeaderPreambleFields()[0], _1stField);
-   setHeaderField(getHeaderPreambleFields()[1], _2ndField);
-   setHeaderField(getHeaderPreambleFields()[2], _3rdField);
-
    size_t headerEnd     = rawMessage.find(HEADER_BODY_DELIM);
    size_t headerStart   = rawMessage.find(HEADER_FIELD_DELIM);
 
@@ -110,10 +98,10 @@ void Message::setHeaderField(const std::string& fieldName, const std::string& fi
 }
 
 //---------------------------------------------------------------------------------------
-const std::string& Message::getHeaderStr()
+std::string Message::getStartLine() const
 //---------------------------------------------------------------------------------------
 {
-   return mHeader.toString(getHeaderPreambleFields());
+   return "";//mHeader.toString(getHeaderPreambleFields());
 }
 
 //---------------------------------------------------------------------------------------
@@ -132,7 +120,7 @@ const std::string& Message::getBody() const
 }
 
 //---------------------------------------------------------------------------------------
-const std::string& Message::toString() const
+const std::string& Message::getRawMessage() const
 //---------------------------------------------------------------------------------------
 {
    TRC_DEBUG_FUNC_ENTER(0U, "");
@@ -140,7 +128,10 @@ const std::string& Message::toString() const
    if (0 == mRawMessage.size())
    {
       mRawMessage =
-            mHeader.toString(getHeaderPreambleFields()) +
+
+//              mHeader.toString(getHeaderPreambleFields()) +
+            getStartLine() +
+            mHeader.toString() +
             HEADER_FIELD_DELIM +
             mBody;
    }
@@ -151,28 +142,29 @@ const std::string& Message::toString() const
 }
 
 //---------------------------------------------------------------------------------------
-const std::string& Message::Header::toString(const std::vector<std::string>& preambleFields) const
+const std::string& Message::Header::toString(/*const std::vector<std::string>& preambleFields*/) const
 //---------------------------------------------------------------------------------------
 {
    if( mHeaderStr.empty() )
    {
       std::stringstream result;
 
-      result << mHeaderFields.at(preambleFields[0]) << " ";
-      result << mHeaderFields.at(preambleFields[1]) << " ";
-      result << mHeaderFields.at(preambleFields[2]) << HEADER_FIELD_DELIM;
+//      result << mHeaderFields.at(preambleFields[0]) << " ";
+//      result << mHeaderFields.at(preambleFields[1]) << " ";
+//      result << mHeaderFields.at(preambleFields[2]) << HEADER_FIELD_DELIM;
 
-      auto skipPreambleFields = [&](const std::pair<std::string, std::string>& entry)
-      {
-         return ( std::find(preambleFields.begin(),
-                            preambleFields.end(),
-                            entry.first) == preambleFields.end() );
-      };
+//      auto skipPreambleFields = [&](const std::pair<std::string, std::string>& entry)
+//      {
+//         return ( std::find(preambleFields.begin(),
+//                            preambleFields.end(),
+//                            entry.first) == preambleFields.end() );
+//      };
 
       result << Utils::join( mHeaderFields,
                              Message::HEADER_FIELD_NAME_DELIM,
-                             Message::HEADER_FIELD_DELIM,
-                             skipPreambleFields );
+                             Message::HEADER_FIELD_DELIM
+//                             skipPreambleFields );
+                             );
 
       mHeaderStr = result.str();
    }

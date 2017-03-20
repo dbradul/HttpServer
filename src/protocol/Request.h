@@ -19,19 +19,38 @@ class Request: public Message
       static const std::string HEADER_METHOD;
       static const std::string HEADER_PATH;
 
+      enum Type
+      {
+          GET,
+          HEAD,
+          POST,
+          PUT,
+          DELETE,
+          CONNECT,
+          OPTIONS,
+          TRACE,
+      };
+
       Request();
       explicit Request(const std::string& rawMessage);
       virtual ~Request();
 
-      void setSessionId(int sessionId);
-      const int getSessionId() const;
+      void                  setSessionId(int sessionId);
+      const int             getSessionId() const;
+      Type                  getType() const;
+      const std::string&    getUrl() const;
+      const std::string&    getProtoVer() const;
+
+      std::string getStartLine() const override;
 
    protected:
-      const std::vector<std::string>& getHeaderPreambleFields() const;
+      void parseStartLine (const std::string& rawMessage) override;
 
    private:
       int mSessionId;
-      static const std::vector<std::string> mHeaderPreambleFields;
+      Type mType;
+      std::string mURL;
+      std::string mProtoVer;
       DISALLOW_COPY_AND_ASSIGN(Request);
 };
 

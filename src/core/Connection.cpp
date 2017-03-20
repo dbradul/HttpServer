@@ -167,13 +167,13 @@ void Connection::readRequest(Request& request)
 bool Connection::writeResponse(const Response& response, int sessionId) const
 //---------------------------------------------------------------------------------------
 {
-   TRC_DEBUG_FUNC_ENTER(0U, "Response='%s', sessionId=%d", response.toString().c_str(), sessionId);
+   TRC_DEBUG_FUNC_ENTER(0U, "Response='%s', sessionId=%d", response.getRawMessage().c_str(), sessionId);
    bool bResult = true;
 
-   int nbytes = response.toString().size();
+   int nbytes = response.getRawMessage().size();
 
    TRC_INFO(0U, "Sending response back to client.");
-   if (nbytes != write(sessionId, response.toString().c_str(), nbytes))
+   if (nbytes != write(sessionId, response.getRawMessage().c_str(), nbytes))
    {
       bResult = false;
    }

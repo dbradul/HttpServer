@@ -32,6 +32,9 @@ class Utils
                                 const std::string& delim1,
                                 const std::string& delim2,
                                 const std::function<bool(const std::pair<std::string, std::string>&)>& predicate);
+        static std::string join(const std::map<std::string, std::string>& map,
+                                const std::string& delim1,
+                                const std::string& delim2);
         static void readDir(const std::string& root, const std::string& relativePath, std::vector<File>& fileList);
         static std::string getTextFileContent(const char *filename);
         static bool readAndCheckIfItIsBinary(const char *filename, std::string& content);

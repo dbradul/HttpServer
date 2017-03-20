@@ -8,6 +8,8 @@
 #include "common/traceout.h"
 #include "Response.h"
 
+using namespace std;
+
 //---------------------------------------------------------------------------------------
 Response::Response()
 //---------------------------------------------------------------------------------------
@@ -64,8 +66,51 @@ void Response::setBody(const std::string& body)
 }
 
 //---------------------------------------------------------------------------------------
-const std::vector<std::string>& Response::getHeaderPreambleFields() const
+std::string Response::getStartLine() const
 //---------------------------------------------------------------------------------------
 {
-   return mHeaderPreambleFields;
+    string header = mProtoVer;
+    header += (" " + to_string(mErrCode));
+    header += (" " + mErrStatus);
+
+    return header;
+}
+
+//---------------------------------------------------------------------------------------
+void Response::parseStartLine(const std::string &rawMessage)
+//---------------------------------------------------------------------------------------
+{
+    char _1stField  [256] = {0};
+    char _2ndField  [256] = {0};
+    char _3rdField  [256] = {0};
+
+    if ( sscanf( rawMessage.c_str(), "%[^ ] %[^ ] %[^ ]", _1stField, _2ndField, _3rdField ) != 3 )
+    {
+        throw ParseException("Request is not correct");
+    }
+
+
+
+
+    if (_2ndField == to_string(ResultCode::OK))
+    {
+        mErrCode = ResultCode::OK;
+    }
+    else if (_2ndField == to_string(ResultCode::CREATED))
+    {
+        mErrCode = ResultCode::CREATED;
+    }
+    else if (_2ndField == to_string(ResultCode::INTERNAL_SERVER_ERROR))
+    {
+        mErrCode = ResultCode::INTERNAL_SERVER_ERROR;
+    }
+    else
+    {
+        string msg = "Response error code is not recognized: ";
+        msg += _2ndField;
+        throw ParseException(msg);
+    }
+
+    mProtoVer   = _1stField;
+    mErrStatus  = _3rdField;
 }

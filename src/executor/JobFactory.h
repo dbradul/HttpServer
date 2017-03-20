@@ -21,11 +21,11 @@ class JobFactory
       JobFactory();
       virtual ~JobFactory();
 
-      //TODO: make it templated
-      static IJobPtr createJob(const Request& request);
+      //TODO: make it templateds
+      static IJob::Ptr createJob(Request::Type requestType, const std::string& url);
 
-      static Callback createJobOnFinishCallback(const Connection& dispatcher, const int sessionId);
-      static Callback createJobOnErrorCallback(const Connection& dispatcher, const int sessionId);
+      static Callback createOnFinishCallback(const Connection& dispatcher, const int sessionId);
+      static Callback createOnErrorCallback(const Connection& dispatcher, const int sessionId);
 };
 
 }

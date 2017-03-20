@@ -9,6 +9,7 @@
 #include "common/Config.h"
 #include "common/traceout.h"
 
+const int JobExecutor::THREAD_NUM_LOWER_BOUND = 1;
 const int JobExecutor::THREAD_NUM_UPPER_BOUND = 512;
 
 //---------------------------------------------------------------------------------------
@@ -35,10 +36,8 @@ void JobExecutor::start()
 
    if (!mbStarted)
    {
-      // we must guarantee that at least one thread will be started!
-      int maxNumThread = std::max(1, mMaxThreadNum);
-
-      // we must ensure that the app will not exhaust system resources
+      // we must ensure that thread number is within limits!
+      int maxNumThread = std::max(THREAD_NUM_LOWER_BOUND, mMaxThreadNum);
       maxNumThread = std::min(THREAD_NUM_UPPER_BOUND, maxNumThread);
 
       for (int i = 0; i < maxNumThread; ++i)
@@ -53,7 +52,7 @@ void JobExecutor::start()
 }
 
 //---------------------------------------------------------------------------------------
-void JobExecutor::submitJob(IJobPtr pJob)
+void JobExecutor::submitJob(IJob::Ptr pJob)
 //---------------------------------------------------------------------------------------
 {
    TRC_DEBUG_FUNC_ENTER(0U, "");
@@ -69,7 +68,7 @@ void JobExecutor::processingLoop()
 {
    TRC_DEBUG_FUNC_ENTER(0U, "");
 
-   while (IJobPtr pJob = mJobQueue.pop())
+   while (IJob::Ptr pJob = mJobQueue.pop())
    {
       TRC_INFO(0U, "New job started: pJob=0x%p", (pJob.get()));
 
@@ -127,7 +126,7 @@ void JobExecutor::stop()
 
    for(int i=0; i < mMaxThreadNum; ++i)
    {
-      mJobQueue.push(IJobPtr(new JobStop(IJob::DUMMY_TERMINATE)));
+      mJobQueue.push(IJob::Ptr(new JobStop(IJob::DUMMY_TERMINATE)));
    }
 
    mbStarted = false;

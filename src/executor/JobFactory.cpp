@@ -11,10 +11,56 @@
 #include "executor/JobFactory.h"
 #include "builder/Templater.h"
 #include "builder/PageBuilder.h"
+#include <memory>
+
+using namespace std;
 
 
 namespace HTTP
 {
+
+class JobRequestGET: public IJob
+{
+   public:
+      std::string execute()
+      {
+         TRC_INFO(0, "GET request for the path: %s", mPath.c_str());
+
+         PageBuilder builder;
+
+         std::string result;
+         std::string URL = Config::getValueStr(Config::ROOT_DIR) + mPath;
+
+         if (Utils::endsWith(URL, "/"))
+         {
+            std::vector<File> content = Utils::getDirContent(URL);
+            HTMLDecorator<File> decorator;
+            decorator.setURL(URL);
+
+            result = builder.build(content, decorator);
+         }
+
+         else
+         {
+            std::vector<std::string> content = Utils::getFileContent(URL);
+            HTMLDecorator<std::string> decorator;
+            decorator.setURL(URL);
+
+            result = builder.build(content, decorator);
+         }
+
+         return result;
+      }
+
+      JobRequestGET(const std::string& path)
+      {
+         mPath = path;
+      }
+
+   private:
+      std::string mPath;
+};
+
 
 //---------------------------------------------------------------------------------------
 JobFactory::JobFactory()
@@ -33,79 +79,21 @@ JobFactory::~JobFactory()
 }
 
 //---------------------------------------------------------------------------------------
-IJobPtr JobFactory::createJob(const Request& request)
+IJob::Ptr JobFactory::createJob(Request::Type requestType, const std::string& url)
 //---------------------------------------------------------------------------------------
 {
-   TRC_DEBUG_FUNC_ENTER (0U, "");
+    switch(requestType)
+    {
+        case Request::Type::GET:
+            return make_unique<JobRequestGET>(url);
 
-   if (request.getHeaderField(Request::HEADER_METHOD) == Message::METHOD_GET)
-   {
-      class JobRequestGET: public IJob
-      {
-         public:
-            std::string execute()
-            {
-               TRC_INFO(0, "GET request for the path: %s", mPath.c_str());
-
-               PageBuilder builder;
-
-               std::string result;
-               std::string URL = Config::getValueStr(Config::ROOT_DIR) + mPath;
-
-               if (Utils::endsWith(URL, "/"))
-               {
-                  std::vector<File> content = Utils::getDirContent(URL);
-                  HTMLDecorator<File> decorator;
-                  decorator.setURL(URL);
-
-                  result = builder.build(content, decorator);
-               }
-
-               else
-               {
-                  std::vector<std::string> content = Utils::getFileContent(URL);
-                  HTMLDecorator<std::string> decorator;
-                  decorator.setURL(URL);
-
-                  result = builder.build(content, decorator);
-               }
-
-               return result;
-            }
-
-            JobRequestGET(const std::string& path)
-            {
-               mPath = path;
-            }
-
-         private:
-            std::string mPath;
-      };
-
-      return IJobPtr(new JobRequestGET(request.getHeaderField(Request::HEADER_PATH)));
-   }
-
-   else if (request.getHeaderField(Request::HEADER_METHOD) == Message::METHOD_POST)
-   {
-      class JobNOP: public IJob
-      {
-         public:
-            std::string execute()
-            {
-               throw(std::logic_error(std::string("Not implemented")));;
-            }
-      };
-
-      return IJobPtr(new JobNOP);
-   }
-
-   TRC_DEBUG_FUNC_EXIT (0U);
-
-   return NULL;
+        default:
+            throw runtime_error("Unsupported request method type");
+    }
 }
 
 //---------------------------------------------------------------------------------------
-Callback JobFactory::createJobOnFinishCallback(const Connection& connection, const int sessionId)
+Callback JobFactory::createOnFinishCallback(const Connection& connection, const int sessionId)
 //---------------------------------------------------------------------------------------
 {
    return [&connection, sessionId] (const std::string& result)
@@ -114,7 +102,7 @@ Callback JobFactory::createJobOnFinishCallback(const Connection& connection, con
       response.setResultCode  (Response::OK);
       response.setBody        (result);
 
-      TRC_INFO(0, "Response constructed: %s", response.getHeaderStr().c_str());
+      TRC_DEBUG(0, "Response constructed: %s", response.getStartLine().c_str());
 
       if( !connection.writeResponse(response, sessionId) )
       {
@@ -124,7 +112,7 @@ Callback JobFactory::createJobOnFinishCallback(const Connection& connection, con
 }
 
 //---------------------------------------------------------------------------------------
-Callback JobFactory::createJobOnErrorCallback(const Connection& connection, const int sessionId)
+Callback JobFactory::createOnErrorCallback(const Connection& connection, const int sessionId)
 //---------------------------------------------------------------------------------------
 {
    return [&connection, sessionId] (const std::string& result)
@@ -136,7 +124,7 @@ Callback JobFactory::createJobOnErrorCallback(const Connection& connection, cons
       response.setResultCode  (Response::INTERNAL_SERVER_ERROR);
       response.setBody        (templater.generate());
 
-      TRC_INFO(0U, "Response will be sent to a caller: %s", response.getHeaderStr().c_str());
+      TRC_DEBUG(0U, "Response will be sent to a caller: %s", response.getStartLine().c_str());
 
       if( !connection.writeResponse(response, sessionId) )
       {

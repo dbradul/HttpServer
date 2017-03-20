@@ -70,6 +70,12 @@ int main(int argc, char *argv[])
       TRC_FATAL(0U, "Application terminated!");
    }
 
+//   catch (...)
+//   {
+//      TRC_FATAL(0U, "Fatal error occured.");
+//      TRC_FATAL(0U, "Application terminated!");
+//   }
+
    TRC_DEINIT();
 
    return 0;

@@ -17,6 +17,9 @@ typedef std::function<void(const std::string&)> Callback;
 class IJob
 {
    public:
+
+      typedef std::unique_ptr<IJob> Ptr;
+
       enum Type
       {
          REGULAR,
@@ -41,6 +44,5 @@ class IJob
       Type mType;
 };
 
-typedef std::unique_ptr<IJob> IJobPtr;
 
 #endif /* IJOB_H_ */

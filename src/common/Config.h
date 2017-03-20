@@ -17,8 +17,8 @@ class Config
       static void setValue(const std::string& valueName, const std::string& value);
       static void setValue(const std::string& valueName, unsigned long value);
 
-      static const std::string getValueStr(const std::string& valueName);
-      static unsigned long getValueInt(const std::string& valueName);
+      static const std::string& getValueStr(const std::string& valueName);
+      static unsigned long      getValueInt(const std::string& valueName);
 
       static const std::string MAX_THREAD_NUMBER;
       static const std::string PORT;
@@ -29,7 +29,7 @@ class Config
    private:
       Config();
       Config(const Config& rhs);
-      static std::map<std::string, std::string> settings;
+      static std::map<std::string, std::string> m_settings;
 };
 
 #endif /* CONFIG_H_ */

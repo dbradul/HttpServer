@@ -14,6 +14,12 @@
 #include "common/traceout.h"
 #include "builder/Templater.h"
 
+namespace
+{
+    char workingDir[FILENAME_MAX] = {};
+    std::string UNKNOWN = "<UNKNOWN>";
+}
+
 //---------------------------------------------------------------------------------------
 // Protocol constants
 //---------------------------------------------------------------------------------------
@@ -24,44 +30,39 @@ const std::string Config::ROOT_DIR           = "ROOT_DIR";
 const std::string Config::PAGE_TITLE         = "PAGE_TITLE";
 
 //---------------------------------------------------------------------------------------
-char workingDir[FILENAME_MAX]={0};
-std::map<std::string, std::string> Config::settings =
+std::map<std::string, std::string> Config::m_settings =
 {
-   {MAX_THREAD_NUMBER,                       "4"},
-   {PORT,                                    "8080"},
-   {PAGE_TITLE,                              "HttpServer"},
-   {WORKING_DIR,                             std::string(getcwd(workingDir, sizeof(workingDir)))},
-   {ROOT_DIR,                                std::string(getcwd(workingDir, sizeof(workingDir)))},
+   {MAX_THREAD_NUMBER,              "4"},
+   {PORT,                           "8080"},
+   {PAGE_TITLE,                     "HttpServer"},
+   {WORKING_DIR,                    std::string(getcwd(workingDir, sizeof(workingDir)))},
+   {ROOT_DIR,                       std::string(getcwd(workingDir, sizeof(workingDir)))},
+
+   {UNKNOWN,                        UNKNOWN},
 };
 
 //---------------------------------------------------------------------------------------
 void Config::setValue(const std::string& valueName, const std::string& value)
 //---------------------------------------------------------------------------------------
 {
-   settings[valueName] = value;
+   m_settings[valueName] = value;
 }
 
 //---------------------------------------------------------------------------------------
 void Config::setValue(const std::string& valueName, unsigned long value)
 //---------------------------------------------------------------------------------------
 {
-   setValue(valueName, Utils::to_string(value));
+   setValue(valueName, std::to_string(value));
 }
 
 //---------------------------------------------------------------------------------------
-const std::string Config::getValueStr(const std::string& valueName)
+const std::string& Config::getValueStr(const std::string& valueName)
 //---------------------------------------------------------------------------------------
 {
-   std::string result = "UNKNOWN";
+   auto iter = m_settings.find(valueName);
 
-   auto iter = settings.find(valueName);
-
-   if (iter != settings.end())
-   {
-      result = iter->second;
-   }
-
-   return result;
+   return (iter != m_settings.end()) ? iter->second
+                                     : m_settings[UNKNOWN];
 }
 
 //---------------------------------------------------------------------------------------

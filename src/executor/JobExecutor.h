@@ -20,6 +20,7 @@ class JobExecutor
 {
    public:
       static const int THREAD_NUM_UPPER_BOUND;
+      static const int THREAD_NUM_LOWER_BOUND;
 
       JobExecutor();
       virtual ~JobExecutor();
@@ -27,7 +28,7 @@ class JobExecutor
       void start();
       void stop();
 
-      void submitJob(IJobPtr job);
+      void submitJob(IJob::Ptr job);
       void setMaxThreadNum(int maxThreadNum);
       BlockingQueuePtr<IJob> mJobQueue;
 

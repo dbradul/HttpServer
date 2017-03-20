@@ -5,7 +5,7 @@
  *  @author: DB
  ******************************************************************/
 
-#include <core/Dispatcher.h>
+#include "core/Dispatcher.h"
 #include "executor/JobFactory.h"
 #include "executor/JobExecutor.h"
 #include "protocol/Request.h"
@@ -46,23 +46,40 @@ void Dispatcher::start()
    // read and process requests until the connection is closed
    while (true)
    {
-      Request request;
-      mConnection.readRequest(request);
+       Request request;
 
-      //TODO: exception if failed?
+       try
+       {
+           mConnection.readRequest(request);
 
-      TRC_INFO(0U, "The new request is received: request='%s'", request.getHeaderStr().c_str());
+           TRC_INFO(0U, "The new request is received: request='%s'", request.getStartLine().c_str());
 
-      IJobPtr pJob(JobFactory::createJob(request));
-      Callback onFinishCallback  = JobFactory::createJobOnFinishCallback   (mConnection, request.getSessionId());
-      Callback onErrorCallback   = JobFactory::createJobOnErrorCallback    (mConnection, request.getSessionId());
+           auto pJob = JobFactory::createJob(request.getType(), request.getUrl());
+           Callback onFinishCallback  = JobFactory::createOnFinishCallback   (mConnection, request.getSessionId());
+           Callback onErrorCallback   = JobFactory::createOnErrorCallback    (mConnection, request.getSessionId());
 
-      pJob->setOnFinishCallback  (onFinishCallback);
-      pJob->setOnErrorCallback   (onErrorCallback);
+           pJob->setOnFinishCallback  (onFinishCallback);
+           pJob->setOnErrorCallback   (onErrorCallback);
 
-      mJobExecutor.submitJob(std::move(pJob));
+           mJobExecutor.submitJob(std::move(pJob));
 
-      TRC_INFO(0U, "The corresponding job is queued: pJob=0x%p, sessionId=%d", pJob.get(), request.getSessionId());
+           TRC_INFO(0U, "The corresponding job is queued: pJob=0x%p, sessionId=%d", pJob.get(), request.getSessionId());
+       }
+
+       catch(ParseException& ex)
+       {
+           TRC_ERROR(0U,
+                     "Exception while parsing request '%s': %s",
+                     request.getRawMessage().c_str(),
+                     ex.what());
+       }
+
+       catch (const std::exception& e)
+       {
+           stop();
+           throw;
+       }
+
    }
 }
 

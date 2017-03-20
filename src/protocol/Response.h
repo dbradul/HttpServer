@@ -42,12 +42,17 @@ class Response: public Message
       void setVersion(const std::string& version);
       void setBody(const std::string& body);
 
-   protected:
-      const std::vector<std::string>& getHeaderPreambleFields() const;
+      std::string getStartLine() const override;
 
-   private:
+protected:
+      void parseStartLine(const std::string &rawMessage) override;
+
+private:
       static const std::map<ResultCode, std::string> mResultCodeDescriptions;
-      static const std::vector<std::string> mHeaderPreambleFields;
+
+      std::string mProtoVer  = "";
+      ResultCode  mErrCode   = ResultCode::OK;
+      std::string mErrStatus = "";
 
       DISALLOW_COPY_AND_ASSIGN(Response);
 };

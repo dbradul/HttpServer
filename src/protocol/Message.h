@@ -13,6 +13,7 @@
 #include <sstream>
 #include <algorithm>
 #include <functional>
+#include <exception>
 
 #include "common/Utils.h"
 
@@ -33,33 +34,30 @@ class Message
       Message();
       virtual ~Message();
 
-      void parse(const std::string& rawMessage);
-
+      void               parse(const std::string& rawMessage);
       virtual void       setBody(const std::string& body);
       void               setHeaderField(const std::string& fieldName, const std::string& fieldValue);
-
       const std::string& getHeaderField(const std::string& fieldName) const;
       const std::string& getBody() const;
-      const std::string& getHeaderStr();
-
-      const std::string& toString() const;
+      virtual std::string getStartLine() const;
+      const std::string& getRawMessage() const;
 
    protected:
       class Header
       {
          public:
-            const std::string& toString(const std::vector<std::string>& preambleFields) const;
-            std::string& operator[](const std::string& key);
-            const std::string& operator[](const std::string& key) const;
+            const std::string&  toString(/*const std::vector<std::string>& preambleFields*/) const;
+            std::string&        operator[](const std::string& key);
+            const std::string&  operator[](const std::string& key) const;
 
          private:
             mutable std::string mHeaderStr;
             std::map<std::string, std::string> mHeaderFields;
       };
 
-      virtual const std::vector<std::string>& getHeaderPreambleFields() const=0;
-      void parseHeader (const std::string& rawMessage);
-      void parseBody   (const std::string& rawMessage);
+      virtual void parseStartLine   (const std::string& rawMessage){}
+      void parseHeader      (const std::string& rawMessage);
+      void parseBody        (const std::string& rawMessage);
 
       mutable std::string  mRawMessage;
       mutable Header       mHeader;
@@ -67,6 +65,14 @@ class Message
 
    private:
       DISALLOW_COPY_AND_ASSIGN(Message);
+};
+
+class ParseException : public std::runtime_error
+{
+public:
+    ParseException(const std::string descr)
+        : std::runtime_error(descr)
+    {}
 };
 
 #endif /* MESSAGE_H_ */

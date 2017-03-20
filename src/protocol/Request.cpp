@@ -13,6 +13,8 @@
 #include "common/traceout.h"
 #include "Request.h"
 
+using namespace std;
+
 //---------------------------------------------------------------------------------------
 Request::Request()
    : mSessionId(-1)
@@ -25,6 +27,7 @@ Request::Request()
 //---------------------------------------------------------------------------------------
 Request::Request(const std::string& rawMessage)
    : mSessionId(-1)
+   , mType(Type::GET)
 //---------------------------------------------------------------------------------------
 {
    TRC_DEBUG_FUNC_ENTER(0U, "rawMessage='%s'", rawMessage.c_str());
@@ -57,8 +60,65 @@ const int Request::getSessionId() const
 }
 
 //---------------------------------------------------------------------------------------
-const std::vector<std::string>& Request::getHeaderPreambleFields() const
+Request::Type Request::getType() const
 //---------------------------------------------------------------------------------------
 {
-   return mHeaderPreambleFields;
+    return mType;
+}
+
+//---------------------------------------------------------------------------------------
+const string &Request::getUrl() const
+//---------------------------------------------------------------------------------------
+{
+    return mURL;
+}
+
+//---------------------------------------------------------------------------------------
+const string &Request::getProtoVer() const
+//---------------------------------------------------------------------------------------
+{
+    return mProtoVer;
+}
+
+//---------------------------------------------------------------------------------------
+void Request::parseStartLine(const std::string &rawMessage)
+//---------------------------------------------------------------------------------------
+{
+    char _1stField  [256] = {0};
+    char _2ndField  [256] = {0};
+    char _3rdField  [256] = {0};
+
+    if ( sscanf( rawMessage.c_str(), "%[^ ] %[^ ] %[^ ]", _1stField, _2ndField, _3rdField ) != 3 )
+    {
+        throw ParseException("Request is not correct");
+    }
+
+
+
+    if (_1stField == Message::METHOD_POST)
+    {
+        mType = Type::POST;
+    }
+    else if (_1stField == Message::METHOD_GET)
+    {
+        mType = Type::GET;
+    }
+    else
+    {
+        string msg = "Request type is not recognized: ";
+        msg += _1stField;
+        throw ParseException(msg);
+    }
+
+    mURL        = _2ndField;
+    mProtoVer   = _3rdField;
+}
+
+string Request::getStartLine() const
+{
+    string header = "GET"; //FIXME
+    header += (" " + mURL);
+    header += (" " + mProtoVer);
+
+    return header;
 }

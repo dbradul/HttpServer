@@ -331,6 +331,18 @@ std::string Utils::join(  const std::map<std::string, std::string>& map,
 }
 
 //---------------------------------------------------------------------------------------
+std::string Utils::join(  const std::map<std::string, std::string>& map,
+                          const std::string& delim1,
+                          const std::string& delim2)
+//---------------------------------------------------------------------------------------
+{
+    return Utils::join( map, delim1, delim2, [&](const std::pair<std::string, std::string>& entry)
+    {
+        return true;
+    });
+}
+
+//---------------------------------------------------------------------------------------
 std::vector<std::string> Utils::getFileContent(std::string URL)
 //---------------------------------------------------------------------------------------
 {
