@@ -15,11 +15,11 @@
 namespace HTTP
 {
 
-class Dispatcher
+class Server
 {
    public:
-      Dispatcher();
-      virtual ~Dispatcher();
+      Server();
+      virtual ~Server();
 
       void setConnection(const Connection& connector);
 

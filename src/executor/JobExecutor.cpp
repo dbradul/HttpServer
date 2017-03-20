@@ -5,6 +5,8 @@
  *  @author: DB
  ******************************************************************/
 
+#include <memory>
+
 #include "JobExecutor.h"
 #include "common/Config.h"
 #include "common/traceout.h"
@@ -12,10 +14,13 @@
 const int JobExecutor::THREAD_NUM_LOWER_BOUND = 1;
 const int JobExecutor::THREAD_NUM_UPPER_BOUND = 512;
 
+using namespace std;
+
 //---------------------------------------------------------------------------------------
-JobExecutor::JobExecutor() :
-      mbStarted(false),
-      mMaxThreadNum(Config::getValueInt(Config::MAX_THREAD_NUMBER))
+JobExecutor::JobExecutor()
+    : mbStarted(false)
+    , mMaxThreadNum(Config::getValueInt(Config::MAX_THREAD_NUMBER))
+    , mThreadPool()
 //---------------------------------------------------------------------------------------
 {
 }
@@ -38,7 +43,7 @@ void JobExecutor::start()
    {
       // we must ensure that thread number is within limits!
       int maxNumThread = std::max(THREAD_NUM_LOWER_BOUND, mMaxThreadNum);
-      maxNumThread = std::min(THREAD_NUM_UPPER_BOUND, maxNumThread);
+      maxNumThread     = std::min(THREAD_NUM_UPPER_BOUND, maxNumThread);
 
       for (int i = 0; i < maxNumThread; ++i)
       {
@@ -126,8 +131,12 @@ void JobExecutor::stop()
 
    for(int i=0; i < mMaxThreadNum; ++i)
    {
-      mJobQueue.push(IJob::Ptr(new JobStop(IJob::DUMMY_TERMINATE)));
+       mJobQueue.push (make_unique<JobStop> (IJob::DUMMY_TERMINATE));
    }
+
+   for_each(mThreadPool.begin(), mThreadPool.end(), [](thread& e){
+       e.join();
+   });
 
    mbStarted = false;
 }

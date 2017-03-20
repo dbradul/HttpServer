@@ -108,8 +108,11 @@ void Connection::connect()
 void Connection::disconnect()
 //---------------------------------------------------------------------------------------
 {
-   close(mSocketDesc);
-   mbStarted = false;
+    if (mbStarted)
+    {
+        close(mSocketDesc);
+        mbStarted = false;
+    }
 }
 
 /*

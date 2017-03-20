@@ -9,7 +9,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
-#include "core/Dispatcher.h"
+#include "core/Server.h"
 #include "core/Connection.h"
 #include "common/traceout.h"
 #include "common/Utils.h"
@@ -51,17 +51,17 @@ int main(int argc, char *argv[])
 
    try
    {
-      HTTP::Dispatcher dispatcher;
+      HTTP::Server server;
       HTTP::Connection connection;
       connection.setPort(Config::getValueInt(Config::PORT));
 
       // initialize
-      dispatcher.setConnection(connection);
+      server.setConnection(connection);
 
       TRC_INFO(0U, "Server is being started...");
 
-      // blocking call: starts infinite message loop
-      dispatcher.start();
+      // starts message loop
+      server.start();
    }
 
    catch (const std::exception& e)

@@ -16,12 +16,12 @@
 
 //---------------------------------------------------------------------------------------
 template<class T>
-class BlockingQueuePtr
+class BlockingQueue
 //---------------------------------------------------------------------------------------
 {
    public:
-      BlockingQueuePtr();
-      virtual ~BlockingQueuePtr();
+      BlockingQueue();
+      virtual ~BlockingQueue();
 
       void push(std::unique_ptr<T> elem);
       std::unique_ptr<T> pop();
@@ -34,21 +34,21 @@ class BlockingQueuePtr
 
 //---------------------------------------------------------------------------------------
 template<class T>
-BlockingQueuePtr<T>::BlockingQueuePtr()
+BlockingQueue<T>::BlockingQueue()
 //---------------------------------------------------------------------------------------
 {
 }
 
 //---------------------------------------------------------------------------------------
 template<class T>
-BlockingQueuePtr<T>::~BlockingQueuePtr()
+BlockingQueue<T>::~BlockingQueue()
 //---------------------------------------------------------------------------------------
 {
 }
 
 //---------------------------------------------------------------------------------------
 template<class T>
-void BlockingQueuePtr<T>::push(std::unique_ptr<T> elem)
+void BlockingQueue<T>::push(std::unique_ptr<T> elem)
 //---------------------------------------------------------------------------------------
 {
    std::unique_lock<std::mutex> lock(mMutex);
@@ -58,7 +58,7 @@ void BlockingQueuePtr<T>::push(std::unique_ptr<T> elem)
 
 //---------------------------------------------------------------------------------------
 template<class T>
-std::unique_ptr<T> BlockingQueuePtr<T>::pop()
+std::unique_ptr<T> BlockingQueue<T>::pop()
 //---------------------------------------------------------------------------------------
 {
    std::unique_lock<std::mutex> lock(mMutex);
@@ -71,15 +71,5 @@ std::unique_ptr<T> BlockingQueuePtr<T>::pop()
    mQueue.pop();
    return elem;
 }
-
-////---------------------------------------------------------------------------------------
-//template<class T>
-//std::shared_ptr<T> BlockingQueue<T>::peek()
-////---------------------------------------------------------------------------------------
-//{
-//   std::unique_lock<std::mutex> lock(mMutex);
-//
-//   return std::shared_ptr<T>(mQueue.front().get());
-//}
 
 #endif /* BLOCKINGQUEUE_H_ */

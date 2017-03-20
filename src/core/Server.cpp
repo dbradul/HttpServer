@@ -5,7 +5,7 @@
  *  @author: DB
  ******************************************************************/
 
-#include "core/Dispatcher.h"
+#include "core/Server.h"
 #include "executor/JobFactory.h"
 #include "executor/JobExecutor.h"
 #include "protocol/Request.h"
@@ -14,7 +14,9 @@
 namespace HTTP
 {
 //---------------------------------------------------------------------------------------
-Dispatcher::Dispatcher()
+Server::Server()
+    : mConnection()
+    , mJobExecutor()
 //---------------------------------------------------------------------------------------
 {
    TRC_DEBUG_FUNC_ENTER(0U, "");
@@ -22,22 +24,25 @@ Dispatcher::Dispatcher()
 }
 
 //---------------------------------------------------------------------------------------
-Dispatcher::~Dispatcher()
+Server::~Server()
 //---------------------------------------------------------------------------------------
 {
    TRC_DEBUG_FUNC_ENTER(0U, "");
+
+   stop();
+
    TRC_DEBUG_FUNC_EXIT(0U);
 }
 
 //---------------------------------------------------------------------------------------
-void Dispatcher::setConnection(const Connection& connector)
+void Server::setConnection(const Connection& connector)
 //---------------------------------------------------------------------------------------
 {
    mConnection = connector;
 }
 
 //---------------------------------------------------------------------------------------
-void Dispatcher::start()
+void Server::start()
 //---------------------------------------------------------------------------------------
 {
    mJobExecutor.start();
@@ -84,7 +89,7 @@ void Dispatcher::start()
 }
 
 //---------------------------------------------------------------------------------------
-void Dispatcher::stop()
+void Server::stop()
 //---------------------------------------------------------------------------------------
 {
    mConnection.disconnect();
