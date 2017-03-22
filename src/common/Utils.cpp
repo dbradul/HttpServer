@@ -29,6 +29,7 @@
 #include "common/File.h"
 #include "common/Config.h"
 
+#include "boost/lexical_cast.hpp"
 
 //---------------------------------------------------------------------------------------
 const std::string Utils::getCurrentDateTime()
@@ -279,9 +280,11 @@ void Utils::replaceAll(std::string &s, const std::string & search, const std::st
 std::string Utils::to_string(unsigned long int_value)
 //---------------------------------------------------------------------------------------
 {
-    char buffer[16];
-    sprintf(buffer, "%lu", int_value);
-    return buffer;
+//    char buffer[16];
+//    sprintf(buffer, "%lu", int_value);
+//    return buffer;
+
+    return boost::lexical_cast<std::string>(int_value);
 }
 
 //---------------------------------------------------------------------------------------

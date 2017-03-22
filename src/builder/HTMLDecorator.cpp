@@ -32,7 +32,7 @@ std::string HTMLDecorator<File>::decorateLine(File file) const
 
     templater.setMacro(Templater::MACROS_FILENAME,  file.getName());
     templater.setMacro(Templater::MACROS_FILEPATH,  file.getReference());
-    templater.setMacro(Templater::MACROS_SIZE,      Utils::to_string(file.getSize()));
+    templater.setMacro(Templater::MACROS_SIZE,      std::to_string(file.getSize()));
     templater.setMacro(Templater::MACROS_PERMS,     file.getPermissions());
 
     TRC_DEBUG_FUNC_EXIT(0U);

@@ -3,6 +3,15 @@ cmake_minimum_required(VERSION 3.0)
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++14 -Wall -g")
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 
+# Boost
+find_package(Boost REQUIRED)
+###find_package(Boost COMPONENTS system filesystem REQUIRED)
+include_directories(${Boost_INCLUDE_DIR})
+link_directories(${Boost_LIBRARY_DIR})
+###add_executable(main main.cpp)
+###target_link_libraries( main ${Boost_LIBRARIES} )
+
+
 include_directories(.)
 
 message("PROJECT_SOURCE_DIR: ${PROJECT_SOURCE_DIR}")
