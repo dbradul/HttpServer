@@ -30,10 +30,11 @@ class JobExecutor
 
       void submitJob(IJob::Ptr job);
       void setMaxThreadNum(int maxThreadNum);
-      BlockingQueue<IJob> mJobQueue;
 
    private:
       void processingLoop();
+
+      BlockingQueue<IJob::Ptr> mJobQueue;
       bool mbStarted;
       int mMaxThreadNum;
       std::vector<std::thread> mThreadPool;

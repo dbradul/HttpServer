@@ -39,7 +39,7 @@ class Response: public Message
       virtual ~Response();
 
       void setResultCode(ResultCode resultCode);
-      void setVersion(const std::string& version);
+      void setProtoVer(const std::string& version);
       void setBody(const std::string& body);
 
       std::string getStartLine() const override;
@@ -50,9 +50,9 @@ protected:
 private:
       static const std::map<ResultCode, std::string> mResultCodeDescriptions;
 
-      std::string mProtoVer  = "";
-      ResultCode  mErrCode   = ResultCode::OK;
-      std::string mErrStatus = "";
+      std::string mProtoVer     = SUPPORTED_VERSION;
+      ResultCode  mResultCode   = ResultCode::OK;
+      std::string mErrStatus    = "";
 
       DISALLOW_COPY_AND_ASSIGN(Response);
 };

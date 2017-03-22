@@ -16,9 +16,8 @@ Response::Response()
 {
    TRC_DEBUG_FUNC_ENTER(0U, "");
 
+   //TODO: ??
    setHeaderField (HEADER_CONTENT_TYPE,       TEXT_HTML);
-   setHeaderField (HEADER_PROTOCOL_VERSION,   SUPPORTED_VERSION);
-   setResultCode  (Response::OK);
 
    TRC_DEBUG_FUNC_EXIT(0U);
 }
@@ -46,15 +45,14 @@ Response::~Response()
 void Response::setResultCode(ResultCode resultCode)
 //---------------------------------------------------------------------------------------
 {
-   setHeaderField(HEADER_RET_CODE,      Utils::to_string(resultCode));
-   setHeaderField(HEADER_RET_CODE_DESC, mResultCodeDescriptions.at(resultCode));
+    mResultCode = resultCode;
 }
 
 //---------------------------------------------------------------------------------------
-void Response::setVersion(const std::string& version)
+void Response::setProtoVer(const std::string& version)
 //---------------------------------------------------------------------------------------
 {
-   setHeaderField(HEADER_PROTOCOL_VERSION, version);
+    mProtoVer = version;
 }
 
 //---------------------------------------------------------------------------------------
@@ -62,7 +60,7 @@ void Response::setBody(const std::string& body)
 //---------------------------------------------------------------------------------------
 {
    Message::setBody(body);
-   mHeader[HEADER_CONTENT_LENGTH] = Utils::to_string(mBody.length());
+   mHeader[HEADER_CONTENT_LENGTH] = to_string(mBody.length());//Utils::to_string(mBody.length());
 }
 
 //---------------------------------------------------------------------------------------
@@ -70,7 +68,7 @@ std::string Response::getStartLine() const
 //---------------------------------------------------------------------------------------
 {
     string header = mProtoVer;
-    header += (" " + to_string(mErrCode));
+    header += (" " + to_string(mResultCode));
     header += (" " + mErrStatus);
 
     return header;
@@ -94,15 +92,15 @@ void Response::parseStartLine(const std::string &rawMessage)
 
     if (_2ndField == to_string(ResultCode::OK))
     {
-        mErrCode = ResultCode::OK;
+        mResultCode = ResultCode::OK;
     }
     else if (_2ndField == to_string(ResultCode::CREATED))
     {
-        mErrCode = ResultCode::CREATED;
+        mResultCode = ResultCode::CREATED;
     }
     else if (_2ndField == to_string(ResultCode::INTERNAL_SERVER_ERROR))
     {
-        mErrCode = ResultCode::INTERNAL_SERVER_ERROR;
+        mResultCode = ResultCode::INTERNAL_SERVER_ERROR;
     }
     else
     {

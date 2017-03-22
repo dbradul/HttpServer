@@ -12,13 +12,14 @@
 #include "common/traceout.h"
 
 const int JobExecutor::THREAD_NUM_LOWER_BOUND = 1;
-const int JobExecutor::THREAD_NUM_UPPER_BOUND = 512;
+const int JobExecutor::THREAD_NUM_UPPER_BOUND = 64;
 
 using namespace std;
 
 //---------------------------------------------------------------------------------------
 JobExecutor::JobExecutor()
-    : mbStarted(false)
+    : mJobQueue()
+    , mbStarted(false)
     , mMaxThreadNum(Config::getValueInt(Config::MAX_THREAD_NUMBER))
     , mThreadPool()
 //---------------------------------------------------------------------------------------
@@ -73,9 +74,10 @@ void JobExecutor::processingLoop()
 {
    TRC_DEBUG_FUNC_ENTER(0U, "");
 
-   while (IJob::Ptr pJob = mJobQueue.pop())
+   while (IJob::Ptr pJob = ::move(mJobQueue.peek()))
    {
       TRC_INFO(0U, "New job started: pJob=0x%p", (pJob.get()));
+      mJobQueue.pop();
 
       if(IJob::DUMMY_TERMINATE == pJob->getType())
       {
@@ -134,7 +136,8 @@ void JobExecutor::stop()
        mJobQueue.push (make_unique<JobStop> (IJob::DUMMY_TERMINATE));
    }
 
-   for_each(mThreadPool.begin(), mThreadPool.end(), [](thread& e){
+   for_each(mThreadPool.begin(), mThreadPool.end(), [](thread& e)
+   {
        e.join();
    });
 

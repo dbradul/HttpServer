@@ -5,7 +5,7 @@ enable_testing()
 find_package(GTest REQUIRED)
 include_directories(${GTEST_INCLUDE_DIR})
 
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++14 -Wall -pedantic")
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++14 -pthread -Wall -pedantic")
 include_directories(${PROJECT_SOURCE_DIR}/src)
 message("Unittests project! Linked with lib: ${PROJECT_NAME}_LIB")
 
@@ -15,6 +15,7 @@ add_executable(runUnitTests
     FileTest.cpp
     ConfigTest.cpp
     MessageTest.cpp
+    BlockingQueueTest.cpp
 )
 
 # Link test executable against gtest & main lib
