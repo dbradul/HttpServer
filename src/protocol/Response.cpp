@@ -14,31 +14,31 @@ using namespace std;
 Response::Response()
 //---------------------------------------------------------------------------------------
 {
-   TRC_DEBUG_FUNC_ENTER(0U, "");
+    TRC_DEBUG_FUNC_ENTER(0U, "");
 
-   //TODO: ??
-   setHeaderField (HEADER_CONTENT_TYPE,       TEXT_HTML);
+    //TODO: ??
+    setHeaderField (HEADER_CONTENT_TYPE,       TEXT_HTML);
 
-   TRC_DEBUG_FUNC_EXIT(0U);
+    TRC_DEBUG_FUNC_EXIT(0U);
 }
 
 //---------------------------------------------------------------------------------------
 Response::Response(const std::string& rawMessage)
 //---------------------------------------------------------------------------------------
 {
-   TRC_DEBUG_FUNC_ENTER(0U, "rawMessage='%s'", rawMessage.c_str());
+    TRC_DEBUG_FUNC_ENTER(0U, "rawMessage='%s'", rawMessage.c_str());
 
-   parse(rawMessage);
+    parse(rawMessage);
 
-   TRC_DEBUG_FUNC_EXIT(0U);
+    TRC_DEBUG_FUNC_EXIT(0U);
 }
 
 //---------------------------------------------------------------------------------------
 Response::~Response()
 //---------------------------------------------------------------------------------------
 {
-   TRC_DEBUG_FUNC_ENTER(0U, "");
-   TRC_DEBUG_FUNC_EXIT(0U);
+    TRC_DEBUG_FUNC_ENTER(0U, "");
+    TRC_DEBUG_FUNC_EXIT(0U);
 }
 
 //---------------------------------------------------------------------------------------
@@ -59,8 +59,8 @@ void Response::setProtoVer(const std::string& version)
 void Response::setBody(const std::string& body)
 //---------------------------------------------------------------------------------------
 {
-   Message::setBody(body);
-   mHeader[HEADER_CONTENT_LENGTH] = to_string(mBody.length());//Utils::to_string(mBody.length());
+    Message::setBody(body);
+    mHeader[HEADER_CONTENT_LENGTH] = to_string(mBody.length());//Utils::to_string(mBody.length());
 }
 
 //---------------------------------------------------------------------------------------

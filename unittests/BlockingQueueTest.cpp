@@ -65,9 +65,9 @@ TEST(TestBlockingQueue, BlockingPeekTest)
     BlockingQueue<int> queue;
 
     auto asyncFuture = std::async(
-        std::launch::async,[&] {
-            queue.peek();
-        }
+                std::launch::async,[&] {
+        queue.peek();
+    }
     );
 
     // Assert

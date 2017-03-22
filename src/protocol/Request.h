@@ -15,43 +15,43 @@
 
 class Request: public Message
 {
-   public:
-      static const std::string HEADER_METHOD;
-      static const std::string HEADER_PATH;
+public:
+    static const std::string HEADER_METHOD;
+    static const std::string HEADER_PATH;
 
-      enum Type
-      {
-          GET,
-          HEAD,
-          POST,
-          PUT,
-          DELETE,
-          CONNECT,
-          OPTIONS,
-          TRACE,
-      };
+    enum Type
+    {
+        GET,
+        HEAD,
+        POST,
+        PUT,
+        DELETE,
+        CONNECT,
+        OPTIONS,
+        TRACE,
+    };
 
-      Request();
-      explicit Request(const std::string& rawMessage);
-      virtual ~Request();
+    Request();
+    explicit Request(const std::string& rawMessage);
+    virtual ~Request();
 
-      void                  setSessionId(int sessionId);
-      const int             getSessionId() const;
-      Type                  getType() const;
-      const std::string&    getUrl() const;
-      const std::string&    getProtoVer() const;
+    void                  setSessionId(int sessionId);
+    const int             getSessionId() const;
+    Type                  getType() const;
+    const std::string&    getUrl() const;
+    const std::string&    getProtoVer() const;
 
-      std::string getStartLine() const override;
+    std::string getStartLine() const override;
 
-   protected:
-      void parseStartLine (const std::string& rawMessage) override;
+protected:
+    void parseStartLine (const std::string& rawMessage) override;
 
-   private:
-      int mSessionId;
-      Type mType;
-      std::string mURL;
-      std::string mProtoVer;
-      DISALLOW_COPY_AND_ASSIGN(Request);
+private:
+    int mSessionId;
+    Type mType;
+    std::string mURL;
+    std::string mProtoVer;
+    DISALLOW_COPY_AND_ASSIGN(Request);
 };
 
 #endif /* REQUEST_H_ */

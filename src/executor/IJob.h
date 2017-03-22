@@ -16,32 +16,32 @@ typedef std::function<void(const std::string&)> Callback;
 
 class IJob
 {
-   public:
+public:
 
-      typedef std::unique_ptr<IJob> Ptr;
+    typedef std::unique_ptr<IJob> Ptr;
 
-      enum Type
-      {
-         REGULAR,
-         DUMMY_TERMINATE
-      };
+    enum Type
+    {
+        REGULAR,
+        DUMMY_TERMINATE
+    };
 
-      IJob();
-      explicit IJob(Type type);
-      virtual ~IJob();
+    IJob();
+    explicit IJob(Type type);
+    virtual ~IJob();
 
-      virtual std::string execute() = 0;
+    virtual std::string execute() = 0;
 
-      Type getType() const;
+    Type getType() const;
 
-      void setOnFinishCallback(const Callback& callback);
-      void setOnErrorCallback(const Callback& callback);
+    void setOnFinishCallback(const Callback& callback);
+    void setOnErrorCallback(const Callback& callback);
 
-      Callback onFinishCallback;
-      Callback onErrorCallback;
+    Callback onFinishCallback;
+    Callback onErrorCallback;
 
-   private:
-      Type mType;
+private:
+    Type mType;
 };
 
 

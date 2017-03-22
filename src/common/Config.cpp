@@ -16,8 +16,8 @@
 
 namespace
 {
-    char workingDir[FILENAME_MAX] = {};
-    std::string UNKNOWN = "<UNKNOWN>";
+char workingDir[FILENAME_MAX] = {};
+std::string UNKNOWN = "<UNKNOWN>";
 }
 
 //---------------------------------------------------------------------------------------
@@ -32,43 +32,43 @@ const std::string Config::PAGE_TITLE         = "PAGE_TITLE";
 //---------------------------------------------------------------------------------------
 std::map<std::string, std::string> Config::m_settings =
 {
-   {MAX_THREAD_NUMBER,              "4"},
-   {PORT,                           "8080"},
-   {PAGE_TITLE,                     "HttpServer"},
-   {WORKING_DIR,                    std::string(getcwd(workingDir, sizeof(workingDir)))},
-   {ROOT_DIR,                       std::string(getcwd(workingDir, sizeof(workingDir)))},
+    {MAX_THREAD_NUMBER,              "4"},
+    {PORT,                           "8080"},
+    {PAGE_TITLE,                     "HttpServer"},
+    {WORKING_DIR,                    std::string(getcwd(workingDir, sizeof(workingDir)))},
+    {ROOT_DIR,                       std::string(getcwd(workingDir, sizeof(workingDir)))},
 
-   {UNKNOWN,                        UNKNOWN},
+    {UNKNOWN,                        UNKNOWN},
 };
 
 //---------------------------------------------------------------------------------------
 void Config::setValue(const std::string& valueName, const std::string& value)
 //---------------------------------------------------------------------------------------
 {
-   m_settings[valueName] = value;
+    m_settings[valueName] = value;
 }
 
 //---------------------------------------------------------------------------------------
 void Config::setValue(const std::string& valueName, unsigned long value)
 //---------------------------------------------------------------------------------------
 {
-   setValue(valueName, std::to_string(value));
+    setValue(valueName, std::to_string(value));
 }
 
 //---------------------------------------------------------------------------------------
 const std::string& Config::getValueStr(const std::string& valueName)
 //---------------------------------------------------------------------------------------
 {
-   auto iter = m_settings.find(valueName);
+    auto iter = m_settings.find(valueName);
 
-   return (iter != m_settings.end()) ? iter->second
-                                     : m_settings[UNKNOWN];
+    return (iter != m_settings.end()) ? iter->second
+                                      : m_settings[UNKNOWN];
 }
 
 //---------------------------------------------------------------------------------------
 unsigned long Config::getValueInt(const std::string& valueName)
 //---------------------------------------------------------------------------------------
 {
-   std::string valueStr = getValueStr(valueName);
-   return Utils::to_int(valueStr.c_str());
+    std::string valueStr = getValueStr(valueName);
+    return Utils::to_int(valueStr.c_str());
 }

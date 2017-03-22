@@ -47,98 +47,98 @@ const std::string Templater::MACRO_TAG = "##";
 Templater::Templater()
 //---------------------------------------------------------------------------------------
 {
-   TRC_DEBUG_FUNC_ENTER(0U, "");
-   TRC_DEBUG_FUNC_EXIT (0U);
+    TRC_DEBUG_FUNC_ENTER(0U, "");
+    TRC_DEBUG_FUNC_EXIT (0U);
 }
 
 //---------------------------------------------------------------------------------------
 Templater::Templater(const std::string& templateFilepath)
 //---------------------------------------------------------------------------------------
 {
-   TRC_DEBUG_FUNC_ENTER(0U, "templateFilepath='%s'", templateFilepath.c_str());
+    TRC_DEBUG_FUNC_ENTER(0U, "templateFilepath='%s'", templateFilepath.c_str());
 
-   mContent = lookupTemplate(templateFilepath);
+    mContent = lookupTemplate(templateFilepath);
 
-   TRC_DEBUG_FUNC_EXIT (0U);
+    TRC_DEBUG_FUNC_EXIT (0U);
 }
 
 //---------------------------------------------------------------------------------------
 Templater::~Templater()
 //---------------------------------------------------------------------------------------
 {
-   TRC_DEBUG_FUNC_ENTER(0U, "");
-   TRC_DEBUG_FUNC_EXIT (0U);
+    TRC_DEBUG_FUNC_ENTER(0U, "");
+    TRC_DEBUG_FUNC_EXIT (0U);
 }
 
 //---------------------------------------------------------------------------------------
 void Templater::setMacro(const std::string& macroName, const std::string& macroValue)
 //---------------------------------------------------------------------------------------
 {
-   mMacroses[macroName] = macroValue;
+    mMacroses[macroName] = macroValue;
 }
 
 //---------------------------------------------------------------------------------------
 std::string Templater::generate()
 //---------------------------------------------------------------------------------------
 {
-   TRC_DEBUG_FUNC_ENTER(0U, "");
+    TRC_DEBUG_FUNC_ENTER(0U, "");
 
-   std::size_t tagOpenBracket  = mContent.find(Templater::MACRO_TAG);
-   std::size_t tagCloseBracket = mContent.find(Templater::MACRO_TAG, tagOpenBracket+1);
+    std::size_t tagOpenBracket  = mContent.find(Templater::MACRO_TAG);
+    std::size_t tagCloseBracket = mContent.find(Templater::MACRO_TAG, tagOpenBracket+1);
 
-   while(   std::string::npos != tagOpenBracket
-         && std::string::npos != tagCloseBracket)
-   {
-      std::string token = mContent.substr(   tagOpenBracket + Templater::MACRO_TAG.length(),
-                           tagCloseBracket - tagOpenBracket - Templater::MACRO_TAG.length() );
+    while(   std::string::npos != tagOpenBracket
+             && std::string::npos != tagCloseBracket)
+    {
+        std::string token = mContent.substr(   tagOpenBracket + Templater::MACRO_TAG.length(),
+                                               tagCloseBracket - tagOpenBracket - Templater::MACRO_TAG.length() );
 
-      std::size_t lastModifiedSymbol = tagCloseBracket + 1;
+        std::size_t lastModifiedSymbol = tagCloseBracket + 1;
 
-      auto iter = mMacroses.find(token);
-      if (iter != mMacroses.end())
-      {
-         TRC_DEBUG(0U, "macro recognized: '%s' -> '%s'", token.c_str(), iter->second.c_str());
+        auto iter = mMacroses.find(token);
+        if (iter != mMacroses.end())
+        {
+            TRC_DEBUG(0U, "macro recognized: '%s' -> '%s'", token.c_str(), iter->second.c_str());
 
-         mContent.replace( mContent.begin() + tagOpenBracket,
-                           mContent.begin() + tagCloseBracket + Templater::MACRO_TAG.length(),
-                           iter->second);
+            mContent.replace( mContent.begin() + tagOpenBracket,
+                              mContent.begin() + tagCloseBracket + Templater::MACRO_TAG.length(),
+                              iter->second);
 
-         lastModifiedSymbol = tagOpenBracket + iter->second.length();
-      }
+            lastModifiedSymbol = tagOpenBracket + iter->second.length();
+        }
 
-      tagOpenBracket  = mContent.find(Templater::MACRO_TAG, lastModifiedSymbol + 1);
-      tagCloseBracket = mContent.find(Templater::MACRO_TAG, tagOpenBracket + 1);
-   }
+        tagOpenBracket  = mContent.find(Templater::MACRO_TAG, lastModifiedSymbol + 1);
+        tagCloseBracket = mContent.find(Templater::MACRO_TAG, tagOpenBracket + 1);
+    }
 
-   TRC_DEBUG_FUNC_EXIT(0U);
+    TRC_DEBUG_FUNC_EXIT(0U);
 
-   return mContent;
+    return mContent;
 }
 
 //---------------------------------------------------------------------------------------
 std::string Templater::lookupTemplate(const std::string& templateName)
 //---------------------------------------------------------------------------------------
 {
-   auto iter = mTemplateCache.find(templateName);
+    auto iter = mTemplateCache.find(templateName);
 
-   if (iter == mTemplateCache.end())
-   {
-      std::string workDir = Config::getValueStr(Config::WORKING_DIR);
+    if (iter == mTemplateCache.end())
+    {
+        std::string workDir = Config::getValueStr(Config::WORKING_DIR);
 
-      mTemplateCache.insert({
-                              templateName,
-                              Utils::getTextFileContent((workDir + templateName).c_str())
-                           });
+        mTemplateCache.insert({
+                                  templateName,
+                                  Utils::getTextFileContent((workDir + templateName).c_str())
+                              });
 
-      iter = mTemplateCache.find(templateName);
-   }
+        iter = mTemplateCache.find(templateName);
+    }
 
-   return iter->second;
+    return iter->second;
 }
 
 //---------------------------------------------------------------------------------------
 void Templater::purgeCache()
 //---------------------------------------------------------------------------------------
 {
-   mTemplateCache.clear();
+    mTemplateCache.clear();
 }

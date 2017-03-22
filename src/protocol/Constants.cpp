@@ -48,9 +48,11 @@ const std::string Response::HEADER_CONTENT_TYPE    = "Content-type";
 const std::map<Response::ResultCode, std::string> Response::mResultCodeDescriptions =
 //---------------------------------------------------------------------------------------
 {
-      {Response::OK,                               "OK"},
-      {Response::CREATED,                          "Created"},
-      //...
-      {Response::INTERNAL_SERVER_ERROR,            "Internal Server Error"}
-      //...
+    {Response::OK,                               "OK"},
+    {Response::CREATED,                          "Created"},
+
+    //...
+    {Response::INTERNAL_SERVER_ERROR,            "Internal Server Error"}
+
+    //...
 };

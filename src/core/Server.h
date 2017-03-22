@@ -17,18 +17,18 @@ namespace HTTP
 
 class Server
 {
-   public:
-      Server();
-      virtual ~Server();
+public:
+    Server();
+    virtual ~Server();
 
-      void setConnection(const Connection& connector);
+    void setConnection(const Connection& connector);
 
-      void start();
-      void stop();
+    void start();
+    void stop();
 
-   private:
-      Connection mConnection;
-      JobExecutor mJobExecutor;
+private:
+    Connection mConnection;
+    JobExecutor mJobExecutor;
 };
 
 }

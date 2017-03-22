@@ -17,83 +17,83 @@ namespace HTTP
 Server::Server()
     : mConnection()
     , mJobExecutor()
-//---------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------------
 {
-   TRC_DEBUG_FUNC_ENTER(0U, "");
-   TRC_DEBUG_FUNC_EXIT(0U);
+    TRC_DEBUG_FUNC_ENTER(0U, "");
+    TRC_DEBUG_FUNC_EXIT(0U);
 }
 
 //---------------------------------------------------------------------------------------
 Server::~Server()
 //---------------------------------------------------------------------------------------
 {
-   TRC_DEBUG_FUNC_ENTER(0U, "");
+    TRC_DEBUG_FUNC_ENTER(0U, "");
 
-   stop();
+    stop();
 
-   TRC_DEBUG_FUNC_EXIT(0U);
+    TRC_DEBUG_FUNC_EXIT(0U);
 }
 
 //---------------------------------------------------------------------------------------
 void Server::setConnection(const Connection& connector)
 //---------------------------------------------------------------------------------------
 {
-   mConnection = connector;
+    mConnection = connector;
 }
 
 //---------------------------------------------------------------------------------------
 void Server::start()
 //---------------------------------------------------------------------------------------
 {
-   mJobExecutor.start();
-   mConnection.connect();
+    mJobExecutor.start();
+    mConnection.connect();
 
-   // read and process requests until the connection is closed
-   while (true)
-   {
-       Request request;
+    // read and process requests until the connection is closed
+    while (true)
+    {
+        Request request;
 
-       try
-       {
-           mConnection.readRequest(request);
+        try
+        {
+            mConnection.readRequest(request);
 
-           TRC_INFO(0U, "The new request is received: request='%s'", request.getStartLine().c_str());
+            TRC_INFO(0U, "The new request is received: request='%s'", request.getStartLine().c_str());
 
-           auto pJob = JobFactory::createJob(request.getType(), request.getUrl());
-           Callback onFinishCallback  = JobFactory::createOnFinishCallback   (mConnection, request.getSessionId());
-           Callback onErrorCallback   = JobFactory::createOnErrorCallback    (mConnection, request.getSessionId());
+            auto pJob = JobFactory::createJob(request.getType(), request.getUrl());
+            Callback onFinishCallback  = JobFactory::createOnFinishCallback   (mConnection, request.getSessionId());
+            Callback onErrorCallback   = JobFactory::createOnErrorCallback    (mConnection, request.getSessionId());
 
-           pJob->setOnFinishCallback  (onFinishCallback);
-           pJob->setOnErrorCallback   (onErrorCallback);
+            pJob->setOnFinishCallback  (onFinishCallback);
+            pJob->setOnErrorCallback   (onErrorCallback);
 
-           mJobExecutor.submitJob(std::move(pJob));
+            mJobExecutor.submitJob(std::move(pJob));
 
-           TRC_INFO(0U, "The corresponding job is queued: pJob=0x%p, sessionId=%d", pJob.get(), request.getSessionId());
-       }
+            TRC_INFO(0U, "The corresponding job is queued: pJob=0x%p, sessionId=%d", pJob.get(), request.getSessionId());
+        }
 
-       catch(ParseException& ex)
-       {
-           TRC_ERROR(0U,
-                     "Exception while parsing request '%s': %s",
-                     request.getRawMessage().c_str(),
-                     ex.what());
-       }
+        catch(ParseException& ex)
+        {
+            TRC_ERROR(0U,
+                      "Exception while parsing request '%s': %s",
+                      request.getRawMessage().c_str(),
+                      ex.what());
+        }
 
-       catch (const std::exception& e)
-       {
-           stop();
-           throw;
-       }
+        catch (const std::exception& e)
+        {
+            stop();
+            throw;
+        }
 
-   }
+    }
 }
 
 //---------------------------------------------------------------------------------------
 void Server::stop()
 //---------------------------------------------------------------------------------------
 {
-   mConnection.disconnect();
-   mJobExecutor.stop();
+    mConnection.disconnect();
+    mJobExecutor.stop();
 }
 
 }

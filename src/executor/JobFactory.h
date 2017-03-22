@@ -17,15 +17,15 @@ namespace HTTP
 
 class JobFactory
 {
-   public:
-      JobFactory();
-      virtual ~JobFactory();
+public:
+    JobFactory();
+    virtual ~JobFactory();
 
-      //TODO: make it templateds
-      static IJob::Ptr createJob(Request::Type requestType, const std::string& url);
+    //TODO: make it templateds
+    static IJob::Ptr createJob(Request::Type requestType, const std::string& url);
 
-      static Callback createOnFinishCallback(const Connection& dispatcher, const int sessionId);
-      static Callback createOnErrorCallback(const Connection& dispatcher, const int sessionId);
+    static Callback createOnFinishCallback(const Connection& dispatcher, const int sessionId);
+    static Callback createOnErrorCallback(const Connection& dispatcher, const int sessionId);
 };
 
 }

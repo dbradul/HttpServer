@@ -20,5 +20,3 @@ TEST(TestConfig, BaseTest)
     EXPECT_EQ(Config::getValueInt("C"), 5);
     EXPECT_EQ(Config::getValueStr("D"), "<UNKNOWN>");
 }
-
-
